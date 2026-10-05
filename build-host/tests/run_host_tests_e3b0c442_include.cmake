@@ -1,5 +1,0 @@
-if(EXISTS "/Users/ww/src/phase-box/build-host/tests/run_host_tests_e3b0c442_tests.cmake")
-  include("/Users/ww/src/phase-box/build-host/tests/run_host_tests_e3b0c442_tests.cmake")
-else()
-  add_test(run_host_tests_NOT_BUILT run_host_tests_NOT_BUILT)
-endif()
