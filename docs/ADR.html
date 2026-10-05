@@ -1,0 +1,670 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phase Box: Combined Technical Specification &amp; Architecture Decision Record (ADR)</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.2);
+            --border: #334155;
+            --success: #34d399;
+            --warning: #f59e0b;
+            --code-bg: #0f172a;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        h1, h2, h3, h4 {
+            color: var(--text-main);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+        }
+        h1 { font-size: 2.2rem; margin-top: 0; }
+        h2 { font-size: 1.5rem; color: var(--accent); }
+        h3 { font-size: 1.1rem; border-bottom: none; color: var(--success); }
+        h4 { font-size: 1rem; border-bottom: none; color: var(--text-muted); font-weight: 600;}
+        .badge {
+            display: inline-block;
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border: 1px solid var(--accent);
+        }
+        ul { padding-left: 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        
+        code {
+            background: var(--code-bg);
+            color: var(--accent);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        pre {
+            background: var(--code-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+        pre code {
+            color: var(--text-main);
+            padding: 0;
+            background: transparent;
+        }
+
+
+        .diagram-container {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+        svg { max-width: 100%; height: auto; }
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+        /* Animation keyframes for interactive workflow */
+        @keyframes stepCycle {
+            0%, 23% { opacity: 1; }
+            28%, 100% { opacity: 0; }
+        }
+        @keyframes stepCycle2 {
+            0%, 23% { opacity: 0; }
+            28%, 51% { opacity: 1; }
+            56%, 100% { opacity: 0; }
+        }
+        @keyframes stepCycle3 {
+            0%, 51% { opacity: 0; }
+            56%, 79% { opacity: 1; }
+            84%, 100% { opacity: 0; }
+        }
+        @keyframes stepCycle4 {
+            0%, 79% { opacity: 0; }
+            84%, 100% { opacity: 1; }
+        }
+        .step-1 { animation: stepCycle 12s infinite; }
+        .step-2 { animation: stepCycle2 12s infinite; }
+        .step-3 { animation: stepCycle3 12s infinite; }
+        .step-4 { animation: stepCycle4 12s infinite; }
+        @keyframes pulseGlow {
+            0%, 100% { r: 18; stroke-width: 2; }
+            50% { r: 21; stroke-width: 3.5; stroke: #34d399; }
+        }
+        .interactive-glow {
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="container">
+    <div class="badge">Accepted / Active Implementation Plan</div>
+    <h1>Phase Box: Combined Technical Specification &amp; Architecture Decision Record (ADR)</h1>
+    <p>This document serves as the definitive technical reference and Claude Agent implementation guide for building the Phase Box algorithmic MIDI modulation engine.</p>
+    
+    <h2>1. Feature Summary</h2>
+    <ul>
+        <li><strong>Algorithmic Modulation:</strong> Generates continuous, non-repetitive control streams (Sine, Triangle, Square, S&H).</li>
+        <li><strong>Nested LFO Engine:</strong> Background LFOs modulate the frequency/depth of foreground LFOs for evolving organic drifts.</li>
+        <li><strong>Turing-Machine Mutations:</strong> Probabilistic step mutation for generative, non-repeating rhythmic patterns.</li>
+        <li><strong>Multi-Destination Macros:</strong> Expression pedal mapped to weighted multi-parameter scaling matrices.</li>
+        <li><strong>Tactile Control Matrix:</strong> Live-first interface using an infinite rotary encoder, dedicated mode buttons, and dual footswitches.</li>
+        <li><strong>Zero-Friction Preset Workflow:</strong> "Hold Encoder to Save" captures live tweaks instantly to onboard flash via LittleFS.</li>
+        <li><strong>Multi-Channel MIDI:</strong> Independent CC routing across multiple channels (CH1: Auto Waaaves, CH2: r_e_c_u_r).</li>
+        <li><strong>Dual Clock Architecture:</strong> Auto-sync to incoming external MIDI Clock with seamless fallback to Tap Tempo and instant Phase Reset.</li>
+        <li><strong>Power Topology:</strong> Operates on standard 9V DC pedalboard power, regulated internally to 5V for the Pico.</li>
+        <li><strong>Host-Side Development:</strong> Core logic compiles on Ubuntu via a Hardware Abstraction Layer (HAL) for simulation prior to hardware flashing.</li>
+    </ul>
+
+
+    <h2>2. Architecture Decision Record (ADR)</h2>
+    
+    <h3>2.1. Context &amp; Problem Statement</h3>
+    <p>We are building a custom hardware device, "Phase Box," based on a Raspberry Pi Pico. Its primary function is to act as an algorithmic modulation engine, continuously generating MIDI Control Change (CC) messages to control parameters on two external video synthesis applications: <strong>Auto Waaaves</strong> and <strong>r_e_c_u_r</strong>. The device must be gig-ready, robust, and feature an intuitive live-first interface that allows capturing accidental or deliberate parameter tweaks instantly.</p>
+
+
+    <h3>2.2. Decision Drivers</h3>
+    <ul>
+        <li><strong>Live Reliability &amp; Determinism:</strong> The core algorithmic generation (LFOs, S&H) must not glitch or stutter. Latency must be minimal.</li>
+        <li><strong>Dual Clock Sovereignty:</strong> Must auto-sync to an incoming MIDI Clock signal but fallback seamlessly to internal Tap Tempo when the clock stops. An instant "Phase Reset" footswitch is critical for rhythmic alignment.</li>
+        <li><strong>Zero-Friction Preset Capture:</strong> The interface must support saving the *current live state* to flash memory via a simple, long-press gesture on the encoder ("Hold-to-Save"), without navigating menus.</li>
+        <li><strong>Multi-Target &amp; Nested Routing:</strong> Must partition independent modulation streams across multiple MIDI channels and support routing slower LFOs to modulate faster LFOs.</li>
+        <li><strong>Power Isolation:</strong> Must operate cleanly off standard pedalboard 9V DC power supplies, isolated from USB bus power to prevent ground loops and noise artifacts.</li>
+        <li><strong>Developer Velocity:</strong> Must allow the core C++ logic (math, routing, state machines) to be compiled, simulated, and unit-tested on a Linux host (Ubuntu) without requiring the microcontroller hardware attached.</li>
+    </ul>
+
+
+    <h3>2.3. Architectural Decisions</h3>
+
+
+    <h4>2.3.1. Modular Software &amp; Hardware Abstraction Layer (HAL)</h4>
+    <p>The firmware is strictly decoupled into self-contained modules (e.g., <code>PhaseLFO</code>, <code>ClockManager</code>, <code>InputMatrix</code>). All hardware dependencies are abstracted behind clean C++ interfaces defined in a HAL. This enables two concrete implementations:</p>
+    <ul>
+        <li><code>MockImplementation</code>: Links against standard C++ and testing frameworks (GoogleTest) on Ubuntu for simulation.</li>
+        <li><code>PicoImplementation</code>: Uses the <code>pico-sdk</code> to interact with the actual RP2040 hardware.</li>
+    </ul>
+
+
+    <div class="diagram-container">
+        <svg viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg">
+            <rect width="800" height="360" fill="#090d16" rx="8"/>
+            <rect x="50" y="40" width="700" height="150" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+            <text x="70" y="70" fill="#38bdf8" font-family="sans-serif" font-weight="bold" font-size="14">PHASE BOX CORE ARCHITECTURE</text>
+            
+            <rect x="80" y="90" width="130" height="80" rx="4" fill="#0f172a" stroke="#334155"/>
+            <text x="145" y="125" fill="#f8fafc" font-family="sans-serif" font-size="12" text-anchor="middle">Clock Manager</text>
+            <text x="145" y="145" fill="#94a3b8" font-family="sans-serif" font-size="10" text-anchor="middle">(MIDI Clock / Tap)</text>
+
+
+            <rect x="225" y="90" width="130" height="80" rx="4" fill="#0f172a" stroke="#334155"/>
+            <text x="290" y="125" fill="#f8fafc" font-family="sans-serif" font-size="12" text-anchor="middle">Phase LFO Engine</text>
+            <text x="290" y="145" fill="#94a3b8" font-family="sans-serif" font-size="10" text-anchor="middle">(Nested / Turing)</text>
+
+
+            <rect x="370" y="90" width="130" height="80" rx="4" fill="#0f172a" stroke="#334155"/>
+            <text x="435" y="125" fill="#f8fafc" font-family="sans-serif" font-size="12" text-anchor="middle">Live UI &amp; Flash</text>
+            <text x="435" y="145" fill="#94a3b8" font-family="sans-serif" font-size="10" text-anchor="middle">(LittleFS / OLED)</text>
+
+
+            <rect x="515" y="90" width="100" height="80" rx="4" fill="#0f172a" stroke="#334155"/>
+            <text x="565" y="125" fill="#f8fafc" font-family="sans-serif" font-size="12" text-anchor="middle">Midi Router</text>
+            <text x="565" y="145" fill="#94a3b8" font-family="sans-serif" font-size="10" text-anchor="middle">(Ch1 / Ch2)</text>
+
+
+            <rect x="630" y="90" width="90" height="80" rx="4" fill="#0f172a" stroke="#334155"/>
+            <text x="675" y="125" fill="#f8fafc" font-family="sans-serif" font-size="12" text-anchor="middle">Macro Engine</text>
+            <text x="675" y="145" fill="#94a3b8" font-family="sans-serif" font-size="10" text-anchor="middle">(Expression)</text>
+
+
+            <rect x="50" y="210" width="700" height="40" rx="4" fill="#334155" opacity="0.4"/>
+            <text x="400" y="235" fill="#f8fafc" font-family="sans-serif" font-weight="bold" font-size="11" text-anchor="middle">HARDWARE ABSTRACTION LAYER (HAL) &amp; DUAL-CORE TASK SPLIT</text>
+
+
+            <rect x="100" y="280" width="160" height="50" rx="4" fill="#1e293b" stroke="#34d399"/>
+            <text x="180" y="310" fill="#34d399" font-family="sans-serif" font-size="11" text-anchor="middle">Footswitches &amp; Encoder</text>
+
+
+            <rect x="320" y="280" width="160" height="50" rx="4" fill="#1e293b" stroke="#34d399"/>
+            <text x="400" y="310" fill="#34d399" font-family="sans-serif" font-size="11" text-anchor="middle">Expression Pedals (ADC)</text>
+
+
+            <rect x="540" y="280" width="160" height="50" rx="4" fill="#1e293b" stroke="#34d399"/>
+            <text x="620" y="310" fill="#34d399" font-family="sans-serif" font-size="11" text-anchor="middle">CME H2MIDI Pro</text>
+
+
+            <line x1="180" y1="280" x2="180" y2="250" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4"/>
+            <line x1="400" y1="280" x2="400" y2="250" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4"/>
+            <line x1="620" y1="280" x2="620" y2="250" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4"/>
+        </svg>
+    </div>
+
+
+    <h4>2.3.2. Power Topology</h4>
+    <p>To ensure galvanic isolation and eliminate digital noise, the Phase Box operates on standard 9V DC pedalboard power. This voltage is stepped down internally to 5V via a dedicated buck regulator connected to the Pico's <code>VSYS</code> pin. The Pico's USB port is used exclusively for flashing and debugging, not for live performance power.</p>
+
+
+    <h4>2.3.3. Preset Storage &amp; Data Persistence</h4>
+    <p>Presets are stored in the RP2040's onboard SPI NOR flash memory using the LittleFS filesystem, mapping structured binary configuration blobs to virtual files (e.g., <code>patch1.bin</code>).</p>
+
+
+    <h3>2.4. Interactive OLED Workflow Simulation</h3>
+    <p>The animated schematic below cycles through the four primary live performance states rendered on the 128x32 I2C OLED display:</p>
+
+
+    <div class="diagram-container">
+        <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="600" height="200" fill="#090d16" rx="8"/>
+            <!-- OLED Outer Bezel -->
+            <rect x="100" y="30" width="400" height="140" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+            <rect x="120" y="45" width="360" height="110" rx="4" fill="#050811" stroke="#334155"/>
+            
+            <!-- STEP 1: Live Telemetry View -->
+            <g class="step-1">
+                <text x="140" y="70" fill="#38bdf8" font-family="monospace" font-size="14" font-weight="bold">[SINE] CH1  BPM:125  EXT</text>
+                <text x="140" y="95" fill="#94a3b8" font-family="monospace" font-size="12">/^\  /^\  /^\  /^\  /^\</text>
+                <text x="140" y="125" fill="#34d399" font-family="monospace" font-size="13">CC#10 Filter Cutoff  VAL:104</text>
+                <text x="140" y="145" fill="#64748b" font-family="sans-serif" font-size="10">STATE 1: LIVE TELEMETRY VIEW</text>
+            </g>
+
+
+            <!-- STEP 2: Live Parameter Edit View -->
+            <g class="step-2">
+                <text x="140" y="70" fill="#f59e0b" font-family="monospace" font-size="14" font-weight="bold">EDITING: CH1 TARGET CC</text>
+                <text x="140" y="95" fill="#f8fafc" font-family="monospace" font-size="13">&gt; CC 10: Feedback (Auto Waaaves)</text>
+                <text x="140" y="125" fill="#94a3b8" font-family="monospace" font-size="12">Scale: [Weight: +1.0]</text>
+                <text x="140" y="145" fill="#64748b" font-family="sans-serif" font-size="10">STATE 2: PARAMETER EDIT MODE</text>
+            </g>
+
+
+            <!-- STEP 3: Hold-to-Save Preset View -->
+            <g class="step-3">
+                <text x="140" y="70" fill="#34d399" font-family="monospace" font-size="14" font-weight="bold">[HOLD TO SAVE ACTIVE]</text>
+                <text x="140" y="95" fill="#f8fafc" font-family="monospace" font-size="13">&gt; Slot 3: GLITCH ACID DRIFT</text>
+                <text x="140" y="125" fill="#94a3b8" font-family="monospace" font-size="12">Release Encoder to Write Flash</text>
+                <text x="140" y="145" fill="#64748b" font-family="sans-serif" font-size="10">STATE 3: PRESET SAVE WORKFLOW</text>
+            </g>
+
+
+            <!-- STEP 4: Tap Tempo / Phase Reset View -->
+            <g class="step-4">
+                <text x="140" y="70" fill="#38bdf8" font-family="monospace" font-size="14" font-weight="bold">TAP TEMPO / SYNC</text>
+                <text x="140" y="95" fill="#f8fafc" font-family="monospace" font-size="13">BPM: 128.0 [TAP DETECTED]</text>
+                <text x="140" y="125" fill="#34d399" font-family="monospace" font-size="12">&gt;&gt; PHASE ACCUMULATOR RESET TO 0</text>
+                <text x="140" y="145" fill="#64748b" font-family="sans-serif" font-size="10">STATE 4: CLOCK &amp; PHASE ALIGNMENT</text>
+            </g>
+        </svg>
+    </div>
+
+
+    <h2>3. Enclosure &amp; Physical Layout Specifications</h2>
+    <p>Phase Box is housed in a rugged <strong>Hammond 1590BB</strong> die-cast aluminum stompbox enclosure, ensuring durability for live touring environments while providing sufficient internal clearance for the Raspberry Pi Pico, custom protoboard, buck regulator, and wiring harnesses.</p>
+
+
+    <div class="diagram-container">
+        <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+            <rect width="700" height="320" fill="#090d16" rx="8"/>
+            <!-- Enclosure Top Plate Outline -->
+            <rect x="50" y="30" width="600" height="260" rx="16" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+            
+            <!-- Top Row: Jacks & Power -->
+            <circle cx="150" cy="55" r="14" fill="#0f172a" stroke="#34d399" stroke-width="2"/>
+            <text x="150" y="59" fill="#34d399" font-family="sans-serif" font-size="9" text-anchor="middle">TRS MIDI</text>
+
+
+            <circle cx="350" cy="55" r="14" fill="#0f172a" stroke="#34d399" stroke-width="2"/>
+            <text x="350" y="59" fill="#34d399" font-family="sans-serif" font-size="9" text-anchor="middle">EXP PEDAL</text>
+
+
+            <circle cx="550" cy="55" r="12" fill="#0f172a" stroke="#f59e0b" stroke-width="2"/>
+            <text x="550" y="59" fill="#f59e0b" font-family="sans-serif" font-size="9" text-anchor="middle">9V DC</text>
+
+
+            <!-- Center Row: OLED & Infinite Encoder -->
+            <rect x="260" y="100" width="180" height="60" rx="4" fill="#050811" stroke="#38bdf8" stroke-width="1.5"/>
+            <text x="350" y="135" fill="#38bdf8" font-family="sans-serif" font-size="12" text-anchor="middle">128x32 OLED Display</text>
+
+
+            <circle cx="520" cy="130" r="18" fill="#0f172a" stroke="#f8fafc" stroke-width="2"/>
+            <text x="520" y="134" fill="#f8fafc" font-family="sans-serif" font-size="9" text-anchor="middle">ENC</text>
+
+
+            <!-- Bottom Row: Performance Footswitches -->
+            <circle cx="200" cy="225" r="22" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+            <text x="200" y="229" fill="#38bdf8" font-family="sans-serif" font-size="10" text-anchor="middle">TAP / RST</text>
+
+
+            <circle cx="500" cy="225" r="22" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+            <text x="500" y="229" fill="#38bdf8" font-family="sans-serif" font-size="10" text-anchor="middle">MODE / MUTATE</text>
+
+
+            <!-- Legend / Annotation -->
+            <text x="350" y="280" fill="#94a3b8" font-family="sans-serif" font-size="11" text-anchor="middle">Hammond 1590BB Top Panel Layout (Top-Mounted Jacks, Dual Footswitches, Infinite Encoder)</text>
+        </svg>
+    </div>
+
+
+    <ul>
+        <li><strong>Top Panel Topography:</strong> Top-mounted TRS MIDI jacks and 9V DC input preserve valuable pedalboard lateral spacing. Dual heavy-duty momentary footswitches flank the lower section for hands-free tap tempo/phase reset and mode selection.</li>
+        <li><strong>Central Control Hub:</strong> The 128x32 OLED display is centrally framed directly above the main endless rotary encoder with integrated push-switch, enabling one-handed navigation and the "Hold-to-Save" preset gesture.</li>
+    </ul>
+
+
+    <h2>4. Architectural Performance Boundaries &amp; Mitigation Strategies</h2>
+    <div class="warning-box">
+        <strong>CRITICAL HARDWARE CONSTRAINTS:</strong> The RP2040 is a powerful dual-core microcontroller, but real-time MIDI modulation combined with graphics rendering and flash persistence introduces specific performance bottlenecks that must be addressed in firmware design.
+    </div>
+
+
+    <h3>4.1. Floating-Point Math Optimization (No Hardware FPU)</h3>
+    <ul>
+        <li><strong>The Boundary:</strong> The RP2040 dual Cortex-M0+ cores lack a hardware Floating-Point Unit (FPU). Heavy usage of raw floating-point operations in tight loops introduces CPU overhead and modulation jitter.</li>
+        <li><strong>The Solution:</strong> Pre-calculate lookup tables (LUTs) for standard waveforms (Sine, Triangle) instead of computing trigonometric functions on the fly. Utilize integer or fixed-point math for phase accumulator increments where appropriate.</li>
+    </ul>
+
+
+    <h3>4.2. I2C Bus Saturation Prevention</h3>
+    <ul>
+        <li><strong>The Boundary:</strong> Blasting pixel updates to the 128x64 OLED display over a standard I2C bus too frequently blocks the main thread, causing MIDI clock drift and dropped events.</li>
+        <li><strong>The Solution:</strong> Run the I2C bus at Fast-Mode Plus (1MHz) and decouple the display loop from the audio/MIDI loop. Throttle the OLED render routine to a stable 30 FPS using delta-time checks.</li>
+    </ul>
+
+
+    <h3>4.3. Dual-Core Asymmetric Task Splitting</h3>
+    <ul>
+        <li><strong>The Boundary:</strong> Handling USB/MIDI interrupts, LFO math, ADC macro scaling, and OLED rendering on a single execution thread causes timing inconsistencies.</li>
+        <li><strong>The Solution:</strong> Distribute workloads across the RP2040's dual cores:
+            <ul>
+                <li><strong>Core 0 (High Priority):</strong> Dedicated entirely to real-time engine tasks—MIDI clock processing, <code>PhaseLFO</code> math, Turing machine mutations, macro scaling, and message dispatching.</li>
+                <li><strong>Core 1 (Background Priority):</strong> Handles lower-priority operations—LittleFS flash read/writes, button input matrix debouncing, and OLED display rendering.</li>
+            </ul>
+        </li>
+    </ul>
+
+
+    <h3>4.4. Flash File System (LittleFS) Write Isolation</h3>
+    <ul>
+        <li><strong>The Boundary:</strong> Writing presets to flash memory triggers page erasure cycles that temporarily block execution on the active core, risking micro-stutters during live play.</li>
+        <li><strong>The Solution:</strong> Isolate all flash read/write operations exclusively to Core 1 and restrict them to explicit user actions (e.g., the 1-second encoder "Hold-to-Save" gesture), ensuring zero interference with real-time MIDI generation on Core 0.</li>
+    </ul>
+
+
+</div>
+
+
+</body>
+</html>
+
+
+
+
+    <meta charset="UTF-8">
+    <title>Phase Box Presentation: Architecture, Features &amp; Performance</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.2);
+            --border: #334155;
+            --success: #34d399;
+            --warning: #f59e0b;
+            --code-bg: #0f172a;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+        }
+        .slide {
+            max-width: 1000px;
+            margin: 0 auto 3rem auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        h1, h2, h3, h4 {
+            color: var(--text-main);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+        }
+        h1 { font-size: 2.2rem; margin-top: 0; }
+        h2 { font-size: 1.5rem; color: var(--accent); }
+        .badge {
+            display: inline-block;
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border: 1px solid var(--accent);
+        }
+        ul { padding-left: 1.5rem; }
+        li { margin-bottom: 0.5ln; }
+        .diagram-container {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+        svg { max-width: 100%; height: auto; }
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+        /* Animation keyframes for interactive workflow */
+        @keyframes stepCycle {
+            0%, 23% { opacity: 1; }
+            28%, 100% { opacity: 0; }
+        }
+        @keyframes stepCycle2 {
+            0%, 23% { opacity: 0; }
+            28%, 51% { opacity: 1; }
+            56%, 100% { opacity: 0; }
+        }
+        @keyframes stepCycle3 {
+            0%, 51% { opacity: 0; }
+            56%, 79% { opacity: 1; }
+            84%, 100% { opacity: 0; }
+        }
+        @keyframes stepCycle4 {
+            0%, 79% { opacity: 0; }
+            84%, 100% { opacity: 1; }
+        }
+        .step-1 { animation: stepCycle 12s infinite; }
+        .step-2 { animation: stepCycle2 12s infinite; }
+        .step-3 { animation: stepCycle3 12s infinite; }
+        .step-4 { animation: stepCycle4 12s infinite; }
+    </style>
+
+
+
+
+<!-- SLIDE 1: Title Slide -->
+<div class="slide">
+    <div class="badge">Presentation Showcase</div>
+    <h1>Phase Box: Algorithmic MIDI Modulation Engine</h1>
+    <p>A robust hardware and software technical specification showcase for gig-ready video synth modulation powered by the Raspberry Pi Pico.</p>
+</div>
+
+
+<!-- SLIDE 2: Section Title -->
+<div class="slide">
+    <h2>Core Concepts &amp; Architecture</h2>
+    <p>Modular design separating core math from target hardware for seamless Ubuntu simulation and RP2040 deployment.</p>
+    
+    <div class="diagram-container">
+        <svg viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg">
+            <rect width="800" height="360" fill="#090d16" rx="8"/>
+            <rect x="50" y="40" width="700" height="150" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+            <text x="70" y="70" fill="#38bdf8" font-family="sans-serif" font-weight="bold" font-size="14">PHASE BOX CORE ARCHITECTURE</text>
+            
+            <rect x="80" y="90" width="130" height="80" rx="4" fill="#0f172a" stroke="#334155"/>
+            <text x="145" y="125" fill="#f8fafc" font-family="sans-serif" font-size="12" text-anchor="middle">Clock Manager</text>
+            <text x="145" y="145" fill="#94a3b8" font-family="sans-serif" font-size="10" text-anchor="middle">(MIDI Clock / Tap)</text>
+
+
+            <rect x="225" y="90" width="130" height="80" rx="4" fill="#0f172a" stroke="#334155"/>
+            <text x="290" y="125" fill="#f8fafc" font-family="sans-serif" font-size="12" text-anchor="middle">Phase LFO Engine</text>
+            <text x="290" y="145" fill="#94a3b8" font-family="sans-serif" font-size="10" text-anchor="middle">(Nested / Turing)</text>
+
+
+            <rect x="370" y="90" width="130" height="80" rx="4" fill="#0f172a" stroke="#334155"/>
+            <text x="435" y="125" fill="#f8fafc" font-family="sans-serif" font-size="12" text-anchor="middle">Live UI &amp; Flash</text>
+            <text x="435" y="145" fill="#94a3b8" font-family="sans-serif" font-size="10" text-anchor="middle">(LittleFS / OLED)</text>
+
+
+            <rect x="515" y="90" width="100" height="80" rx="4" fill="#0f172a" stroke="#334155"/>
+            <text x="565" y="125" fill="#f8fafc" font-family="sans-serif" font-size="12" text-anchor="middle">Midi Router</text>
+            <text x="565" y="145" fill="#94a3b8" font-family="sans-serif" font-size="10" text-anchor="middle">(Ch1 / Ch2)</text>
+
+
+            <rect x="630" y="90" width="90" height="80" rx="4" fill="#0f172a" stroke="#334155"/>
+            <text x="675" y="125" fill="#f8fafc" font-family="sans-serif" font-size="12" text-anchor="middle">Macro Engine</text>
+            <text x="675" y="145" fill="#94a3b8" font-family="sans-serif" font-size="10" text-anchor="middle">(Expression)</text>
+
+
+            <rect x="50" y="210" width="700" height="40" rx="4" fill="#334155" opacity="0.4"/>
+            <text x="400" y="235" fill="#f8fafc" font-family="sans-serif" font-weight="bold" font-size="11" text-anchor="middle">HARDWARE ABSTRACTION LAYER (HAL) &amp; DUAL-CORE TASK SPLIT</text>
+
+
+            <rect x="100" y="280" width="160" height="50" rx="4" fill="#1e293b" stroke="#34d399"/>
+            <text x="180" y="310" fill="#34d399" font-family="sans-serif" font-size="11" text-anchor="middle">Footswitches &amp; Encoder</text>
+
+
+            <rect x="320" y="280" width="160" height="50" rx="4" fill="#1e293b" stroke="#34d399"/>
+            <text x="400" y="310" fill="#34d399" font-family="sans-serif" font-size="11" text-anchor="middle">Expression Pedals (ADC)</text>
+
+
+            <rect x="540" y="280" width="160" height="50" rx="4" fill="#1e293b" stroke="#34d399"/>
+            <text x="620" y="310" fill="#34d399" font-family="sans-serif" font-size="11" text-anchor="middle">CME H2MIDI Pro</text>
+
+
+            <line x1="180" y1="280" x2="180" y2="250" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4"/>
+            <line x1="400" y1="280" x2="400" y2="250" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4"/>
+            <line x1="620" y1="280" x2="620" y2="250" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4"/>
+        </svg>
+    </div>
+</div>
+
+
+<!-- SLIDE 3: Interactive OLED Workflow Simulation -->
+<div class="slide">
+    <h2>Interactive OLED Workflow Simulation</h2>
+    <p>Visual states during live performance handling telemetry, parameter edits, preset saves, and clock syncing.</p>
+
+
+    <div class="diagram-container">
+        <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="600" height="200" fill="#090d16" rx="8"/>
+            <rect x="100" y="30" width="400" height="140" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+            <rect x="120" y="45" width="360" height="110" rx="4" fill="#050811" stroke="#334155"/>
+            
+            <g class="step-1">
+                <text x="140" y="70" fill="#38bdf8" font-family="monospace" font-size="14" font-weight="bold">[SINE] CH1  BPM:125  EXT</text>
+                <text x="140" y="95" fill="#94a3b8" font-family="monospace" font-size="12">/^\  /^\  /^\  /^\  /^\</text>
+                <text x="140" y="125" fill="#34d399" font-family="monospace" font-size="13">CC#10 Filter Cutoff  VAL:104</text>
+                <text x="140" y="145" fill="#64748b" font-family="sans-serif" font-size="10">STATE 1: LIVE TELEMETRY VIEW</text>
+            </g>
+
+
+            <g class="step-2">
+                <text x="140" y="70" fill="#f59e0b" font-family="monospace" font-size="14" font-weight="bold">EDITING: CH1 TARGET CC</text>
+                <text x="140" y="95" fill="#f8fafc" font-family="monospace" font-size="13">&gt; CC 10: Feedback (Auto Waaaves)</text>
+                <text x="140" y="125" fill="#94a3b8" font-family="monospace" font-size="12">Scale: [Weight: +1.0]</text>
+                <text x="140" y="145" fill="#64748b" font-family="sans-serif" font-size="10">STATE 2: PARAMETER EDIT MODE</text>
+            </g>
+
+
+            <g class="step-3">
+                <text x="140" y="70" fill="#34d399" font-family="monospace" font-size="14" font-weight="bold">[HOLD TO SAVE ACTIVE]</text>
+                <text x="140" y="95" fill="#f8fafc" font-family="monospace" font-size="13">&gt; Slot 3: GLITCH ACID DRIFT</text>
+                <text x="140" y="125" fill="#94a3b8" font-family="monospace" font-size="12">Release Encoder to Write Flash</text>
+                <text x="140" y="145" fill="#64748b" font-family="sans-serif" font-size="10">STATE 3: PRESET SAVE WORKFLOW</text>
+            </g>
+
+
+            <g class="step-4">
+                <text x="140" y="70" fill="#38bdf8" font-family="monospace" font-size="14" font-weight="bold">TAP TEMPO / SYNC</text>
+                <text x="140" y="95" fill="#f8fafc" font-family="monospace" font-size="13">BPM: 128.0 [TAP DETECTED]</text>
+                <text x="140" y="125" fill="#34d399" font-family="monospace" font-size="12">&gt;&gt; PHASE ACCUMULATOR RESET TO 0</text>
+                <text x="140" y="145" fill="#64748b" font-family="sans-serif" font-size="10">STATE 4: CLOCK &amp; PHASE ALIGNMENT</text>
+            </g>
+        </svg>
+    </div>
+</div>
+
+
+<!-- SLIDE 4: Enclosure Layout -->
+<div class="slide">
+    <h2>Enclosure &amp; Physical Layout Specifications</h2>
+    <p>Hammond 1590BB enclosure design ensuring touring durability and ergonomic pedalboard access.</p>
+
+
+    <div class="diagram-container">
+        <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+            <rect width="700" height="320" fill="#090d16" rx="8"/>
+            <rect x="50" y="30" width="600" height="260" rx="16" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+            
+            <circle cx="150" cy="55" r="14" fill="#0f172a" stroke="#34d399" stroke-width="2"/>
+            <text x="150" y="59" fill="#34d399" font-family="sans-serif" font-size="9" text-anchor="middle">TRS MIDI</text>
+
+
+            <circle cx="350" cy="55" r="14" fill="#0f172a" stroke="#34d399" stroke-width="2"/>
+            <text x="350" y="59" fill="#34d399" font-family="sans-serif" font-size="9" text-anchor="middle">EXP PEDAL</text>
+
+
+            <circle cx="550" cy="55" r="12" fill="#0f172a" stroke="#f59e0b" stroke-width="2"/>
+            <text x="550" y="59" fill="#f59e0b" font-family="sans-serif" font-size="9" text-anchor="middle">9V DC</text>
+
+
+            <rect x="260" y="100" width="180" height="60" rx="4" fill="#050811" stroke="#38bdf8" stroke-width="1.5"/>
+            <text x="350" y="135" fill="#38bdf8" font-family="sans-serif" font-size="12" text-anchor="middle">128x32 OLED Display</text>
+
+
+            <circle cx="520" cy="130" r="18" fill="#0f172a" stroke="#f8fafc" stroke-width="2"/>
+            <text x="520" y="134" fill="#f8fafc" font-family="sans-serif" font-size="9" text-anchor="middle">ENC</text>
+
+
+            <circle cx="200" cy="225" r="22" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+            <text x="200" y="229" fill="#38bdf8" font-family="sans-serif" font-size="10" text-anchor="middle">TAP / RST</text>
+
+
+            <circle cx="500" cy="225" r="22" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+            <text x="500" y="229" fill="#38bdf8" font-family="sans-serif" font-size="10" text-anchor="middle">MODE / MUTATE</text>
+
+
+            <text x="350" y="280" fill="#94a3b8" font-family="sans-serif" font-size="11" text-anchor="middle">Hammond 1590BB Top Panel Layout</text>
+        </svg>
+    </div>
+</div>
+
+
+<!-- SLIDE 5: Architectural Performance Considerations -->
+<div class="slide">
+    <h2>Architectural Performance Considerations &amp; Solutions</h2>
+    <div class="warning-box">
+        <strong>CRITICAL HARDWARE CONSTRAINTS:</strong> Managing real-time MIDI, probabilistic Turing mutations, graphic rendering, and flash persistence on the RP2040.
+    </div>
+
+
+    <ul>
+        <li><strong>Floating-Point Math (No Hardware FPU):</strong> The RP2040 Cortex-M0+ lacks a hardware FPU. <em>Solution:</em> Pre-calculate lookup tables (LUTs) for standard waveforms (Sine, Triangle) and use fixed-point arithmetic for phase accumulators.</li>
+        <li><strong>I2C Bus Saturation:</strong> Blasting pixel data to the OLED can block the main thread and cause MIDI jitter. <em>Solution:</em> Run I2C at Fast-Mode Plus (1MHz) and throttle display rendering to a stable 30 FPS.</li>
+        <li><strong>Dual-Core Asymmetric Task Splitting:</strong> <em>Solution:</em> Core 0 is dedicated to real-time engine processing (MIDI clock, LFO math, Turing mutations, macro scaling), while Core 1 handles low-priority tasks (LittleFS flash writes, button debouncing, OLED rendering).</li>
+        <li><strong>Flash File System (LittleFS) Isolation:</strong> Flash write cycles cause blocking delays. <em>Solution:</em> Isolate all write tasks strictly to Core 1 on user demand (Hold-to-Save gesture), completely protecting the Core 0 real-time MIDI output.</li>
+    </ul>
+</div>
+
+
+</body>
+</html>
