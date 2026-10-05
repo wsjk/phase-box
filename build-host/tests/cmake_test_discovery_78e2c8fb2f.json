@@ -1,0 +1,48 @@
+{
+  "tests": 6,
+  "name": "AllTests",
+  "testsuites": [
+    {
+      "name": "PhaseLFOTest",
+      "tests": 3,
+      "testsuite": [
+        {
+          "name": "WaveformSineLUT",
+          "file": "\/Users\/ww\/src\/phase-box\/tests\/test_main.cpp",
+          "line": 9
+        },
+        {
+          "name": "WaveformSquare",
+          "file": "\/Users\/ww\/src\/phase-box\/tests\/test_main.cpp",
+          "line": 19
+        },
+        {
+          "name": "PhaseReset",
+          "file": "\/Users\/ww\/src\/phase-box\/tests\/test_main.cpp",
+          "line": 28
+        }
+      ]
+    },
+    {
+      "name": "ClockManagerTest",
+      "tests": 3,
+      "testsuite": [
+        {
+          "name": "DefaultInternalTap",
+          "file": "\/Users\/ww\/src\/phase-box\/tests\/test_main.cpp",
+          "line": 39
+        },
+        {
+          "name": "TapTempoCalculation",
+          "file": "\/Users\/ww\/src\/phase-box\/tests\/test_main.cpp",
+          "line": 45
+        },
+        {
+          "name": "ExternalMIDIClockFallback",
+          "file": "\/Users\/ww\/src\/phase-box\/tests\/test_main.cpp",
+          "line": 52
+        }
+      ]
+    }
+  ]
+}
