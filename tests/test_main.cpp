@@ -1,9 +1,9 @@
-// tests/test_main.cpp
 #include <gtest/gtest.h>
 #include "hal/hal_gpio.hpp"
 #include "core/phase_lfo.hpp"
 #include "core/clock_manager.hpp"
 #include "core/midi_router.hpp"
+#include "core/modulation_engine.hpp"
 
 using namespace phasebox::core;
 
@@ -86,6 +86,18 @@ TEST(MidiRouterTest, ChannelMapping) {
     EXPECT_EQ(msg.status, 0xB1); // CC on Channel 2
     EXPECT_EQ(msg.data1, 15);
     EXPECT_EQ(msg.data2, 64);
+}
+
+TEST(ModulationEngineTest, EngineTickGeneratesMessages) {
+    ModulationEngine engine;
+    engine.set_bpm(120.0f);
+    auto msgs = engine.tick(1000);
+
+    EXPECT_EQ(msgs.size(), 4);
+    EXPECT_EQ(msgs.status, 0xB0); // LFO 0 on Channel 1
+    EXPECT_EQ(msgs.data1, 14);   // CC #14
+    EXPECT_EQ(msgs.status, 0xB1); // LFO 1 on Channel 2
+    EXPECT_EQ(msgs.data1, 15);   // CC #15
 }
 
 int main(int argc, char **argv) {
