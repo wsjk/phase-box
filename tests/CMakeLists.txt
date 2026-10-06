@@ -1,4 +1,4 @@
-add_executable(run_host_tests test_main.cpp)
+add_executable(run_host_tests test_main.cpp test_macro_engine.cpp)
 target_link_libraries(run_host_tests PRIVATE gtest_main)
 include(GoogleTest)
 gtest_discover_tests(run_host_tests)
