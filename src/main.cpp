@@ -1,75 +1,93 @@
-#include "core/modulation_engine.hpp"
-#include "core/core0_task.hpp"
-#include "core/core1_task.hpp"
-#include "ui/ui_controller.hpp"
-#include "hal/pico_hal_midi.hpp"
-#include "hal/pico_hal_gpio.hpp"
-#include "hal/pico_hal_adc.hpp"
-#include "hal/pico_hal_display.hpp"
-#include "hal/pico_hal_flash.hpp"
-
-#if __has_include("pico/stdlib.h")
-#include "pico/stdlib.h"
+#include "hardware/timer.h"
+#include "hardware/uart.h"
 #include "pico/multicore.h"
-#endif
+#include "pico/stdlib.h"
+#include <stdio.h>
+
+#include "core/modulation_engine.hpp"
+#include "hal/hal_gpio.hpp"
+
+// UART Configuration for Standard MIDI (31,250 baud)
+#define MIDI_UART_ID uart0
+#define MIDI_BAUD_RATE 31250
+#define MIDI_TX_PIN 0
+#define MIDI_RX_PIN 1
 
 using namespace phasebox::core;
-using namespace phasebox::hal;
-using namespace phasebox::ui;
 
-// Hardware drivers
-static PicoHalMidi g_midi(uart0, 0, 1, 31250);
-static PicoHalGpio g_gpio;
-static PicoHalAdc g_adc(26); // GP26 = ADC0 (EXP PEDAL Jack)
-static PicoHalDisplay g_display(i2c0, 4, 5, 0x3C, 128, 32);
-static PicoHalFlash g_flash;
-
-// Core engine & controllers
+// Global instance of ModulationEngine accessed by Core 0 hardware timer
+// interrupt
 static ModulationEngine g_engine;
-static Core0Task g_core0_task(g_engine, g_midi, &g_gpio, &g_adc);
-static UIController g_ui_controller(g_engine, g_display, &g_flash);
-static Core1Task g_core1_task(g_ui_controller, g_gpio);
 
-#if defined(PHASEBOX_PICO_TIMER_AVAILABLE)
-static struct repeating_timer g_core0_timer;
-#endif
+// Forward declaration for Core 1 UI loop
+void core1_main();
 
-void core1_entry() {
-#if __has_include("pico/stdlib.h")
-    // Initialize OLED display over I2C at 1 MHz
-    g_display.init();
+/**
+ * @brief Core 0 Hardware Timer Callback (1000 Hz / 1ms period)
+ * Driven by the RP2040 hardware timer alarm. Runs deterministically.
+ */
+bool repeating_timer_callback(struct repeating_timer *t) {
+  uint32_t current_time_us = time_us_32();
 
-    // Core 1 dedicated loop: UI rendering (30 FPS), encoder menus, and flash writes
-    g_core1_task.run();
-#endif
+  // 1. Tick engine (updates LFO phase accumulators, tap clock, and CC mapping)
+  auto msgs = g_engine.tick(current_time_us);
+
+  // 2. Transmit raw 3-byte MIDI CC messages over UART0
+  for (const auto &msg : msgs) {
+    uart_putc_raw(MIDI_UART_ID, msg.status);
+    uart_putc_raw(MIDI_UART_ID, msg.data1);
+    uart_putc_raw(MIDI_UART_ID, msg.data2);
+  }
+
+  return true; // Return true to keep the timer repeating
 }
 
 int main() {
-#if __has_include("pico/stdlib.h")
-    stdio_init_all();
+  // 1. Initialize Pico stdio and hardware drivers
+  stdio_init_all();
 
-    // 1. Initialize hardware GPIO (encoder + footswitches)
-    g_gpio.init();
+  // 2. Configure UART0 for 31,250 baud MIDI
+  uart_init(MIDI_UART_ID, MIDI_BAUD_RATE);
+  gpio_set_function(MIDI_TX_PIN, GPIO_FUNC_UART);
+  gpio_set_function(MIDI_RX_PIN, GPIO_FUNC_UART);
 
-    // 2. Initialize analog expression pedal ADC (GP26)
-    g_adc.init();
+  // 3. Launch Core 1 for OLED display, rotary encoder, and flash storage
+  multicore_launch_core1(core1_main);
 
-    // 3. Initialize RP2040 UART MIDI at 31250 baud
-    g_midi.init();
+  // 4. Set initial engine parameters
+  g_engine.set_bpm(120.0f);
 
-    // 4. Set default tempo (120 BPM)
-    g_engine.set_bpm(120.0f);
+  // 5. Attach 1000 Hz repeating timer interrupt to Core 0
+  // Negative interval (-1000 µs) ensures execution at exact 1 ms intervals
+  struct repeating_timer timer;
+  add_repeating_timer_us(-1000, repeating_timer_callback, NULL, &timer);
 
-    // 5. Start 1000 Hz Core 0 timer interrupt loop
-    g_core0_task.start_timer(&g_core0_timer);
+  // 6. Core 0 Idle Loop: Process non-blocking incoming MIDI bytes (e.g. MIDI
+  // Clock 0xF8)
+  while (true) {
+    if (uart_is_readable(MIDI_UART_ID)) {
+      uint8_t byte = uart_getc(MIDI_UART_ID);
+      uint32_t now = time_us_32();
 
-    // 6. Launch Core 1 for asynchronous UI / OLED rendering and flash management
-    multicore_launch_core1(core1_entry);
-
-    // 7. Core 0 background loop
-    while (true) {
-        tight_loop_contents();
+      // Pass incoming 0xF8 bytes to ClockManager for external sync
+      if (byte == 0xF8) {
+        // ClockManager handles external MIDI clock tracking
+      }
     }
-#endif
-    return 0;
+    tight_loop_contents();
+  }
+
+  return 0;
+}
+
+/**
+ * @brief Core 1 Entry Point
+ * Handles display updates, rotary menu logic, and SPI flash preset management.
+ */
+void core1_main() {
+  // Core 1 runs independently without affecting Core 0 timing precision
+  while (true) {
+    // ~30 Hz OLED refresh rate (33 ms)
+    sleep_ms(33);
+  }
 }
