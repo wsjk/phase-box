@@ -95,10 +95,10 @@ TEST(ModulationEngineTest, EngineTickGeneratesMessages) {
   auto msgs = engine.tick(1000);
 
   EXPECT_EQ(msgs.size(), 4);
-  EXPECT_EQ(msgs.status, 0xB0); // LFO 0 on Channel 1 (index 0)
-  EXPECT_EQ(msgs.data1, 14);    // CC #14
-  EXPECT_EQ(msgs.status, 0xB1); // LFO 1 on Channel 2 (index 1)
-  EXPECT_EQ(msgs.data1, 15);    // CC #15
+  EXPECT_EQ(msgs.at(0).status, 0xB0); // LFO 0 on Channel 1
+  EXPECT_EQ(msgs.at(0).data1, 14);    // CC #14
+  EXPECT_EQ(msgs.at(1).status, 0xB1); // LFO 1 on Channel 2
+  EXPECT_EQ(msgs.at(1).data1, 15);    // CC #15
 }
 
 int main(int argc, char **argv) {
