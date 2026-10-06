@@ -10,12 +10,9 @@ TEST(MainEngineTest, TickAndMessageGeneration) {
     auto msgs = engine.tick(1000000);
     ASSERT_GE(msgs.size(), 2u);
 
-    const auto& msg0 = msgs;
-    const auto& msg1 = msgs;
+    EXPECT_EQ(msgs.status, 0xB0);
+    EXPECT_EQ(msgs.data1, 14);
 
-    EXPECT_EQ(msg0.status, 0xB0);
-    EXPECT_EQ(msg0.data1, 14);
-
-    EXPECT_EQ(msg1.status, 0xB1);
-    EXPECT_EQ(msg1.data1, 15);
+    EXPECT_EQ(msgs.status, 0xB1);
+    EXPECT_EQ(msgs.data1, 15);
 }

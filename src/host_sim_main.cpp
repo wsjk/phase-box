@@ -105,7 +105,7 @@ int main() {
         mvprintw(10, 2, "Q / ESC          : Quit");
 
         if (!msgs.empty()) {
-            const auto& msg = msgs.front();
+            const auto& msg = msgs;
             mvprintw(12, 0, "Latest Outgoing MIDI CC: Status=0x%02X Data1=%d Data2=%d",
                      msg.status, msg.data1, msg.data2);
         }
