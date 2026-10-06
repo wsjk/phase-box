@@ -77,7 +77,7 @@ int main() {
                 break;
             case 'q':
             case 'Q':
-            case 27: // ESC
+            case 27:
                 running = false;
                 break;
         }
@@ -104,10 +104,9 @@ int main() {
         mvprintw(9, 2, "T                : Tap Tempo");
         mvprintw(10, 2, "Q / ESC          : Quit");
 
-        // Access element 0 of the returned vector using .at(0)
         if (!msgs.empty()) {
             mvprintw(12, 0, "Latest Outgoing MIDI CC: Status=0x%02X Data1=%d Data2=%d",
-                     msgs.at(0).status, msgs.at(0).data1, msgs.at(0).data2);
+                     msgs.status, msgs.data1, msgs.data2);
         }
 
         refresh();

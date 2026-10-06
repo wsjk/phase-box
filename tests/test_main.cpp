@@ -10,10 +10,9 @@ TEST(MainEngineTest, TickAndMessageGeneration) {
     auto msgs = engine.tick(1000000);
     ASSERT_GE(msgs.size(), 2u);
 
-    // Access elements inside the returned vector
-    EXPECT_EQ(msgs.status, 0xB0); // LFO 0 on Channel 1
-    EXPECT_EQ(msgs.data1, 14);   // Target CC #14
+    EXPECT_EQ(msgs.status, 0xB0);
+    EXPECT_EQ(msgs.data1, 14);
 
-    EXPECT_EQ(msgs.status, 0xB1); // LFO 1 on Channel 2
-    EXPECT_EQ(msgs.data1, 15);   // Target CC #15
+    EXPECT_EQ(msgs.status, 0xB1);
+    EXPECT_EQ(msgs.data1, 15);
 }
