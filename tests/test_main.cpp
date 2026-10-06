@@ -320,6 +320,90 @@ TEST(Core1TaskTest, PropagatesEncoderInputs) {
     EXPECT_EQ(ui.get_selected_lfo(), 1);
 }
 
+#include "core/macro_engine.hpp"
+#include "hal/mock_hal_adc.hpp"
+
+TEST(MacroEngineTest, ExpressionScalingAndWeights) {
+    MacroEngine macro;
+    macro.set_weight(0, 1.0f); // LFO 0 full positive scaling
+    macro.set_weight(1, -1.0f); // LFO 1 inverse scaling
+
+    // Neutral pedal (0.5) -> no offset
+    macro.set_expression_value(0.5f);
+    EXPECT_EQ(macro.apply(0, 64), 64);
+    EXPECT_EQ(macro.apply(1, 64), 64);
+
+    // Toe down (1.0) -> positive offset for LFO 0, negative for LFO 1
+    macro.set_expression_value(1.0f);
+    EXPECT_EQ(macro.apply(0, 64), 127);
+    EXPECT_EQ(macro.apply(1, 64), 0);
+
+    // Heel down (0.0) -> negative offset for LFO 0, positive for LFO 1
+    macro.set_expression_value(0.0f);
+    EXPECT_EQ(macro.apply(0, 64), 0);
+    EXPECT_EQ(macro.apply(1, 64), 127);
+}
+
+TEST(MacroEngineTest, ClampingBoundaries) {
+    MacroEngine macro;
+    macro.set_weight(0, 1.0f);
+
+    // Exceeding top boundary clamps cleanly to 127
+    macro.set_expression_value(1.0f);
+    EXPECT_EQ(macro.apply(0, 120), 127);
+
+    // Exceeding bottom boundary clamps cleanly to 0
+    macro.set_expression_value(0.0f);
+    EXPECT_EQ(macro.apply(0, 10), 0);
+}
+
+TEST(ModulationEngineTest, NestedCrossModulation) {
+    ModulationEngine engine;
+    engine.set_bpm(120.0f);
+
+    // Baseline tick without cross-modulation
+    auto msgs_baseline = engine.tick(1000);
+    uint8_t lfo0_base = msgs_baseline[0].data2;
+
+    // Enable cross-modulation: LFO 1 modulates LFO 0 at depth 1.0
+    ModulationEngine engine_nested;
+    engine_nested.set_bpm(120.0f);
+    engine_nested.set_cross_modulation(1, 0, 1.0f);
+    EXPECT_FLOAT_EQ(engine_nested.get_cross_modulation(1, 0), 1.0f);
+
+    auto msgs_nested = engine_nested.tick(1000);
+    // Since LFO 1 is at square or sine LUT, its offset influences LFO 0
+    EXPECT_NE(msgs_nested[0].data2, 0);
+}
+
+TEST(Core0TaskTest, ExpressionPedalViaHalAdc) {
+    ModulationEngine engine;
+    engine.get_macro_engine().set_weight(0, 1.0f); // LFO 0 responds to expression
+
+    MockHalMidi midi;
+    MockHalGpio gpio;
+    MockHalAdc adc;
+    Core0Task core0(engine, midi, &gpio, &adc);
+
+    // Expression pedal at heel (0.0f)
+    adc.set_channel(0, 0.0f);
+    core0.step(1000);
+    const auto& sent_heel = midi.get_sent_messages();
+    ASSERT_GE(sent_heel.size(), 4);
+    uint8_t val_heel = sent_heel[0].value;
+
+    // Expression pedal at toe (1.0f)
+    midi.clear();
+    adc.set_channel(0, 1.0f);
+    core0.step(2000);
+    const auto& sent_toe = midi.get_sent_messages();
+    ASSERT_GE(sent_toe.size(), 4);
+    uint8_t val_toe = sent_toe[0].value;
+
+    // Toe position must produce a higher value than heel position
+    EXPECT_GT(val_toe, val_heel);
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

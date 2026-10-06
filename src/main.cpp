@@ -4,6 +4,7 @@
 #include "ui/ui_controller.hpp"
 #include "hal/pico_hal_midi.hpp"
 #include "hal/pico_hal_gpio.hpp"
+#include "hal/pico_hal_adc.hpp"
 #include "hal/pico_hal_display.hpp"
 #include "hal/pico_hal_flash.hpp"
 
@@ -19,12 +20,13 @@ using namespace phasebox::ui;
 // Hardware drivers
 static PicoHalMidi g_midi(uart0, 0, 1, 31250);
 static PicoHalGpio g_gpio;
+static PicoHalAdc g_adc(26); // GP26 = ADC0 (EXP PEDAL Jack)
 static PicoHalDisplay g_display(i2c0, 4, 5, 0x3C, 128, 32);
 static PicoHalFlash g_flash;
 
 // Core engine & controllers
 static ModulationEngine g_engine;
-static Core0Task g_core0_task(g_engine, g_midi, &g_gpio);
+static Core0Task g_core0_task(g_engine, g_midi, &g_gpio, &g_adc);
 static UIController g_ui_controller(g_engine, g_display, &g_flash);
 static Core1Task g_core1_task(g_ui_controller, g_gpio);
 
@@ -49,19 +51,22 @@ int main() {
     // 1. Initialize hardware GPIO (encoder + footswitches)
     g_gpio.init();
 
-    // 2. Initialize RP2040 UART MIDI at 31250 baud
+    // 2. Initialize analog expression pedal ADC (GP26)
+    g_adc.init();
+
+    // 3. Initialize RP2040 UART MIDI at 31250 baud
     g_midi.init();
 
-    // 3. Set default tempo (120 BPM)
+    // 4. Set default tempo (120 BPM)
     g_engine.set_bpm(120.0f);
 
-    // 4. Start 1000 Hz Core 0 timer interrupt loop
+    // 5. Start 1000 Hz Core 0 timer interrupt loop
     g_core0_task.start_timer(&g_core0_timer);
 
-    // 5. Launch Core 1 for asynchronous UI / OLED rendering and flash management
+    // 6. Launch Core 1 for asynchronous UI / OLED rendering and flash management
     multicore_launch_core1(core1_entry);
 
-    // 6. Core 0 background loop
+    // 7. Core 0 background loop
     while (true) {
         tight_loop_contents();
     }

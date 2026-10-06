@@ -2,6 +2,7 @@
 #include "core/modulation_engine.hpp"
 #include "hal/hal_midi.hpp"
 #include "hal/hal_gpio.hpp"
+#include "hal/hal_adc.hpp"
 #include <cstdint>
 
 #if __has_include("pico/time.h")
@@ -25,8 +26,8 @@ class Core0Task {
 public:
     static constexpr uint32_t TICK_INTERVAL_US = 1000; // 1000 Hz = 1000 microseconds
 
-    Core0Task(ModulationEngine& engine, hal::HalMidi& midi, hal::HalGpio* gpio = nullptr)
-        : engine_(engine), midi_(midi), gpio_(gpio) {}
+    Core0Task(ModulationEngine& engine, hal::HalMidi& midi, hal::HalGpio* gpio = nullptr, hal::HalAdc* adc = nullptr)
+        : engine_(engine), midi_(midi), gpio_(gpio), adc_(adc) {}
 
     /**
      * @brief Execute a single 1000 Hz real-time step.
@@ -57,7 +58,13 @@ public:
             last_mutate_state_ = mutate_pressed;
         }
 
-        // 3. Tick modulation engine (advances accumulators, samples LUTs)
+        // 3. Sample expression pedal analog input (ADC0 / GP26)
+        if (adc_ != nullptr) {
+            float exp_val = adc_->read_normalized(0);
+            engine_.get_macro_engine().set_expression_value(exp_val);
+        }
+
+        // 4. Tick modulation engine (advances accumulators, samples LUTs)
         auto messages = engine_.tick(current_time_us);
 
         // 4. Dispatch generated MIDI CC messages via HAL
@@ -119,6 +126,7 @@ private:
     ModulationEngine& engine_;
     hal::HalMidi& midi_;
     hal::HalGpio* gpio_{nullptr};
+    hal::HalAdc* adc_{nullptr};
 
     bool last_tap_state_{false};
     bool last_mutate_state_{false};

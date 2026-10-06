@@ -44,6 +44,7 @@ else()
         hardware_i2c
         hardware_flash
         hardware_sync
+        hardware_adc
         pico_multicore
     )
     pico_add_extra_outputs(phase_box)
