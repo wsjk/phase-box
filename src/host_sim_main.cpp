@@ -24,7 +24,6 @@ int main() {
     nodelay(stdscr, TRUE);
     curs_set(0);
 
-    // Instantiate hardware abstraction and core engines
     HalAdc adc;
     HalEncoder encoder;
     HalDisplay display;
@@ -33,10 +32,10 @@ int main() {
     UIController ui;
 
     adc.init();
-    encoder.init(2, 3, 4);
+    encoder.init();
     display.init(6, 7);
     preset_mgr.init();
-    engine.set_bpm(120.0f);
+    ui.init(&engine, &display, &preset_mgr);
 
     uint32_t now_us = 0;
     bool running = true;
@@ -95,11 +94,9 @@ int main() {
             ui.handle_button_press(false, now_us / 1000);
         }
 
-        // Run modulation engine tick (10ms = 10000us)
         now_us += 10000;
         auto msgs = engine.tick(10000);
 
-        // Render ncurses terminal UI
         erase();
         mvprintw(0, 0, "=== PHASE BOX C++ TERMINAL SIMULATOR ===");
         
@@ -116,10 +113,9 @@ int main() {
         mvprintw(10, 2, "T                : Tap Tempo");
         mvprintw(11, 2, "Q / ESC          : Quit");
 
-        // Index vector element msgs
         if (!msgs.empty()) {
             mvprintw(13, 0, "Latest Outgoing MIDI CC: Status=0x%02X Data1=%d Data2=%d",
-                     msgs.status, msgs.data1, msgs.data2);
+                     msgs.at(0).status, msgs.at(0).data1, msgs.at(0).data2);
         }
 
         refresh();
