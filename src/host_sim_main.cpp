@@ -95,7 +95,7 @@ int main() {
         mvprintw(2, 0, "Expression Pedal ADC: %d / 4095 (%.0f%%)", 
                  raw_adc, (raw_adc / 4095.0f) * 100.0f);
 
-        mvprintw(4, 0, "Display Framebuffer Status: [ Render Count: %u ]", 
+        mvprintw(4, 0, "Display Framebuffer Status: Render Count = %u", 
                  display.get_render_count());
 
         mvprintw(6, 0, "Controls:");
@@ -105,7 +105,7 @@ int main() {
         mvprintw(10, 2, "Q / ESC          : Quit");
 
         if (!msgs.empty()) {
-            const auto& msg = msgs.front();
+            const MidiMessage& msg = msgs.front();
             mvprintw(12, 0, "Latest Outgoing MIDI CC: Status=0x%02X Data1=%d Data2=%d",
                      msg.status, msg.data1, msg.data2);
         }
