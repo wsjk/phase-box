@@ -27,6 +27,14 @@ public:
         }
     }
 
+    uint8_t get_target_channel(uint8_t lfo_index) const {
+        return (lfo_index < 4) ? channels_[lfo_index] : 1;
+    }
+
+    uint8_t get_target_cc(uint8_t lfo_index) const {
+        return (lfo_index < 4) ? cc_numbers_[lfo_index] : 0;
+    }
+
     MidiMessage generate_cc_message(uint8_t lfo_index, uint8_t value) const {
         if (lfo_index >= 4) return {0, 0, 0};
         

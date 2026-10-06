@@ -77,23 +77,35 @@ See detailed notes in [Architecture Reference](./references/architecture.md).
    * Launched from Core 0 via `multicore_launch_core1(core1_entry)`.
    * Throttled OLED rendering (30 FPS max over I2C at 1 MHz Fast-Mode Plus).
    * Rotary encoder debouncing and menu navigation state machine.
-   * Preset serialization and LittleFS flash writes on explicit user request ("Hold-to-Save").
+   * Preset serialization and SPI NOR flash writes on explicit user request ("Hold-to-Save").
 
 ---
 
-## Next Implementation Task: Step 4 Runbook (Core 1 GUI & Drivers)
+## Completed Roadmap & Implementation Status
 
-When implementing Step 4:
-1. **OLED Display Driver**:
-   * Implement SSD1306 128x32 I2C driver (I2C0, GP4 SDA, GP5 SCL).
-   * Enforce delta-time check (33 ms interval = ~30 FPS).
-2. **Rotary Encoder State Machine**:
-   * Poll encoder delta (`read_encoder_delta()`) and button (`read_button(ButtonId::EncoderSwitch)`).
-   * Implement 4 UI states:
-     - State 1: Live Telemetry View
-     - State 2: Parameter Edit Mode
-     - State 3: Hold-to-Save Preset (1 second hold threshold)
-     - State 4: Tap Tempo / Phase Reset sync display
-3. **SPI Flash Preset Storage**:
-   * Implement `HalFlash` using LittleFS or raw flash sector erase/write (`hardware/flash.h`).
-   * Restrict all writes strictly to Core 1.
+All roadmap phases from the Handover Document and ADR are fully implemented and verified:
+
+* **Step 1 (Fix Assertions)**: Vector index access in tests resolved.
+* **Step 2 (Host Test Harness)**: GoogleTest suite established with 24 passing unit tests across 8 suites.
+* **Step 3 (Core 0 Real-Time Engine)**: 1000 Hz hardware repeating timer interrupt, 4-channel LFO calculation, UART MIDI at 31250 baud on GP0, 24 PPQN external MIDI clock fallback, and tap tempo / phase reset.
+* **Step 4 (Core 1 UI & Drivers)**: SSD1306 128x32 OLED driver at 1 MHz I2C, 4-state rotary menu machine (Telemetry, Param Edit, Hold-to-Save, Tap Sync), and SPI NOR flash preset storage.
+* **Macro Engine & ADC**: GP26 analog expression pedal reading, bipolar weighted matrix scaling across channels, and nested LFO cross-modulation.
+
+---
+
+## Extension & Maintenance Guide
+
+### Adding New Waveforms
+1. Add new enum value to `Waveform` in `include/core/phase_lfo.hpp`.
+2. Implement phase mapping in `PhaseLFO::update()`.
+3. Add name string to `UIController::waveform_to_string()`.
+4. Add ASCII graphic pattern to `UIController::render_telemetry_view()`.
+
+### Adjusting Hardware Pinout
+Update default pins in `PicoHalMidi`, `PicoHalGpio`, `PicoHalAdc`, or `PicoHalDisplay`:
+- MIDI TX: GP0, RX: GP1
+- Encoder: GP2 (A), GP3 (B), GP6 (Switch)
+- Footswitches: GP10 (Tap/Reset), GP11 (Mutate)
+- OLED I2C0: GP4 (SDA), GP5 (SCL)
+- Expression ADC0: GP26
+

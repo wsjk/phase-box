@@ -241,6 +241,10 @@ TEST(UIControllerTest, HoldToSavePresetAndLoad) {
     MockHalFlash flash;
     UIController ui(engine, display, &flash);
 
+    // Configure custom waveform and mutation probability on LFO 0
+    engine.get_lfo(0).set_waveform(Waveform::Square);
+    engine.get_lfo(0).set_mutation_probability(75);
+
     // Press encoder down at 0us
     ui.handle_input(0, true, 0);
 
@@ -258,13 +262,54 @@ TEST(UIControllerTest, HoldToSavePresetAndLoad) {
     EXPECT_EQ(flash.get_last_saved_slot(), 2);
     EXPECT_EQ(ui.get_current_state(), UIState::Telemetry);
 
-    // Change engine tempo and verify load restores it
+    // Modify engine settings
     engine.set_bpm(90.0f);
+    engine.get_lfo(0).set_waveform(Waveform::Sine);
+    engine.get_lfo(0).set_mutation_probability(20);
     EXPECT_FLOAT_EQ(engine.get_clock_manager().get_bpm(), 90.0f);
 
     bool loaded = ui.load_preset(2);
     EXPECT_TRUE(loaded);
     EXPECT_FLOAT_EQ(engine.get_clock_manager().get_bpm(), 130.0f);
+    EXPECT_EQ(engine.get_lfo(0).get_waveform(), Waveform::Square);
+    EXPECT_EQ(engine.get_lfo(0).get_mutation_probability(), 75);
+}
+
+TEST(UIControllerTest, WaveformAndMutationParameterEditing) {
+    ModulationEngine engine;
+    MockHalDisplay display;
+    UIController ui(engine, display);
+
+    // Enter edit mode (click 1: TargetCC)
+    ui.handle_input(0, true, 1000);
+    ui.handle_input(0, false, 2000);
+    EXPECT_EQ(ui.get_selected_param(), EditParam::TargetCC);
+
+    // Click 2: Channel
+    ui.handle_input(0, true, 3000);
+    ui.handle_input(0, false, 4000);
+    EXPECT_EQ(ui.get_selected_param(), EditParam::Channel);
+
+    // Click 3: Waveform
+    ui.handle_input(0, true, 5000);
+    ui.handle_input(0, false, 6000);
+    EXPECT_EQ(ui.get_selected_param(), EditParam::Waveform);
+
+    // Turn encoder to select Triangle (1)
+    ui.handle_input(1, false, 7000);
+    EXPECT_EQ(engine.get_lfo(0).get_waveform(), Waveform::Triangle);
+
+    ui.render(7000);
+    EXPECT_TRUE(display.contains_text("> WAVE: TRI"));
+
+    // Click 4: MutationProb
+    ui.handle_input(0, true, 8000);
+    ui.handle_input(0, false, 9000);
+    EXPECT_EQ(ui.get_selected_param(), EditParam::MutationProb);
+
+    // Turn encoder to adjust mutation prob (+10%)
+    ui.handle_input(2, false, 10000);
+    EXPECT_EQ(engine.get_lfo(0).get_mutation_probability(), 30); // 20 + 2*5 = 30
 }
 
 TEST(UIControllerTest, ClockSyncFeedback) {

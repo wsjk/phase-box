@@ -6,6 +6,7 @@
 #include <string>
 #include <cstdio>
 #include <cstring>
+#include <algorithm>
 
 namespace phasebox::ui {
 
@@ -44,6 +45,17 @@ public:
 
     UIController(core::ModulationEngine& engine, hal::HalDisplay& display, hal::HalFlash* flash = nullptr)
         : engine_(engine), display_(display), flash_(flash) {}
+
+    static const char* waveform_to_string(core::Waveform wf) {
+        switch (wf) {
+            case core::Waveform::Sine: return "SINE";
+            case core::Waveform::Triangle: return "TRI";
+            case core::Waveform::Square: return "SQR";
+            case core::Waveform::SampleAndHold: return "S&H";
+            case core::Waveform::TuringMutation: return "TURING";
+        }
+        return "SINE";
+    }
 
     void handle_input(int32_t encoder_delta, bool encoder_button, uint32_t current_time_us) {
         // Track button press duration for Hold-to-Save gesture
@@ -119,10 +131,10 @@ public:
         std::snprintf(preset.name, sizeof(preset.name), "Slot %u", slot + 1);
 
         for (size_t i = 0; i < 4; ++i) {
-            preset.lfos[i].channel = static_cast<uint8_t>(i + 1);
-            preset.lfos[i].cc_number = static_cast<uint8_t>(14 + i);
-            preset.lfos[i].waveform = 0;
-            preset.lfos[i].mutation_prob = 20;
+            preset.lfos[i].channel = engine_.get_router().get_target_channel(static_cast<uint8_t>(i));
+            preset.lfos[i].cc_number = engine_.get_router().get_target_cc(static_cast<uint8_t>(i));
+            preset.lfos[i].waveform = static_cast<uint8_t>(engine_.get_lfo(i).get_waveform());
+            preset.lfos[i].mutation_prob = engine_.get_lfo(i).get_mutation_probability();
         }
 
         return flash_->save_preset(slot, reinterpret_cast<const uint8_t*>(&preset), sizeof(preset));
@@ -141,6 +153,10 @@ public:
             for (size_t i = 0; i < 4; ++i) {
                 engine_.get_router().set_target_channel(static_cast<uint8_t>(i), preset.lfos[i].channel);
                 engine_.get_router().set_target_cc(static_cast<uint8_t>(i), preset.lfos[i].cc_number);
+                if (preset.lfos[i].waveform <= 4) {
+                    engine_.get_lfo(i).set_waveform(static_cast<core::Waveform>(preset.lfos[i].waveform));
+                }
+                engine_.get_lfo(i).set_mutation_probability(preset.lfos[i].mutation_prob);
             }
             return true;
         }
@@ -181,17 +197,29 @@ private:
             }
             case UIState::ParameterEdit: {
                 if (selected_param_ == EditParam::TargetCC) {
-                    uint8_t cur_cc = 14 + selected_lfo_;
+                    uint8_t cur_cc = engine_.get_router().get_target_cc(selected_lfo_);
                     int next_cc = static_cast<int>(cur_cc) + delta;
                     if (next_cc >= 0 && next_cc <= 127) {
                         engine_.get_router().set_target_cc(selected_lfo_, static_cast<uint8_t>(next_cc));
                     }
                 } else if (selected_param_ == EditParam::Channel) {
-                    uint8_t cur_ch = selected_lfo_ + 1;
+                    uint8_t cur_ch = engine_.get_router().get_target_channel(selected_lfo_);
                     int next_ch = static_cast<int>(cur_ch) + delta;
                     if (next_ch >= 1 && next_ch <= 16) {
                         engine_.get_router().set_target_channel(selected_lfo_, static_cast<uint8_t>(next_ch));
                     }
+                } else if (selected_param_ == EditParam::Waveform) {
+                    int cur_wf = static_cast<int>(engine_.get_lfo(selected_lfo_).get_waveform());
+                    int next_wf = cur_wf + delta;
+                    if (next_wf < 0) next_wf = 0;
+                    if (next_wf > 4) next_wf = 4;
+                    engine_.get_lfo(selected_lfo_).set_waveform(static_cast<core::Waveform>(next_wf));
+                } else if (selected_param_ == EditParam::MutationProb) {
+                    int cur_prob = static_cast<int>(engine_.get_lfo(selected_lfo_).get_mutation_probability());
+                    int next_prob = cur_prob + (delta * 5);
+                    if (next_prob < 0) next_prob = 0;
+                    if (next_prob > 100) next_prob = 100;
+                    engine_.get_lfo(selected_lfo_).set_mutation_probability(static_cast<uint8_t>(next_prob));
                 }
                 break;
             }
@@ -210,14 +238,34 @@ private:
     void render_telemetry_view() {
         char line1[32];
         const char* clk_str = (engine_.get_clock_manager().get_clock_source() == core::ClockSource::ExternalMIDI) ? "EXT" : "INT";
-        std::snprintf(line1, sizeof(line1), "[SINE] CH%u BPM:%u %s", selected_lfo_ + 1,
+        const char* wf_str = waveform_to_string(engine_.get_lfo(selected_lfo_).get_waveform());
+        std::snprintf(line1, sizeof(line1), "[%s] CH%u BPM:%u %s", wf_str, selected_lfo_ + 1,
                       static_cast<unsigned int>(engine_.get_clock_manager().get_bpm()), clk_str);
         display_.draw_string(0, 0, line1);
 
-        display_.draw_string(0, 10, "/^\\  /^\\  /^\\  /^\\");
+        // Visual waveform preview
+        switch (engine_.get_lfo(selected_lfo_).get_waveform()) {
+            case core::Waveform::Sine:
+                display_.draw_string(0, 10, "/^\\  /^\\  /^\\  /^\\");
+                break;
+            case core::Waveform::Triangle:
+                display_.draw_string(0, 10, "/\\  /\\  /\\  /\\  /\\");
+                break;
+            case core::Waveform::Square:
+                display_.draw_string(0, 10, "_--_--_--_--_--_");
+                break;
+            case core::Waveform::SampleAndHold:
+                display_.draw_string(0, 10, "|_--|-__|---|--_");
+                break;
+            case core::Waveform::TuringMutation:
+                display_.draw_string(0, 10, "0110 1001 0101..");
+                break;
+        }
 
         char line3[32];
-        std::snprintf(line3, sizeof(line3), "CC#%u LFO%u OUT", 14 + selected_lfo_, selected_lfo_ + 1);
+        uint8_t cc = engine_.get_router().get_target_cc(selected_lfo_);
+        uint8_t ch = engine_.get_router().get_target_channel(selected_lfo_);
+        std::snprintf(line3, sizeof(line3), "CC#%u (CH%u) LFO%u OUT", cc, ch, selected_lfo_ + 1);
         display_.draw_string(0, 22, line3);
     }
 
@@ -228,11 +276,17 @@ private:
 
         char line2[32];
         if (selected_param_ == EditParam::TargetCC) {
-            std::snprintf(line2, sizeof(line2), "> CC %u: PARAM", 14 + selected_lfo_);
+            uint8_t cc = engine_.get_router().get_target_cc(selected_lfo_);
+            std::snprintf(line2, sizeof(line2), "> CC %u: PARAM", cc);
         } else if (selected_param_ == EditParam::Channel) {
-            std::snprintf(line2, sizeof(line2), "> CHAN: %u", selected_lfo_ + 1);
-        } else {
-            std::snprintf(line2, sizeof(line2), "> WAVE: SINE");
+            uint8_t ch = engine_.get_router().get_target_channel(selected_lfo_);
+            std::snprintf(line2, sizeof(line2), "> CHAN: %u", ch);
+        } else if (selected_param_ == EditParam::Waveform) {
+            const char* wf = waveform_to_string(engine_.get_lfo(selected_lfo_).get_waveform());
+            std::snprintf(line2, sizeof(line2), "> WAVE: %s", wf);
+        } else if (selected_param_ == EditParam::MutationProb) {
+            uint8_t prob = engine_.get_lfo(selected_lfo_).get_mutation_probability();
+            std::snprintf(line2, sizeof(line2), "> MUTATION: %u%%", prob);
         }
         display_.draw_string(0, 12, line2);
 

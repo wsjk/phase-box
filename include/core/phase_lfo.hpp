@@ -73,6 +73,14 @@ public:
         mutation_probability_ = prob_pct;
     }
 
+    uint8_t get_mutation_probability() const {
+        return mutation_probability_;
+    }
+
+    Waveform get_waveform() const {
+        return waveform_;
+    }
+
     void reset_phase() {
         phase_ = 0;
         last_phase_ = 0;
