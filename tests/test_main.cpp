@@ -188,8 +188,141 @@ TEST(Core0TaskTest, Continuous1000HzExecution) {
     EXPECT_EQ(midi.get_sent_count(), 4000); // 4 messages per 1000 Hz tick
 }
 
+#include "ui/ui_controller.hpp"
+#include "core/core1_task.hpp"
+#include "hal/mock_hal_display.hpp"
+#include "hal/mock_hal_flash.hpp"
+
+using namespace phasebox::ui;
+using namespace phasebox::hal;
+
+TEST(UIControllerTest, DefaultStateTelemetryRender) {
+    ModulationEngine engine;
+    engine.set_bpm(125.0f);
+    MockHalDisplay display;
+    UIController ui(engine, display);
+
+    EXPECT_EQ(ui.get_current_state(), UIState::Telemetry);
+    ui.render(0);
+
+    EXPECT_GT(display.get_update_count(), 0);
+    EXPECT_TRUE(display.contains_text("[SINE]"));
+    EXPECT_TRUE(display.contains_text("BPM:125"));
+}
+
+TEST(UIControllerTest, EncoderNavigationAndParamEdit) {
+    ModulationEngine engine;
+    MockHalDisplay display;
+    UIController ui(engine, display);
+
+    // Initial state: Telemetry
+    EXPECT_EQ(ui.get_current_state(), UIState::Telemetry);
+
+    // Short click: press at 1000us, release at 50000us (< 1s threshold)
+    ui.handle_input(0, true, 1000);
+    ui.handle_input(0, false, 50000);
+    EXPECT_EQ(ui.get_current_state(), UIState::ParameterEdit);
+    EXPECT_EQ(ui.get_selected_param(), EditParam::TargetCC);
+
+    // Rotate encoder to adjust target CC
+    ui.handle_input(2, false, 60000);
+    EXPECT_EQ(engine.get_router().generate_cc_message(0, 100).data1, 16); // 14 + 2 = 16
+
+    // Click again to cycle to Channel parameter
+    ui.handle_input(0, true, 70000);
+    ui.handle_input(0, false, 80000);
+    EXPECT_EQ(ui.get_selected_param(), EditParam::Channel);
+}
+
+TEST(UIControllerTest, HoldToSavePresetAndLoad) {
+    ModulationEngine engine;
+    engine.set_bpm(130.0f);
+    MockHalDisplay display;
+    MockHalFlash flash;
+    UIController ui(engine, display, &flash);
+
+    // Press encoder down at 0us
+    ui.handle_input(0, true, 0);
+
+    // Advance beyond 1 second (1,000,000 us)
+    ui.handle_input(0, true, 1000001);
+    EXPECT_EQ(ui.get_current_state(), UIState::HoldToSave);
+
+    // Rotate to select slot 2
+    ui.handle_input(2, true, 1000050);
+    EXPECT_EQ(ui.get_selected_slot(), 2);
+
+    // Release button to trigger flash write
+    ui.handle_input(0, false, 1000100);
+    EXPECT_EQ(flash.get_save_count(), 1);
+    EXPECT_EQ(flash.get_last_saved_slot(), 2);
+    EXPECT_EQ(ui.get_current_state(), UIState::Telemetry);
+
+    // Change engine tempo and verify load restores it
+    engine.set_bpm(90.0f);
+    EXPECT_FLOAT_EQ(engine.get_clock_manager().get_bpm(), 90.0f);
+
+    bool loaded = ui.load_preset(2);
+    EXPECT_TRUE(loaded);
+    EXPECT_FLOAT_EQ(engine.get_clock_manager().get_bpm(), 130.0f);
+}
+
+TEST(UIControllerTest, ClockSyncFeedback) {
+    ModulationEngine engine;
+    engine.set_bpm(140.0f);
+    MockHalDisplay display;
+    UIController ui(engine, display);
+
+    ui.trigger_clock_sync_event(100000);
+    EXPECT_EQ(ui.get_current_state(), UIState::ClockSync);
+
+    ui.render(100000);
+    EXPECT_TRUE(display.contains_text("TAP TEMPO / SYNC"));
+    EXPECT_TRUE(display.contains_text("BPM: 140"));
+
+    // After 1.5 seconds, times out back to Telemetry
+    ui.handle_input(0, false, 100000 + UIController::CLOCK_SYNC_DISPLAY_TIMEOUT_US + 1000);
+    EXPECT_EQ(ui.get_current_state(), UIState::Telemetry);
+}
+
+TEST(Core1TaskTest, ThrottlesRenderingTo30FPS) {
+    ModulationEngine engine;
+    MockHalDisplay display;
+    UIController ui(engine, display);
+    MockHalGpio gpio;
+    Core1Task core1(ui, gpio);
+
+    // Run 105 steps spaced 1 ms apart (104 ms total)
+    // 30 FPS = 33.3 ms render interval -> renders at 0ms, 34ms, 68ms, 102ms (4 renders)
+    uint32_t time_us = 0;
+    for (int i = 0; i < 105; ++i) {
+        core1.step(time_us);
+        time_us += 1000;
+    }
+
+    EXPECT_EQ(core1.get_step_count(), 105);
+    EXPECT_EQ(core1.get_render_count(), 4);
+    EXPECT_EQ(display.get_update_count(), 4);
+}
+
+TEST(Core1TaskTest, PropagatesEncoderInputs) {
+    ModulationEngine engine;
+    MockHalDisplay display;
+    UIController ui(engine, display);
+    MockHalGpio gpio;
+    Core1Task core1(ui, gpio);
+
+    // Set encoder delta
+    gpio.set_encoder_delta(1);
+    core1.step(10000);
+
+    // In Telemetry, rotating moves selected LFO
+    EXPECT_EQ(ui.get_selected_lfo(), 1);
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
+
 
