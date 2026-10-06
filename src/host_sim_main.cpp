@@ -33,7 +33,7 @@ int main() {
     UIController ui;
 
     adc.init();
-    encoder.init();
+    encoder.init(2, 3, 4);
     display.init(6, 7);
     preset_mgr.init();
     engine.set_bpm(120.0f);
@@ -59,7 +59,8 @@ int main() {
                 encoder_delta = 1;
                 break;
             case ' ':
-            case '\n':
+            case '
+':
             case KEY_ENTER:
                 encoder_click = true;
                 break;
@@ -77,7 +78,7 @@ int main() {
                 break;
             case 't':
             case 'T':
-                ui.handle_tap_tempo();
+                ui.handle_tap_tempo(now_us / 1000);
                 break;
             case 'q':
             case 'Q':
@@ -90,9 +91,13 @@ int main() {
             ui.handle_encoder_input(encoder_delta, now_us);
         }
 
+        if (encoder_click) {
+            ui.handle_button_press(false, now_us / 1000);
+        }
+
         // Run modulation engine tick (10ms = 10000us)
         now_us += 10000;
-        std::vector<MidiMessage> msgs = engine.tick(10000);
+        auto msgs = engine.tick(10000);
 
         // Render ncurses terminal UI
         erase();
@@ -111,9 +116,10 @@ int main() {
         mvprintw(10, 2, "T                : Tap Tempo");
         mvprintw(11, 2, "Q / ESC          : Quit");
 
+        // Index vector element msgs
         if (!msgs.empty()) {
             mvprintw(13, 0, "Latest Outgoing MIDI CC: Status=0x%02X Data1=%d Data2=%d",
-                     msgs[0].status, msgs[0].data1, msgs[0].data2);
+                     msgs.status, msgs.data1, msgs.data2);
         }
 
         refresh();
