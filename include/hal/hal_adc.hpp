@@ -1,17 +1,47 @@
-#pragma once
+#ifndef PHASEBOX_HAL_ADC_HPP
+#define PHASEBOX_HAL_ADC_HPP
+
 #include <cstdint>
 
 namespace phasebox::hal {
 
 class HalAdc {
 public:
-    virtual ~HalAdc() = default;
+    HalAdc() = default;
+
     /**
-     * @brief Read analog value from specified ADC channel.
-     * @param channel ADC channel index (0 for GP26 expression pedal).
-     * @return Normalized floating-point value in range [0.0f, 1.0f].
+     * @brief Initialize RP2040 ADC hardware (GPIO 26 / ADC 0).
      */
-    virtual float read_normalized(uint8_t channel) = 0;
+    void init();
+
+    /**
+     * @brief Read raw 12-bit ADC input (0 to 4095).
+     * @return 12-bit unsigned integer.
+     */
+    uint16_t read_raw();
+
+    /**
+     * @brief Read EMA-smoothed normalized expression value.
+     * @return Float in range [0.0f, 1.0f].
+     */
+    float read_normalized();
+
+#ifdef HOST_BUILD
+    /**
+     * @brief Inject simulated raw ADC value for host unit tests.
+     */
+    void set_simulated_raw(uint16_t value) { simulated_raw_ = value; }
+#endif
+
+private:
+    float smoothed_val_{0.0f};
+    const float alpha_{0.15f}; // Smoothing factor (lower = smoother)
+
+#ifdef HOST_BUILD
+    uint16_t simulated_raw_{0};
+#endif
 };
 
 } // namespace phasebox::hal
+
+#endif // PHASEBOX_HAL_ADC_HPP
