@@ -33,6 +33,15 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 if(BUILD_HOST_TESTS)
     add_subdirectory(tests)
 else()
-    # Pico hardware executable targets go here
-enable_testing()
+    # Pico hardware executable target
+    add_executable(phase_box
+        src/main.cpp
+    )
+    target_link_libraries(phase_box
+        pico_stdlib
+        hardware_uart
+        hardware_gpio
+        pico_multicore
+    )
+    pico_add_extra_outputs(phase_box)
 endif()

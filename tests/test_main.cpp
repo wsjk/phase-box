@@ -88,6 +88,10 @@ TEST(MidiRouterTest, ChannelMapping) {
     EXPECT_EQ(msg.data2, 64);
 }
 
+#include "core/core0_task.hpp"
+#include "hal/mock_hal_midi.hpp"
+#include "hal/mock_hal_gpio.hpp"
+
 TEST(ModulationEngineTest, EngineTickGeneratesMessages) {
     ModulationEngine engine;
     engine.set_bpm(120.0f);
@@ -100,7 +104,92 @@ TEST(ModulationEngineTest, EngineTickGeneratesMessages) {
     EXPECT_EQ(msgs[1].data1, 15); // CC #15 for LFO 1
 }
 
+TEST(Core0TaskTest, StepDispatchesFourMidiChannels) {
+    ModulationEngine engine;
+    phasebox::hal::MockHalMidi midi;
+    Core0Task core0(engine, midi);
+
+    core0.step(1000);
+
+    EXPECT_EQ(core0.get_tick_count(), 1);
+    const auto& sent = midi.get_sent_messages();
+    ASSERT_EQ(sent.size(), 4);
+
+    // Channel 1, CC #14
+    EXPECT_EQ(sent[0].channel, 1);
+    EXPECT_EQ(sent[0].controller, 14);
+
+    // Channel 2, CC #15
+    EXPECT_EQ(sent[1].channel, 2);
+    EXPECT_EQ(sent[1].controller, 15);
+
+    // Channel 3, CC #16
+    EXPECT_EQ(sent[2].channel, 3);
+    EXPECT_EQ(sent[2].controller, 16);
+
+    // Channel 4, CC #17
+    EXPECT_EQ(sent[3].channel, 4);
+    EXPECT_EQ(sent[3].controller, 17);
+}
+
+TEST(Core0TaskTest, MidiClockProcessing) {
+    ModulationEngine engine;
+    phasebox::hal::MockHalMidi midi;
+    Core0Task core0(engine, midi);
+
+    uint32_t time_us = 1000000;
+    // Inject 25 MIDI clock pulses (24 PPQN = 1 beat, ~20833 us for 120 BPM)
+    for (int i = 0; i < 25; ++i) {
+        midi.inject_clock_tick();
+        core0.step(time_us);
+        time_us += 20833;
+    }
+
+    EXPECT_EQ(engine.get_clock_manager().get_clock_source(), ClockSource::ExternalMIDI);
+    EXPECT_NEAR(engine.get_clock_manager().get_bpm(), 120.0f, 1.0f);
+}
+
+TEST(Core0TaskTest, FootswitchTapTempoAndPhaseReset) {
+    ModulationEngine engine;
+    phasebox::hal::MockHalMidi midi;
+    phasebox::hal::MockHalGpio gpio;
+    Core0Task core0(engine, midi, &gpio);
+
+    // Advance LFO
+    core0.step(1000);
+
+    // First tap at 1,000,000 us
+    gpio.set_button(phasebox::hal::ButtonId::FootswitchTapMode, true);
+    core0.step(1000000);
+    gpio.set_button(phasebox::hal::ButtonId::FootswitchTapMode, false);
+    core0.step(1100000);
+
+    // Second tap at 1,500,000 us (delta = 500ms -> 120 BPM)
+    gpio.set_button(phasebox::hal::ButtonId::FootswitchTapMode, true);
+    core0.step(1500000);
+    gpio.set_button(phasebox::hal::ButtonId::FootswitchTapMode, false);
+
+    EXPECT_NEAR(engine.get_clock_manager().get_bpm(), 120.0f, 0.1f);
+}
+
+TEST(Core0TaskTest, Continuous1000HzExecution) {
+    ModulationEngine engine;
+    phasebox::hal::MockHalMidi midi;
+    Core0Task core0(engine, midi);
+
+    // Simulate 1000 ticks at 1000 Hz (1 second)
+    uint32_t time_us = 0;
+    for (int i = 0; i < 1000; ++i) {
+        core0.step(time_us);
+        time_us += 1000;
+    }
+
+    EXPECT_EQ(core0.get_tick_count(), 1000);
+    EXPECT_EQ(midi.get_sent_count(), 4000); // 4 messages per 1000 Hz tick
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
+
