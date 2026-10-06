@@ -28,13 +28,17 @@ int main() {
     HalDisplay display;
     ModulationEngine engine;
     PresetManager preset_mgr;
-    UIController ui;
+
+    UIController ui(engine);
 
     adc.init();
     encoder.init();
     display.init(6, 7);
     preset_mgr.init();
-    ui.init(&engine, &display, &preset_mgr);
+
+    ui.init();
+
+    engine.set_bpm(120.0f);
 
     uint32_t now_us = 0;
     bool running = true;
@@ -43,7 +47,6 @@ int main() {
     while (running) {
         int ch = getch();
         int encoder_delta = 0;
-        bool encoder_click = false;
 
         switch (ch) {
             case KEY_LEFT:
@@ -55,11 +58,6 @@ int main() {
             case 'd':
             case 'D':
                 encoder_delta = 1;
-                break;
-            case ' ':
-            case '\n':
-            case KEY_ENTER:
-                encoder_click = true;
                 break;
             case KEY_UP:
             case 'w':
@@ -85,11 +83,7 @@ int main() {
         }
 
         if (encoder_delta != 0) {
-            ui.handle_encoder_input(encoder_delta, now_us);
-        }
-
-        if (encoder_click) {
-            ui.handle_button_press(false, now_us / 1000);
+            ui.handle_bpm_encoder_input(encoder_delta, now_us);
         }
 
         now_us += 10000;
@@ -98,22 +92,22 @@ int main() {
         erase();
         mvprintw(0, 0, "=== PHASE BOX C++ TERMINAL SIMULATOR ===");
         
-        mvprintw(2, 0, "BPM: %.1f | Expression Pedal ADC: %d / 4095 (%.0f%%)", 
-                 engine.get_bpm(), raw_adc, (raw_adc / 4095.0f) * 100.0f);
+        mvprintw(2, 0, "Expression Pedal ADC: %d / 4095 (%.0f%%)", 
+                 raw_adc, (raw_adc / 4095.0f) * 100.0f);
 
         mvprintw(4, 0, "Display Framebuffer Status: [ Render Count: %u ]", 
                  display.get_render_count());
 
         mvprintw(6, 0, "Controls:");
-        mvprintw(7, 2, "Left/Right (A/D) : Rotary Encoder Turn");
-        mvprintw(8, 2, "Space/Enter      : Encoder Click");
-        mvprintw(9, 2, "Up/Down (W/S)    : Expression Pedal Sweep");
-        mvprintw(10, 2, "T                : Tap Tempo");
-        mvprintw(11, 2, "Q / ESC          : Quit");
+        mvprintw(7, 2, "Left/Right (A/D) : Rotary Encoder Turn (Adjust BPM)");
+        mvprintw(8, 2, "Up/Down (W/S)    : Expression Pedal Sweep");
+        mvprintw(9, 2, "T                : Tap Tempo");
+        mvprintw(10, 2, "Q / ESC          : Quit");
 
+        // Access element 0 of the returned vector using .at(0)
         if (!msgs.empty()) {
-            mvprintw(13, 0, "Latest Outgoing MIDI CC: Status=0x%02X Data1=%d Data2=%d",
-                     msgs.status, msgs.data1, msgs.data2);
+            mvprintw(12, 0, "Latest Outgoing MIDI CC: Status=0x%02X Data1=%d Data2=%d",
+                     msgs.at(0).status, msgs.at(0).data1, msgs.at(0).data2);
         }
 
         refresh();
