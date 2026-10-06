@@ -16,7 +16,6 @@ using namespace phasebox::storage;
 using namespace phasebox::ui;
 
 int main() {
-    // Initialize ncurses terminal UI
     initscr();
     cbreak();
     noecho();
@@ -58,8 +57,7 @@ int main() {
                 encoder_delta = 1;
                 break;
             case ' ':
-            case '
-':
+            case '\n':
             case KEY_ENTER:
                 encoder_click = true;
                 break;
@@ -115,7 +113,7 @@ int main() {
 
         if (!msgs.empty()) {
             mvprintw(13, 0, "Latest Outgoing MIDI CC: Status=0x%02X Data1=%d Data2=%d",
-                     msgs.at(0).status, msgs.at(0).data1, msgs.at(0).data2);
+                     msgs.status, msgs.data1, msgs.data2);
         }
 
         refresh();
