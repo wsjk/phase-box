@@ -1,51 +1,41 @@
 cmake_minimum_required(VERSION 3.13)
 
-# Option to toggle between Host Simulation (macOS) and Target Build (RP2040)
-option(BUILD_HOST_TESTS "Build host unit tests on macOS using GoogleTest" ON)
-
-if(NOT BUILD_HOST_TESTS)
-    # Target build: Pico SDK Initialization
-    include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
-    project(phase_box C CXX ASM)
-    set(CMAKE_C_STANDARD 11)
-    set(CMAKE_CXX_STANDARD 17)
-    pico_sdk_init()
-else()
-    # Host build: Native macOS binary
-    project(phase_box_host CXX)
-    set(CMAKE_CXX_STANDARD 17)
-
-    # Fetch GoogleTest automatically on host build
-    include(FetchContent)
-    FetchContent_Declare(
-      googletest
-      URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-    )
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
-    enable_testing()
+# Include Pico SDK setup if building for hardware
+if (NOT HOST_BUILD)
+    include(pico_sdk_import.cmake)
 endif()
 
-# Include public headers
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+project(phase_box C CXX ASM)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Subdirectories for code modules
-if(BUILD_HOST_TESTS)
-    add_subdirectory(tests)
-else()
-    # Pico hardware executable target
+include_directories(include)
+
+if (NOT HOST_BUILD)
+    # Target RP2040 Build Configuration
+    pico_sdk_init()
+
     add_executable(phase_box
         src/main.cpp
+        src/hal/hal_adc.cpp
+        src/hal/hal_encoder.cpp
+        src/hal/hal_display.cpp
+        src/storage/preset_manager.cpp
+        src/ui/ui_controller.cpp
     )
+
     target_link_libraries(phase_box
         pico_stdlib
-        hardware_uart
-        hardware_gpio
-        hardware_i2c
-        hardware_flash
-        hardware_sync
-        hardware_adc
         pico_multicore
+        hardware_uart
+        hardware_adc
+        hardware_i2c
+        hardware_gpio
+        hardware_timer
     )
+
     pico_add_extra_outputs(phase_box)
+else()
+    # Host Unit Test Build Configuration
+    add_subdirectory(tests)
 endif()
