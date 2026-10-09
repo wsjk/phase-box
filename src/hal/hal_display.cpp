@@ -87,3 +87,12 @@ void HalDisplay::draw_string(int16_t x, int16_t y, const char* str, bool color) 
 
 } // namespace hal
 } // namespace phasebox
+
+namespace phasebox::hal {
+
+void HalDisplay::clear() {
+    buffer_.fill(0);
+    render_count_++;
+}
+
+} // namespace phasebox::hal

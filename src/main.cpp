@@ -30,7 +30,7 @@ static HalAdc           g_adc;
 
 static HalEncoder       g_encoder;
 static HalDisplay       g_display;
-static UIController     g_ui_controller;
+static phasebox::ui::UIController       g_ui_controller(g_engine);
 
 // Forward declaration for Core 1 UI loop
 void core1_main();
@@ -117,11 +117,11 @@ void core1_main() {
         uint32_t hold_ms = g_encoder.get_button_hold_time_ms();
 
         // 2. Update UI state machine
-        g_ui_controller.handle_encoder_input(delta, btn, hold_ms);
+        g_ui_controller.handle_bpm_encoder_input(delta, time_us_32());
 
         // 3. Render frame to local display framebuffer and send over I2C
         g_display.clear();
-        g_ui_controller.render_frame();
+        // g_ui_controller.render();
         g_display.render();
 
         // 4. Limit to ~30 FPS (33 ms frame delay)

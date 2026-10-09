@@ -51,9 +51,7 @@ private:
     uint8_t sda_pin_{6};
     uint8_t scl_pin_{7};
 
-#ifdef HOST_BUILD
     uint32_t render_count_{0};
-#endif
 };
 
 } // namespace phasebox::hal
