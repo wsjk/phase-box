@@ -21,6 +21,7 @@ if (NOT HOST_BUILD)
         src/hal/hal_encoder.cpp
         src/hal/hal_display.cpp
         src/storage/preset_manager.cpp
+    src/ui/ui_controller.cpp
         src/ui/ui_controller.cpp
     )
 
@@ -48,6 +49,7 @@ if (HOST_BUILD)
         src/hal/hal_encoder.cpp
         src/hal/hal_display.cpp
         src/storage/preset_manager.cpp
+    src/ui/ui_controller.cpp
     )
 
     target_compile_definitions(phase_box_sim PRIVATE HOST_BUILD)

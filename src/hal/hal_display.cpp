@@ -4,7 +4,7 @@
 namespace phasebox {
 namespace hal {
 
-static const uint8_t FONT5X7 = {
+static const uint8_t FONT5X7[] = {
     0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x5F, 0x00, 0x00,
     0x00, 0x07, 0x00, 0x07, 0x00,
@@ -46,22 +46,19 @@ static const uint8_t FONT5X7 = {
     0x7F, 0x09, 0x09, 0x09, 0x01
 };
 
-HalDisplay::HalDisplay() : m_render_count(0) {
-    std::memset(m_buffer, 0, sizeof(m_buffer));
-}
 
-void HalDisplay::init(int sda_pin, int scl_pin) {
+void HalDisplay::init(uint8_t sda_pin, uint8_t scl_pin) {
     (void)sda_pin;
     (void)scl_pin;
-    std::memset(m_buffer, 0, sizeof(m_buffer));
-    m_render_count = 0;
+    buffer_.fill(0);
+    render_count_ = 0;
 }
 
 void HalDisplay::render() {
-    m_render_count++;
+    render_count_++;
 }
 
-void HalDisplay::draw_char(int x, int y, char c) {
+void HalDisplay::draw_char(int16_t x, int16_t y, char c, bool color) {
     if (x < 0 || x >= 128 || y < 0 || y >= 32) return;
     
     int glyph_idx = 0;
@@ -76,7 +73,7 @@ void HalDisplay::draw_char(int x, int y, char c) {
     }
 }
 
-void HalDisplay::draw_string(int x, int y, const char* str) {
+void HalDisplay::draw_string(int16_t x, int16_t y, const char* str, bool color) {
     if (!str) return;
     int curr_x = x;
     while (*str) {
@@ -86,13 +83,7 @@ void HalDisplay::draw_string(int x, int y, const char* str) {
     }
 }
 
-uint32_t HalDisplay::get_render_count() const {
-    return m_render_count;
-}
 
-const uint8_t* HalDisplay::get_buffer() const {
-    return m_buffer;
-}
 
 } // namespace hal
 } // namespace phasebox

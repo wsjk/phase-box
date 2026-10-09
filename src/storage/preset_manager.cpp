@@ -12,7 +12,7 @@ bool PresetManager::init() {
 bool PresetManager::save_preset(uint8_t slot, const PresetPatch& patch) {
     if (!is_valid_slot(slot)) return false;
 
-    char filename;
+    char filename[64];
     std::snprintf(filename, sizeof(filename), "patch%d.bin", slot);
 
     FILE* file = std::fopen(filename, "wb");
@@ -27,7 +27,7 @@ bool PresetManager::save_preset(uint8_t slot, const PresetPatch& patch) {
 bool PresetManager::load_preset(uint8_t slot, PresetPatch& patch) {
     if (!is_valid_slot(slot)) return false;
 
-    char filename;
+    char filename[64];
     std::snprintf(filename, sizeof(filename), "patch%d.bin", slot);
 
     FILE* file = std::fopen(filename, "rb");
