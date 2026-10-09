@@ -84,7 +84,6 @@ void HalDisplay::draw_string(int16_t x, int16_t y, const char* str, bool color) 
 }
 
 
-
 } // namespace hal
 } // namespace phasebox
 
@@ -109,4 +108,6 @@ void HalDisplay::draw_pixel(int16_t x, int16_t y, bool color) {
     }
 }
 
-} // namespace phasebox::hal
+
+} // namespace hal
+} // namespace phasebox
