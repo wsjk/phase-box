@@ -56,3 +56,24 @@ if (HOST_BUILD)
     target_include_directories(phase_box_sim PRIVATE include)
     target_link_libraries(phase_box_sim ncurses)
 endif()
+
+if(HOST_BUILD)
+    add_executable(phase_box_host
+        src/main_host.cpp
+        src/hal/hal_adc.cpp
+        src/hal/hal_display.cpp
+        src/hal/hal_encoder.cpp
+        src/storage/preset_manager.cpp
+        src/ui/ui_controller.cpp
+    )
+    target_include_directories(phase_box_host PRIVATE include)
+    target_link_libraries(phase_box_host PRIVATE gtest gmock pthread)
+endif()
+
+
+if(HOST_BUILD)
+    target_compile_definitions(phase_box_host PRIVATE HOST_BUILD)
+    if(TARGET phase_box_sim)
+        target_compile_definitions(phase_box_sim PRIVATE HOST_BUILD)
+    endif()
+endif()
