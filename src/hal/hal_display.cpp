@@ -95,4 +95,18 @@ void HalDisplay::clear() {
     render_count_++;
 }
 
+
+void HalDisplay::draw_pixel(int16_t x, int16_t y, bool color) {
+    if (x < 0 || x >= 128 || y < 0 || y >= 32) return;
+    // Simple 1-bit per pixel or byte-per-pixel layout depending on buffer structure
+    size_t index = x + (y / 8) * 128;
+    if (index < buffer_.size()) {
+        if (color) {
+            buffer_[index] |= (1 << (y % 8));
+        } else {
+            buffer_[index] &= ~(1 << (y % 8));
+        }
+    }
+}
+
 } // namespace phasebox::hal
