@@ -5,7 +5,7 @@
 #include <chrono>
 #include <termios.h>
 #include <unistd.h>
-#include <fcntl.h>
+#include <sys/select.h>
 
 class TerminalScopeGuard {
     struct termios old_t_;
@@ -15,15 +15,19 @@ public:
         struct termios new_t = old_t_;
         new_t.c_lflag &= ~(ICANON | ECHO);
         tcsetattr(STDIN_FILENO, TCSANOW, &new_t);
-        int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
-        fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
     }
     ~TerminalScopeGuard() {
         tcsetattr(STDIN_FILENO, TCSANOW, &old_t_);
-        int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
-        fcntl(STDIN_FILENO, F_SETFL, flags & ~O_NONBLOCK);
     }
 };
+
+bool kbhit() {
+    struct timeval tv = {0, 0};
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds);
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+}
 
 inline std::string render_oled_screen(int wave_type, float phase_offset, int bpm, int encoder_val, bool button_state, float adc_val) {
     const int width = 32;
@@ -78,41 +82,43 @@ int main() {
     std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 
     while (running) {
-        int c = getchar();
-        if (c != EOF) {
-            if (c == 'w' || c == 'W') {
-                current_wave = (current_wave + 1) % 4;
-            } else if (c == 's' || c == 'S') {
-                current_wave = (current_wave + 3) % 4;
-            } else if (c == 'e' || c == 'E') {
-                button_state = !button_state;
-            } else if (c == 't' || c == 'T') {
-                auto now = std::chrono::steady_clock::now();
-                if (!tap_times.empty() && std::chrono::duration_cast<std::chrono::milliseconds>(now - tap_times.back()).count() > 2500) {
-                    tap_times.clear();
-                }
-                tap_times.push_back(now);
-                if (tap_times.size() > 4) tap_times.erase(tap_times.begin());
-                if (tap_times.size() >= 2) {
-                    double total_ms = 0;
-                    for (size_t i = 1; i < tap_times.size(); ++i) {
-                        total_ms += std::chrono::duration_cast<std::chrono::milliseconds>(tap_times[i] - tap_times[i-1]).count();
+        if (kbhit()) {
+            int c = getchar();
+            if (c != EOF) {
+                if (c == 'w' || c == 'W') {
+                    current_wave = (current_wave + 1) % 4;
+                } else if (c == 's' || c == 'S') {
+                    current_wave = (current_wave + 3) % 4;
+                } else if (c == 'e' || c == 'E') {
+                    button_state = !button_state;
+                } else if (c == 't' || c == 'T') {
+                    auto now = std::chrono::steady_clock::now();
+                    if (!tap_times.empty() && std::chrono::duration_cast<std::chrono::milliseconds>(now - tap_times.back()).count() > 2500) {
+                        tap_times.clear();
                     }
-                    double avg_ms = total_ms / (tap_times.size() - 1);
-                    if (avg_ms > 0) {
-                        current_bpm = static_cast<int>(60000.0 / avg_ms);
-                        if (current_bpm < 40) current_bpm = 40;
-                        if (current_bpm > 300) current_bpm = 300;
+                    tap_times.push_back(now);
+                    if (tap_times.size() > 4) tap_times.erase(tap_times.begin());
+                    if (tap_times.size() >= 2) {
+                        double total_ms = 0;
+                        for (size_t i = 1; i < tap_times.size(); ++i) {
+                            total_ms += std::chrono::duration_cast<std::chrono::milliseconds>(tap_times[i] - tap_times[i-1]).count();
+                        }
+                        double avg_ms = total_ms / (tap_times.size() - 1);
+                        if (avg_ms > 0) {
+                            current_bpm = static_cast<int>(60000.0 / avg_ms);
+                            if (current_bpm < 40) current_bpm = 40;
+                            if (current_bpm > 300) current_bpm = 300;
+                        }
                     }
+                } else if (c == '1') {
+                    adc_expression = 0.0f;
+                } else if (c == '2') {
+                    adc_expression = 0.5f;
+                } else if (c == '3') {
+                    adc_expression = 1.0f;
+                } else if (c == 'q' || c == 'Q') {
+                    running = false;
                 }
-            } else if (c == '1') {
-                adc_expression = 0.0f;
-            } else if (c == '2') {
-                adc_expression = 0.5f;
-            } else if (c == '3') {
-                adc_expression = 1.0f;
-            } else if (c == 'q' || c == 'Q') {
-                running = false;
             }
         }
 
