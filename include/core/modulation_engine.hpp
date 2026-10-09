@@ -29,6 +29,9 @@ public:
         }
     }
 
+    float get_bpm() const { return clock_manager_.get_bpm(); }
+    void reset_phase() { for (auto& lfo : lfos_) { lfo.reset_phase(); } }
+
     PhaseLFO& get_lfo(size_t index) {
         return lfos_.at(index);
     }

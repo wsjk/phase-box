@@ -21,6 +21,7 @@ if (NOT HOST_BUILD)
         src/hal/hal_encoder.cpp
         src/hal/hal_display.cpp
         src/storage/preset_manager.cpp
+    src/ui/ui_controller.cpp
         src/ui/ui_controller.cpp
     )
 
@@ -38,4 +39,20 @@ if (NOT HOST_BUILD)
 else()
     # Host Unit Test Build Configuration
     add_subdirectory(tests)
+endif()
+
+# --- Native C++ Terminal Simulator for macOS / Host ---
+if (HOST_BUILD)
+    add_executable(phase_box_sim
+        src/host_sim_main.cpp
+        src/hal/hal_adc.cpp
+        src/hal/hal_encoder.cpp
+        src/hal/hal_display.cpp
+        src/storage/preset_manager.cpp
+    src/ui/ui_controller.cpp
+    )
+
+    target_compile_definitions(phase_box_sim PRIVATE HOST_BUILD)
+    target_include_directories(phase_box_sim PRIVATE include)
+    target_link_libraries(phase_box_sim ncurses)
 endif()

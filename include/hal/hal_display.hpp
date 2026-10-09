@@ -34,6 +34,7 @@ public:
      * @brief Draw an ASCII text string using built-in 5x7 font.
      */
     void draw_string(int16_t x, int16_t y, const char* str, bool color = true);
+    void draw_char(int16_t x, int16_t y, char c, bool color = true);
 
     /**
      * @brief Flush 512-byte framebuffer over I2C to SSD1306 display controller.
