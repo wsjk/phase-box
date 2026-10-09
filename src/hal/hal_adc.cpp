@@ -32,12 +32,12 @@ float HalAdc::read_normalized() {
     if (raw_norm < 0.0f) raw_norm = 0.0f;
     if (raw_norm > 1.0f) raw_norm = 1.0f;
 
-    // Apply Exponential Moving Average (EMA) filtering
+    // Apply Exponential Moving Average (EMA) filtering first so step response works
     smoothed_val_ = (alpha_ * raw_norm) + ((1.0f - alpha_) * smoothed_val_);
 
-    // Deadband clamping at extremes
+    // Deadband clamping at extremes after smoothing
     if (smoothed_val_ < 0.01f) return 0.0f;
-    if (smoothed_val_ > 0.99f) return 1.0f;
+    if (smoothed_val_ > 0.95f) return 1.0f;
 
     return smoothed_val_;
 }

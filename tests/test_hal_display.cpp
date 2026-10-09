@@ -19,13 +19,13 @@ TEST(HalDisplayTest, DrawPixelBounds) {
 
     // Set pixel (0, 0) -> sets bit 0 of byte 0 in framebuffer to 1 (0x01)
     display.draw_pixel(0, 0, true);
-    EXPECT_EQ(display.get_buffer(), 0x01);
+    EXPECT_EQ(display.get_buffer()[0], 0x01);
 
     // Out-of-bounds draws should be safely ignored
     display.draw_pixel(-1, 0, true);
     display.draw_pixel(128, 0, true);
     display.draw_pixel(0, 32, true);
-    EXPECT_EQ(display.get_buffer(), 0x01);
+    EXPECT_EQ(display.get_buffer()[0], 0x01);
 }
 
 TEST(HalDisplayTest, RenderCountIncrement) {
