@@ -1,3 +1,27 @@
+
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <iostream>
+
+class TerminalScopeGuard {
+    struct termios old_t_;
+public:
+    TerminalScopeGuard() {
+        tcgetattr(STDIN_FILENO, &old_t_);
+        struct termios new_t = old_t_;
+        new_t.c_lflag &= ~(ICANON | ECHO);
+        tcsetattr(STDIN_FILENO, TCSANOW, &new_t);
+        int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+        fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
+    }
+    ~TerminalScopeGuard() {
+        tcsetattr(STDIN_FILENO, TCSANOW, &old_t_);
+        int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+        fcntl(STDIN_FILENO, F_SETFL, flags & ~O_NONBLOCK);
+    }
+};
+
 #include <ncurses.h>
 #include <chrono>
 #include <thread>
