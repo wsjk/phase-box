@@ -1,8 +1,11 @@
-
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <string>
+#include <chrono>
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <iostream>
 
 class TerminalScopeGuard {
     struct termios old_t_;
@@ -22,122 +25,109 @@ public:
     }
 };
 
-#include <ncurses.h>
-#include <chrono>
-#include <thread>
-#include <vector>
-
-#include "hal/hal_adc.hpp"
-#include "hal/hal_encoder.hpp"
-#include "hal/hal_display.hpp"
-#include "core/modulation_engine.hpp"
-#include "storage/preset_manager.hpp"
-#include "ui/ui_controller.hpp"
-
-using namespace phasebox::hal;
-using namespace phasebox::core;
-using namespace phasebox::storage;
-using namespace phasebox::ui;
-
-int main() {
-    initscr();
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-    nodelay(stdscr, TRUE);
-    curs_set(0);
-
-    HalAdc adc;
-    HalEncoder encoder;
-    HalDisplay display;
-    ModulationEngine engine;
-    PresetManager preset_mgr;
-
-    UIController ui(engine);
-
-    adc.init();
-    encoder.init();
-    display.init(6, 7);
-    preset_mgr.init();
-
-    ui.init();
-
-    engine.set_bpm(120.0f);
-
-    uint32_t now_us = 0;
-    bool running = true;
-    int raw_adc = 2048;
-
-    while (running) {
-        int ch = getch();
-        int encoder_delta = 0;
-
-        switch (ch) {
-            case KEY_LEFT:
-            case 'a':
-            case 'A':
-                encoder_delta = -1;
-                break;
-            case KEY_RIGHT:
-            case 'd':
-            case 'D':
-                encoder_delta = 1;
-                break;
-            case KEY_UP:
-            case 'w':
-            case 'W':
-                raw_adc = (raw_adc + 256 > 4095) ? 4095 : raw_adc + 256;
-                adc.set_simulated_raw(raw_adc);
-                break;
-            case KEY_DOWN:
-            case 's':
-            case 'S':
-                raw_adc = (raw_adc - 256 < 0) ? 0 : raw_adc - 256;
-                adc.set_simulated_raw(raw_adc);
-                break;
-            case 't':
-            case 'T':
-                ui.handle_tap_tempo(now_us / 1000);
-                break;
-            case 'q':
-            case 'Q':
-            case 27:
-                running = false;
-                break;
+inline std::string render_oled_screen(int wave_type, float phase_offset, int bpm, int encoder_val, bool button_state, float adc_val) {
+    const int width = 32;
+    const int height = 7;
+    std::vector<std::string> grid(height, std::string(width, ' '));
+    
+    for (int x = 0; x < width; ++x) {
+        float t = (static_cast<float>(x) / width) * 2.0f * 3.14159265f + phase_offset;
+        float val = 0.0f;
+        switch (wave_type % 4) {
+            case 0: val = std::sin(t); break;
+            case 1: val = 1.0f - std::fmod(t / 3.14159265f, 2.0f); break;
+            case 2: val = (std::sin(t) >= 0.0f) ? 1.0f : -1.0f; break;
+            case 3: val = 2.0f * std::abs(2.0f * (t / (2.0f * 3.14159265f) - std::floor(t / (2.0f * 3.14159265f) + 0.5f))) - 1.0f; break;
         }
-
-        if (encoder_delta != 0) {
-            ui.handle_bpm_encoder_input(encoder_delta, now_us);
-        }
-
-        now_us += 10000;
-        auto msgs = engine.tick(10000);
-
-        erase();
-        mvprintw(0, 0, "=== PHASE BOX C++ TERMINAL SIMULATOR ===");
-        
-        mvprintw(2, 0, "Expression Pedal ADC: %d / 4095 (%.0f%%)", 
-                 raw_adc, (raw_adc / 4095.0f) * 100.0f);
-
-        mvprintw(4, 0, "Display Framebuffer Status: Render Count = %u", 
-                 display.get_render_count());
-
-        mvprintw(6, 0, "Controls:");
-        mvprintw(7, 2, "Left/Right (A/D) : Rotary Encoder Turn (Adjust BPM)");
-        mvprintw(8, 2, "Up/Down (W/S)    : Expression Pedal Sweep");
-        mvprintw(9, 2, "T                : Tap Tempo");
-        mvprintw(10, 2, "Q / ESC          : Quit");
-
-        if (!msgs.empty()) {
-            const MidiMessage& first_msg = msgs.front();
-            mvprintw(12, 0, "Latest Outgoing MIDI CC: Status=0x%02X Data1=%d Data2=%d",
-                     first_msg.status, first_msg.data1, first_msg.data2);
-        }
-
-        refresh();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        int y = static_cast<int>((1.0f - (val + 1.0f) * 0.5f) * (height - 1));
+        if (y >= 0 && y < height) grid[y][x] = '*';
     }
 
-    endwin();
+    const char* wave_names[] = {"SINE", "SAW", "SQR", "TRI"};
+    
+    std::string oled = "+--------------------------------+\n";
+    char header_buf[64];
+    snprintf(header_buf, sizeof(header_buf), "| W:%-4s B:%3d E:%3d%s |\n", wave_names[wave_type%4], bpm, encoder_val, button_state ? "*" : " ");
+    oled += header_buf;
+    oled += "+--------------------------------+\n";
+    
+    for (const auto& row : grid) {
+        oled += "|" + row + "|\n";
+    }
+    
+    oled += "+--------------------------------+\n";
+    char footer_buf[64];
+    snprintf(footer_buf, sizeof(footer_buf), "| ADC:%4.2f                       |\n", adc_val);
+    oled += footer_buf;
+    oled += "+--------------------------------+\n";
+    
+    return oled;
+}
+
+int main() {
+    TerminalScopeGuard term_guard;
+    bool running = true;
+    int current_wave = 0;
+    float phase_anim = 0.0f;
+    int encoder_val = 50;
+    bool button_state = false;
+    float adc_expression = 0.0f;
+    int current_bpm = 120;
+    std::vector<std::chrono::steady_clock::time_point> tap_times;
+
+    std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+
+    while (running) {
+        int c = getchar();
+        if (c != EOF) {
+            if (c == 'w' || c == 'W') {
+                current_wave = (current_wave + 1) % 4;
+            } else if (c == 's' || c == 'S') {
+                current_wave = (current_wave + 3) % 4;
+            } else if (c == 'e' || c == 'E') {
+                button_state = !button_state;
+            } else if (c == 't' || c == 'T') {
+                auto now = std::chrono::steady_clock::now();
+                if (!tap_times.empty() && std::chrono::duration_cast<std::chrono::milliseconds>(now - tap_times.back()).count() > 2500) {
+                    tap_times.clear();
+                }
+                tap_times.push_back(now);
+                if (tap_times.size() > 4) tap_times.erase(tap_times.begin());
+                if (tap_times.size() >= 2) {
+                    double total_ms = 0;
+                    for (size_t i = 1; i < tap_times.size(); ++i) {
+                        total_ms += std::chrono::duration_cast<std::chrono::milliseconds>(tap_times[i] - tap_times[i-1]).count();
+                    }
+                    double avg_ms = total_ms / (tap_times.size() - 1);
+                    if (avg_ms > 0) {
+                        current_bpm = static_cast<int>(60000.0 / avg_ms);
+                        if (current_bpm < 40) current_bpm = 40;
+                        if (current_bpm > 300) current_bpm = 300;
+                    }
+                }
+            } else if (c == '1') {
+                adc_expression = 0.0f;
+            } else if (c == '2') {
+                adc_expression = 0.5f;
+            } else if (c == '3') {
+                adc_expression = 1.0f;
+            } else if (c == 'q' || c == 'Q') {
+                running = false;
+            }
+        }
+
+        phase_anim += (current_bpm / 120.0f) * 0.15f;
+        encoder_val = (current_wave * 25) + (int)(std::sin(phase_anim) * 5.0f);
+        
+        std::cout << "\033[18A";
+        
+        std::cout << "=== PHASE BOX EMBEDDED OLED SIMULATOR ===\n";
+        std::cout << render_oled_screen(current_wave, phase_anim, current_bpm, encoder_val, button_state, adc_expression);
+        std::cout << "Controls: [w/s] Wave [t] Tap [e] Btn [1-3] ADC [q] Quit\n" << std::flush;
+
+        usleep(50000);
+    }
+
+    std::cout << "\nExiting simulator.\n";
     return 0;
 }
