@@ -4,3 +4,5 @@ build-pico/
 docs/.DS_Store
 .DS_Store
 generate_*.py
+build-pico/
+build-host/
