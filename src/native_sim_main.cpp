@@ -5,18 +5,72 @@
 #include <chrono>
 #include <algorithm>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+// Core DSP Oscillator Engine
+class PhaseOscillator {
+public:
+    enum WaveShape { SINE = 0, SAW = 1, SQUARE = 2, TRIANGLE = 3 };
+
+    WaveShape shape = SINE;
+    float bpm = 120.0f;
+    float phase_offset = 0.0f;
+    float phase = 0.0f;
+
+    // Process a single sample step given delta time
+    void update(float dt) {
+        // Frequency derived from BPM (e.g., 1 beat = 1 cycle or tempo-synced LFO rate)
+        float freq = (bpm / 60.0f) * 2.0f; // 2 Hz base at 120 BPM
+        phase += freq * dt * static_cast<float>(M_PI);
+        if (phase >= 2.0f * static_cast<float>(M_PI)) {
+            phase -= 2.0f * static_cast<float>(M_PI);
+        }
+    }
+
+    // Evaluate waveform sample at a specific phase offset
+    float evaluate(float t_offset, float adc_expression) {
+        float t = phase + t_offset + phase_offset;
+        // Normalize t within [0, 2*PI]
+        t = std::fmod(t, 2.0f * static_cast<float>(M_PI));
+        if (t < 0.0f) t += 2.0f * static_cast<float>(M_PI);
+
+        float val = 0.0f;
+        switch (shape) {
+            case SINE:
+                val = std::sin(t);
+                break;
+            case SAW:
+                val = 1.0f - (t / static_cast<float>(M_PI));
+                break;
+            case SQUARE:
+                val = (t < static_cast<float>(M_PI)) ? 1.0f : -1.0f;
+                break;
+            case TRIANGLE: {
+                float norm = t / (2.0f * static_cast<float>(M_PI));
+                val = 2.0f * std::abs(2.0f * (norm - std::floor(norm + 0.5f))) - 1.0f;
+                break;
+            }
+        }
+
+        // Apply expression pedal modulation
+        val *= (0.5f + 0.5f * adc_expression);
+        return val;
+    }
+};
+
 // Simulated Hardware State with Menu Pages
 struct PhaseBoxState {
-    int current_wave = 0;       // 0: Sine, 1: Saw, 2: Square, 3: Triangle
-    int bpm = 120;              // Tap Tempo BPM
-    float phase_offset = 0.0f;  // Phase offset value
+    PhaseOscillator osc;
     int active_page = 0;        // 0: Waveform, 1: BPM, 2: Phase Offset
     bool button_state = false;  // Encoder Push Button State
     float adc_expression = 0.0f;// Expression Pedal ADC input (0.0 to 1.0)
+    int encoder_val = 50;       // Simulated rotary encoder detents
 };
 
-// Draw 128x64 OLED Virtual Buffer with Menu Pages
-void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, float phase_anim) {
+// Draw 128x64 OLED Virtual Buffer driven by DSP Engine
+void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
     BeginTextureMode(oled_target);
     ClearBackground(BLACK);
 
@@ -30,7 +84,7 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, f
     std::string header = std::string(page_names[state.active_page]) + (state.button_state ? "*" : "");
     DrawText(header.c_str(), 4, 3, 10, WHITE);
 
-    // Waveform Viewport (Rows 15 to 49)
+    // Waveform Viewport (Rows 15 to 49) - Render DSP Buffer
     const int wave_width = 120;
     const int wave_height = 33;
     const int start_x = 4;
@@ -38,15 +92,8 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, f
 
     std::vector<Vector2> points;
     for (int x = 0; x < wave_width; ++x) {
-        float t = (static_cast<float>(x) / wave_width) * 2.0f * 3.14159265f + phase_anim + state.phase_offset;
-        float val = 0.0f;
-        switch (state.current_wave % 4) {
-            case 0: val = std::sin(t); break;
-            case 1: val = 1.0f - std::fmod(t / 3.14159265f, 2.0f); break;
-            case 2: val = (std::sin(t) >= 0.0f) ? 1.0f : -1.0f; break;
-            case 3: val = 2.0f * std::abs(2.0f * (t / (2.0f * 3.14159265f) - std::floor(t / (2.0f * 3.14159265f) + 0.5f))) - 1.0f; break;
-        }
-        val *= (0.5f + 0.5f * state.adc_expression);
+        float sample_phase_offset = (static_cast<float>(x) / wave_width) * 2.0f * static_cast<float>(M_PI);
+        float val = state.osc.evaluate(sample_phase_offset, state.adc_expression);
 
         float py = start_y + (wave_height / 2.0f) - (val * (wave_height / 2.0f - 2));
         points.push_back({(float)(start_x + x), py});
@@ -60,11 +107,11 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, f
     std::string footer = "";
     const char* wave_names[] = {"SINE", "SAW", "SQR", "TRI"};
     if (state.active_page == 0) {
-        footer = "VAL: " + std::string(wave_names[state.current_wave % 4]);
+        footer = "VAL: " + std::string(wave_names[state.osc.shape]);
     } else if (state.active_page == 1) {
-        footer = "VAL: " + std::to_string(state.bpm) + " BPM";
+        footer = "VAL: " + std::to_string(static_cast<int>(state.osc.bpm)) + " BPM";
     } else {
-        footer = "VAL: " + std::string(TextFormat("%.2f", state.phase_offset));
+        footer = "VAL: " + std::string(TextFormat("%.2f", state.osc.phase_offset));
     }
     DrawText(footer.c_str(), 4, 53, 8, WHITE);
 
@@ -80,10 +127,11 @@ int main() {
     RenderTexture2D oled_target = LoadRenderTexture(128, 64);
 
     PhaseBoxState state;
-    float phase_anim = 0.0f;
     std::vector<std::chrono::steady_clock::time_point> tap_times;
 
     while (!WindowShouldClose()) {
+        float dt = GetFrameTime();
+
         // --- INPUT HANDLING ---
         if (IsKeyPressed(KEY_E)) {
             state.button_state = !state.button_state;
@@ -96,20 +144,23 @@ int main() {
         bool dec = IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN);
 
         if (inc) {
-            if (state.active_page == 0) state.current_wave = (state.current_wave + 1) % 4;
-            else if (state.active_page == 1) state.bpm = std::min(300, state.bpm + 5);
-            else if (state.active_page == 2) state.phase_offset += 0.2f;
+            if (state.active_page == 0) state.osc.shape = static_cast<PhaseOscillator::WaveShape>((state.osc.shape + 1) % 4);
+            else if (state.active_page == 1) state.osc.bpm = std::min(300.0f, state.osc.bpm + 5.0f);
+            else if (state.active_page == 2) state.osc.phase_offset += 0.2f;
+            state.encoder_val = std::min(100, state.encoder_val + 5);
         }
         if (dec) {
-            if (state.active_page == 0) state.current_wave = (state.current_wave + 3) % 4;
-            else if (state.active_page == 1) state.bpm = std::max(40, state.bpm - 5);
-            else if (state.active_page == 2) state.phase_offset -= 0.2f;
+            if (state.active_page == 0) state.osc.shape = static_cast<PhaseOscillator::WaveShape>((state.osc.shape + 3) % 4);
+            else if (state.active_page == 1) state.osc.bpm = std::max(40.0f, state.osc.bpm - 5.0f);
+            else if (state.active_page == 2) state.osc.phase_offset -= 0.2f;
+            state.encoder_val = std::max(0, state.encoder_val - 5);
         }
 
         if (IsKeyPressed(KEY_ONE)) state.adc_expression = 0.0f;
         if (IsKeyPressed(KEY_TWO)) state.adc_expression = 0.5f;
         if (IsKeyPressed(KEY_THREE)) state.adc_expression = 1.0f;
 
+        // Tap Tempo via 'T' or Spacebar
         if (IsKeyPressed(KEY_T) || IsKeyPressed(KEY_SPACE)) {
             auto now = std::chrono::steady_clock::now();
             if (!tap_times.empty() && std::chrono::duration_cast<std::chrono::milliseconds>(now - tap_times.back()).count() > 2500) {
@@ -124,28 +175,32 @@ int main() {
                 }
                 double avg_ms = total_ms / (tap_times.size() - 1);
                 if (avg_ms > 0) {
-                    state.bpm = static_cast<int>(60000.0 / avg_ms);
-                    state.bpm = std::clamp(state.bpm, 40, 300);
+                    state.osc.bpm = static_cast<float>(60000.0 / avg_ms);
+                    state.osc.bpm = std::clamp(state.osc.bpm, 40.0f, 300.0f);
                 }
             }
         }
 
-        float dt = GetFrameTime();
-        phase_anim += (state.bpm / 120.0f) * dt * 3.0f;
+        // --- UPDATE DSP ENGINE ---
+        state.osc.update(dt);
 
-        DrawOLEDDisplay(oled_target, state, phase_anim);
+        // Render OLED pixel buffer
+        DrawOLEDDisplay(oled_target, state);
 
+        // --- DRAWING TO NATIVE WINDOW ---
         BeginDrawing();
         ClearBackground(Color{ 20, 20, 25, 255 });
 
         DrawText("PHASE BOX EMBEDDED SIMULATOR", 40, 25, 20, RAYWHITE);
-        DrawText("Hardware Benchtop & OLED Monitor", 40, 50, 14, GRAY);
+        DrawText("Hardware Benchtop & DSP Oscillator Engine", 40, 50, 14, GRAY);
 
+        // Draw Scaled OLED Screen in Center (640x320)
         Rectangle sourceRec = { 0.0f, 0.0f, (float)oled_target.texture.width, (float)-oled_target.texture.height };
         Rectangle destRec = { (screenWidth - 640) / 2.0f, 85.0f, 640.0f, 320.0f };
         DrawTexturePro(oled_target.texture, sourceRec, destRec, { 0, 0 }, 0.0f, WHITE);
         DrawRectangleLines((int)destRec.x - 2, (int)destRec.y - 2, (int)destRec.width + 4, (int)destRec.height + 4, DARKGRAY);
 
+        // Control Panel Help
         DrawRectangle(40, 420, 720, 95, Color{ 30, 30, 38, 255 });
         DrawRectangleLines(40, 420, 720, 95, DARKGRAY);
 
