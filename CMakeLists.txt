@@ -1,19 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 project(PhaseBoxSim CXX)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 include(FetchContent)
-FetchContent_Declare(
-    raylib
-    URL https://github.com/raysan5/raylib/archive/refs/tags/5.0.tar.gz
-)
+FetchContent_Declare(raylib URL https://github.com/raysan5/raylib/archive/refs/tags/5.0.tar.gz)
 FetchContent_MakeAvailable(raylib)
-
-add_executable(phase_box_native_sim src/native_sim_main.cpp)
+include_directories(include)
+add_executable(phase_box_native_sim src/native_sim_main.cpp src/PhaseOscillator.cpp)
 target_link_libraries(phase_box_native_sim PRIVATE raylib)
-
 if(APPLE)
     target_link_libraries(phase_box_native_sim PRIVATE "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" "-framework CoreMIDI" "-framework CoreAudio")
 endif()
