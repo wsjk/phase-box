@@ -87,11 +87,11 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state, int act
 int main() {
     const int screenWidth = 800;
     const int screenHeight = 560;
-    InitWindow(screenWidth, screenHeight, "Phase Box - Interactive Macro Menu Simulator");
+    InitWindow(screenWidth, screenHeight, "Phase Box - Polyrhythmic Macro Simulator");
     SetTargetFPS(60);
 
     PhaseBoxState state;
-    int active_macro_index = 0; // Tracks which macro destination is currently selected for editing
+    int active_macro_index = 0;
     std::vector<std::chrono::steady_clock::time_point> tap_times;
 
 #ifdef __APPLE__
@@ -105,7 +105,6 @@ int main() {
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
-        // 9 total menu pages now (0 to 8)
         if (IsKeyPressed(KEY_E)) {
             state.button_state = !state.button_state;
             if (state.button_state) state.active_page = (state.active_page + 1) % 9;
@@ -174,13 +173,8 @@ int main() {
 
         auto now = std::chrono::steady_clock::now();
         if (std::chrono::duration_cast<std::chrono::milliseconds>(now - last_cc_time).count() > 30) {
-            float current_sample = state.osc.evaluateCC(0.0f, state.adc_expression);
-            if (state.turing.mutation_prob > 0.0f) {
-                float turing_norm = static_cast<float>(state.turing.step() % 128) / 127.0f;
-                current_sample = (1.0f - state.turing.mutation_prob) * current_sample + state.turing.mutation_prob * turing_norm;
-            }
-
-            auto evaluated_macros = state.macros.evaluate(current_sample);
+            // Evaluate polyrhythmic macros with master phase and delta time
+            auto evaluated_macros = state.macros.evaluate(state.osc.phase, dt, state.adc_expression);
 
             #ifdef __APPLE__
             for (const auto& msg : evaluated_macros) {
@@ -197,10 +191,10 @@ int main() {
         BeginDrawing();
         ClearBackground(Color{ 20, 20, 25, 255 });
 
-        DrawText("PHASE BOX - INTERACTIVE MACRO MENU", 40, 20, 20, RAYWHITE);
+        DrawText("PHASE BOX - POLYRHYTHMIC MACRO SIMULATOR", 40, 20, 20, RAYWHITE);
         
-        auto preview_macros = state.macros.evaluate(state.osc.evaluateCC(0.0f, state.adc_expression));
-        std::string macro_status = "Macros -> ";
+        auto preview_macros = state.macros.evaluate(state.osc.phase, dt, state.adc_expression);
+        std::string macro_status = "Polyrhythm -> ";
         for (size_t i = 0; i < preview_macros.size(); ++i) {
             macro_status += "[D" + std::to_string(i+1) + " CC" + std::to_string(preview_macros[i].cc) + ":" + std::to_string(preview_macros[i].value) + "] ";
         }
