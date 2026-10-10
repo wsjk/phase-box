@@ -54,7 +54,6 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
         float sample_offset = (static_cast<float>(x) / wave_width) * 2.0f * static_cast<float>(M_PI);
         float cc_val = state.osc.evaluateCC(sample_offset, state.adc_expression);
         
-        // Blend in Turing mutation stepping if mutation probability > 0
         if (state.turing.mutation_prob > 0.0f) {
             float turing_norm = static_cast<float>(state.turing.step() % 128) / 127.0f;
             cc_val = (1.0f - state.turing.mutation_prob) * cc_val + state.turing.mutation_prob * turing_norm;
@@ -85,7 +84,7 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
 int main() {
     const int screenWidth = 800;
     const int screenHeight = 560;
-    InitWindow(screenWidth, screenHeight, "Phase Box - Turing Mutation Simulator");
+    InitWindow(screenWidth, screenHeight, "Phase Box - Bidirectional Menu Simulator");
     SetTargetFPS(60);
 
     PhaseBoxState state;
@@ -102,9 +101,14 @@ int main() {
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
+        // Menu Navigation: [E] steps forward, [Q] steps backward
         if (IsKeyPressed(KEY_E)) {
             state.button_state = !state.button_state;
-            if (state.button_state) state.active_page = (state.active_page + 1) % 7; // 7 total pages now
+            if (state.button_state) state.active_page = (state.active_page + 1) % 7;
+        }
+        if (IsKeyPressed(KEY_Q)) {
+            state.button_state = !state.button_state;
+            state.active_page = (state.active_page - 1 + 7) % 7;
         }
 
         bool inc = IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP);
@@ -155,7 +159,6 @@ int main() {
 
         state.osc.update(dt);
 
-        // Trigger Turing shift register step on oscillator phase wrap
         if (state.osc.phase < state.last_phase) {
             state.turing.step();
         }
@@ -185,7 +188,7 @@ int main() {
         BeginDrawing();
         ClearBackground(Color{ 20, 20, 25, 255 });
 
-        DrawText("PHASE BOX - TURING MUTATION SIMULATOR", 40, 20, 20, RAYWHITE);
+        DrawText("PHASE BOX - BIDIRECTIONAL MENU SIMULATOR", 40, 20, 20, RAYWHITE);
         DrawText(TextFormat("Streaming CH:%d | CC:%d | Value:%d", state.midi_channel, state.midi_cc_num, state.last_sent_cc_val), 40, 45, 12, GREEN);
 
         Rectangle sourceRec = { 0.0f, 0.0f, (float)oled_target.texture.width, (float)-oled_target.texture.height };
@@ -197,8 +200,8 @@ int main() {
         DrawRectangleLines(40, 410, 720, 125, DARKGRAY);
 
         DrawText("CONTROLS & CONFIGURATION:", 55, 422, 12, ORANGE);
-        DrawText(TextFormat("[E] Click Encoder (Active Page: P%d)", state.active_page + 1), 55, 442, 12, LIGHTGRAY);
-        DrawText("[W/S or Up/Down] Adjust Active Parameter Value (Wave, BPM, Phase, CC, PM, Mutate)", 55, 462, 12, LIGHTGRAY);
+        DrawText(TextFormat("[E] Next Page | [Q] Prev Page (Active Page: P%d)", state.active_page + 1), 55, 442, 12, LIGHTGRAY);
+        DrawText("[W/S or Up/Down] Adjust Active Parameter Value", 55, 462, 12, LIGHTGRAY);
         DrawText("[T / Space] Tap Tempo  |  [1-3] Expression", 55, 482, 12, LIGHTGRAY);
         DrawText("[ESC] Quit", 680, 442, 12, RED);
 
