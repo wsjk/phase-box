@@ -158,7 +158,6 @@ int main() {
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
-        // --- INPUT HANDLING ---
         if (IsKeyPressed(KEY_E)) {
             state.button_state = !state.button_state;
             if (state.button_state) {
