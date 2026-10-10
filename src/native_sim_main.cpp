@@ -84,7 +84,7 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
 int main() {
     const int screenWidth = 800;
     const int screenHeight = 560;
-    InitWindow(screenWidth, screenHeight, "Phase Box - Bidirectional Menu Simulator");
+    InitWindow(screenWidth, screenHeight, "Phase Box - Multi-Destination Macro Simulator");
     SetTargetFPS(60);
 
     PhaseBoxState state;
@@ -101,7 +101,6 @@ int main() {
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
-        // Menu Navigation: [E] steps forward, [Q] steps backward
         if (IsKeyPressed(KEY_E)) {
             state.button_state = !state.button_state;
             if (state.button_state) state.active_page = (state.active_page + 1) % 7;
@@ -172,14 +171,16 @@ int main() {
                 current_sample = (1.0f - state.turing.mutation_prob) * current_sample + state.turing.mutation_prob * turing_norm;
             }
 
-            int midi_val = static_cast<int>(current_sample * 127.0f);
-            midi_val = std::clamp(midi_val, 0, 127);
+            // Evaluate all weighted macro destinations from the single LFO source
+            auto evaluated_macros = state.macros.evaluate(current_sample);
 
             #ifdef __APPLE__
-            SendMIDIControlChange(state.midi_channel, state.midi_cc_num, midi_val);
+            for (const auto& msg : evaluated_macros) {
+                SendMIDIControlChange(msg.channel, msg.cc, msg.value);
+            }
             #endif
 
-            state.last_sent_cc_val = midi_val;
+            state.last_sent_cc_val = evaluated_macros.empty() ? 0 : evaluated_macros[0].value;
             last_cc_time = now;
         }
 
@@ -188,8 +189,15 @@ int main() {
         BeginDrawing();
         ClearBackground(Color{ 20, 20, 25, 255 });
 
-        DrawText("PHASE BOX - BIDIRECTIONAL MENU SIMULATOR", 40, 20, 20, RAYWHITE);
-        DrawText(TextFormat("Streaming CH:%d | CC:%d | Value:%d", state.midi_channel, state.midi_cc_num, state.last_sent_cc_val), 40, 45, 12, GREEN);
+        DrawText("PHASE BOX - MACRO ENGINE SIMULATOR", 40, 20, 20, RAYWHITE);
+        
+        // Display multi-destination status in green header text
+        auto preview_macros = state.macros.evaluate(state.osc.evaluateCC(0.0f, state.adc_expression));
+        std::string macro_status = "Streaming Macros -> ";
+        for (size_t i = 0; i < preview_macros.size(); ++i) {
+            macro_status += "CC" + std::to_string(preview_macros[i].cc) + ":" + std::to_string(preview_macros[i].value) + " ";
+        }
+        DrawText(macro_status.c_str(), 40, 45, 12, GREEN);
 
         Rectangle sourceRec = { 0.0f, 0.0f, (float)oled_target.texture.width, (float)-oled_target.texture.height };
         Rectangle destRec = { (screenWidth - 640) / 2.0f, 75.0f, 640.0f, 320.0f };
