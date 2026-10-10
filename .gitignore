@@ -1,4 +1,4 @@
-build/
+build-native/
 build-host/
 build-pico/
 docs/.DS_Store

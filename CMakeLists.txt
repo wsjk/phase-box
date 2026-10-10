@@ -1,79 +1,25 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.14)
+project(PhaseBoxSim CXX)
 
-# Include Pico SDK setup if building for hardware
-if (NOT HOST_BUILD)
-    include(pico_sdk_import.cmake)
-endif()
-
-project(phase_box C CXX ASM)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(include)
+# Fetch Raylib automatically via CMake FetchContent
+include(FetchContent)
+FetchContent_Declare(
+    raylib
+    URL https://github.com/raysan5/raylib/archive/refs/tags/5.0.tar.gz
+)
+FetchContent_MakeAvailable(raylib)
 
-if (NOT HOST_BUILD)
-    # Target RP2040 Build Configuration
-    pico_sdk_init()
+# Host terminal simulator (legacy fallback)
+add_executable(phase_box_sim src/host_sim_main.cpp)
 
-    add_executable(phase_box
-        src/main.cpp
-        src/hal/hal_adc.cpp
-        src/hal/hal_encoder.cpp
-        src/hal/hal_display.cpp
-        src/storage/preset_manager.cpp
-        src/ui/ui_controller.cpp
-        src/ui/ui_controller.cpp
-    )
+# Native windowed Raylib simulator
+add_executable(phase_box_native_sim src/native_sim_main.cpp)
+target_link_libraries(phase_box_native_sim PRIVATE raylib)
 
-    target_link_libraries(phase_box
-        pico_stdlib
-        pico_multicore
-        hardware_uart
-        hardware_adc
-        hardware_i2c
-        hardware_gpio
-        hardware_timer
-    )
-
-    pico_add_extra_outputs(phase_box)
-else()
-    # Host Unit Test Build Configuration
-    add_subdirectory(tests)
-endif()
-
-# --- Native C++ Terminal Simulator for macOS / Host ---
-if (HOST_BUILD)
-    add_executable(phase_box_sim
-        src/host_sim_main.cpp
-        src/hal/hal_adc.cpp
-        src/hal/hal_encoder.cpp
-        src/hal/hal_display.cpp
-        src/storage/preset_manager.cpp
-    src/ui/ui_controller.cpp
-    )
-
-    target_compile_definitions(phase_box_sim PRIVATE HOST_BUILD)
-    target_include_directories(phase_box_sim PRIVATE include)
-    target_link_libraries(phase_box_sim ncurses)
-endif()
-
-if(HOST_BUILD)
-    add_executable(phase_box_host
-        src/main_host.cpp
-        src/hal/hal_adc.cpp
-        src/hal/hal_display.cpp
-        src/hal/hal_encoder.cpp
-        src/storage/preset_manager.cpp
-        src/ui/ui_controller.cpp
-    )
-    target_include_directories(phase_box_host PRIVATE include)
-    target_link_libraries(phase_box_host PRIVATE gtest gmock pthread)
-endif()
-
-
-if(HOST_BUILD)
-    target_compile_definitions(phase_box_host PRIVATE HOST_BUILD)
-    if(TARGET phase_box_sim)
-        target_compile_definitions(phase_box_sim PRIVATE HOST_BUILD)
-    endif()
+# Enable macOS / Linux framework and graphics linkages required by raylib
+if(APPLE)
+    target_link_libraries(phase_box_native_sim PRIVATE "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo")
 endif()
