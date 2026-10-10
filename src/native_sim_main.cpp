@@ -1,5 +1,5 @@
 #include "raylib.h"
-#include <cmath>
+#include "PhaseBoxState.hpp"
 #include <vector>
 #include <string>
 #include <chrono>
@@ -13,63 +13,6 @@
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
-class PhaseOscillator {
-public:
-    enum WaveShape { SINE = 0, SAW = 1, SQUARE = 2, TRIANGLE = 3 };
-
-    WaveShape shape = SINE;
-    float bpm = 120.0f;
-    float phase_offset = 0.0f;
-    float phase = 0.0f;
-
-    // Phase Modulation Parameters
-    float pm_depth = 0.0f;    // Modulation intensity [0.0 to 5.0]
-    float pm_ratio = 2.0f;    // Secondary modulator frequency ratio relative to primary
-
-    void update(float dt) {
-        float freq = (bpm / 60.0f) * 2.0f;
-        phase += freq * dt * static_cast<float>(M_PI);
-        if (phase >= 2.0f * static_cast<float>(M_PI)) {
-            phase -= 2.0f * static_cast<float>(M_PI);
-        }
-    }
-
-    float evaluateCC(float t_offset, float adc_expression) {
-        // Calculate secondary modulator phase (e.g., 2x frequency for harmonic warping)
-        float mod_phase = (phase * pm_ratio) + t_offset;
-        float modulator = std::sin(mod_phase) * pm_depth;
-
-        // Apply Phase Modulation (warping the base phase with the modulator)
-        float t = phase + t_offset + phase_offset + modulator;
-        t = std::fmod(t, 2.0f * static_cast<float>(M_PI));
-        if (t < 0.0f) t += 2.0f * static_cast<float>(M_PI);
-
-        float val = 0.0f;
-        switch (shape) {
-            case SINE: val = std::sin(t); break;
-            case SAW: val = 1.0f - (t / static_cast<float>(M_PI)); break;
-            case SQUARE: val = (t < static_cast<float>(M_PI)) ? 1.0f : -1.0f; break;
-            case TRIANGLE: {
-                float norm = t / (2.0f * static_cast<float>(M_PI));
-                val = 2.0f * std::abs(2.0f * (norm - std::floor(norm + 0.5f))) - 1.0f;
-                break;
-            }
-        }
-        val *= (0.5f + 0.5f * adc_expression);
-        return (val * 0.5f) + 0.5f; // Normalize to [0.0, 1.0] for MIDI CC
-    }
-};
-
-struct PhaseBoxState {
-    PhaseOscillator osc;
-    int active_page = 0;        // 0: Wave, 1: BPM, 2: Phase, 3: Chan, 4: CC, 5: PM Depth
-    bool button_state = false;
-    float adc_expression = 0.0f;
-    int midi_channel = 1;       
-    int midi_cc_num = 16;       
-    int last_sent_cc_val = -1;
-};
 
 #ifdef __APPLE__
 static MIDIClientRef g_midiClient = 0;
@@ -120,19 +63,12 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
 
     std::string footer = "";
     const char* wave_names[] = {"SINE", "SAW", "SQR", "TRI"};
-    if (state.active_page == 0) {
-        footer = "VAL: " + std::string(wave_names[state.osc.shape]);
-    } else if (state.active_page == 1) {
-        footer = "VAL: " + std::to_string(static_cast<int>(state.osc.bpm)) + " BPM";
-    } else if (state.active_page == 2) {
-        footer = "VAL: " + std::string(TextFormat("%.2f", state.osc.phase_offset));
-    } else if (state.active_page == 3) {
-        footer = "VAL: CH " + std::to_string(state.midi_channel);
-    } else if (state.active_page == 4) {
-        footer = "VAL: CC " + std::to_string(state.midi_cc_num);
-    } else if (state.active_page == 5) {
-        footer = "VAL: PM " + std::string(TextFormat("%.2f", state.osc.pm_depth));
-    }
+    if (state.active_page == 0) footer = "VAL: " + std::string(wave_names[state.osc.shape]);
+    else if (state.active_page == 1) footer = "VAL: " + std::to_string(static_cast<int>(state.osc.bpm)) + " BPM";
+    else if (state.active_page == 2) footer = "VAL: " + std::string(TextFormat("%.2f", state.osc.phase_offset));
+    else if (state.active_page == 3) footer = "VAL: CH " + std::to_string(state.midi_channel);
+    else if (state.active_page == 4) footer = "VAL: CC " + std::to_string(state.midi_cc_num);
+    else if (state.active_page == 5) footer = "VAL: PM " + std::string(TextFormat("%.2f", state.osc.pm_depth));
     DrawText(footer.c_str(), 4, 53, 8, WHITE);
 
     EndTextureMode();
@@ -141,7 +77,7 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
 int main() {
     const int screenWidth = 800;
     const int screenHeight = 560;
-    InitWindow(screenWidth, screenHeight, "Phase Box - PM LFO Generator Simulator");
+    InitWindow(screenWidth, screenHeight, "Phase Box - Modular Architecture Simulator");
     SetTargetFPS(60);
 
     PhaseBoxState state;
@@ -160,9 +96,7 @@ int main() {
 
         if (IsKeyPressed(KEY_E)) {
             state.button_state = !state.button_state;
-            if (state.button_state) {
-                state.active_page = (state.active_page + 1) % 6; // 6 total pages now
-            }
+            if (state.button_state) state.active_page = (state.active_page + 1) % 6;
         }
 
         bool inc = IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP);
@@ -209,7 +143,6 @@ int main() {
         if (IsKeyPressed(KEY_TWO)) state.adc_expression = 0.5f;
         if (IsKeyPressed(KEY_THREE)) state.adc_expression = 1.0f;
 
-        // --- UPDATE DSP & TRANSMIT MIDI ---
         state.osc.update(dt);
 
         auto now = std::chrono::steady_clock::now();
@@ -231,7 +164,7 @@ int main() {
         BeginDrawing();
         ClearBackground(Color{ 20, 20, 25, 255 });
 
-        DrawText("PHASE BOX - PM LFO GENERATOR SIMULATOR", 40, 20, 20, RAYWHITE);
+        DrawText("PHASE BOX - MODULAR SIMULATOR", 40, 20, 20, RAYWHITE);
         DrawText(TextFormat("Streaming CH:%d | CC:%d | Value:%d", state.midi_channel, state.midi_cc_num, state.last_sent_cc_val), 40, 45, 12, GREEN);
 
         Rectangle sourceRec = { 0.0f, 0.0f, (float)oled_target.texture.width, (float)-oled_target.texture.height };
@@ -243,11 +176,9 @@ int main() {
         DrawRectangleLines(40, 410, 720, 125, DARKGRAY);
 
         DrawText("CONTROLS & CONFIGURATION:", 55, 422, 12, ORANGE);
-        DrawText(TextFormat("[E] Click Encoder (Active Page: P%d - %s)", state.active_page + 1, 
-                  state.active_page == 0 ? "WAVE" : state.active_page == 1 ? "BPM" : state.active_page == 2 ? "PHASE" : state.active_page == 3 ? "CHAN" : state.active_page == 4 ? "CC" : "PM"), 55, 442, 12, LIGHTGRAY);
+        DrawText(TextFormat("[E] Click Encoder (Active Page: P%d)", state.active_page + 1), 55, 442, 12, LIGHTGRAY);
         DrawText("[W/S or Up/Down] Adjust Active Parameter Value", 55, 462, 12, LIGHTGRAY);
         DrawText("[T / Space] Tap Tempo  |  [1-3] Expression", 55, 482, 12, LIGHTGRAY);
-        DrawText("Outputs to 'Phase Box Virtual Out'", 55, 505, 12, YELLOW);
         DrawText("[ESC] Quit", 680, 442, 12, RED);
 
         EndDrawing();
