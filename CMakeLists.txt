@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.16)
 project(PhaseBoxSim CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Fetch Raylib automatically via CMake FetchContent
 include(FetchContent)
 FetchContent_Declare(
     raylib
@@ -12,14 +11,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raylib)
 
-# Host terminal simulator (legacy fallback)
-add_executable(phase_box_sim src/host_sim_main.cpp)
-
-# Native windowed Raylib simulator
 add_executable(phase_box_native_sim src/native_sim_main.cpp)
 target_link_libraries(phase_box_native_sim PRIVATE raylib)
 
-# Enable macOS / Linux framework and graphics linkages required by raylib
 if(APPLE)
-    target_link_libraries(phase_box_native_sim PRIVATE "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo")
+    target_link_libraries(phase_box_native_sim PRIVATE "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" "-framework CoreMIDI" "-framework CoreAudio")
 endif()
