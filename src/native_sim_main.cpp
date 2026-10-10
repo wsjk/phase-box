@@ -32,7 +32,7 @@ void SendMIDIControlChange(int channel, int control, int value) {
 }
 #endif
 
-void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
+void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state, int active_macro_index) {
     BeginTextureMode(oled_target);
     ClearBackground(BLACK);
 
@@ -40,7 +40,7 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
     DrawLine(0, 14, 128, 14, WHITE);
     DrawLine(0, 50, 128, 50, WHITE);
 
-    const char* page_names[] = {"P1: WAVE", "P2: BPM", "P3: PHASE", "P4: CHAN", "P5: CC", "P6: PM", "P7: MUTE"};
+    const char* page_names[] = {"P1: WAVE", "P2: BPM", "P3: PHASE", "P4: CHAN", "P5: CC", "P6: PM", "P7: MUTE", "P8: MAC SEL", "P9: MAC WGT"};
     std::string header = std::string(page_names[state.active_page]) + (state.button_state ? "*" : "");
     DrawText(header.c_str(), 4, 3, 10, WHITE);
 
@@ -76,6 +76,9 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
     else if (state.active_page == 4) footer = "VAL: CC " + std::to_string(state.midi_cc_num);
     else if (state.active_page == 5) footer = "VAL: PM " + std::string(TextFormat("%.2f", state.osc.pm_depth));
     else if (state.active_page == 6) footer = "VAL: MUT " + std::string(TextFormat("%.2f", state.turing.mutation_prob));
+    else if (state.active_page == 7) footer = "VAL: DEST " + std::to_string(active_macro_index + 1);
+    else if (state.active_page == 8) footer = "VAL: WGT " + std::string(TextFormat("%.2f", state.macros.destinations[active_macro_index].scale));
+    
     DrawText(footer.c_str(), 4, 53, 8, WHITE);
 
     EndTextureMode();
@@ -84,10 +87,11 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
 int main() {
     const int screenWidth = 800;
     const int screenHeight = 560;
-    InitWindow(screenWidth, screenHeight, "Phase Box - Multi-Destination Macro Simulator");
+    InitWindow(screenWidth, screenHeight, "Phase Box - Interactive Macro Menu Simulator");
     SetTargetFPS(60);
 
     PhaseBoxState state;
+    int active_macro_index = 0; // Tracks which macro destination is currently selected for editing
     std::vector<std::chrono::steady_clock::time_point> tap_times;
 
 #ifdef __APPLE__
@@ -101,13 +105,14 @@ int main() {
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
+        // 9 total menu pages now (0 to 8)
         if (IsKeyPressed(KEY_E)) {
             state.button_state = !state.button_state;
-            if (state.button_state) state.active_page = (state.active_page + 1) % 7;
+            if (state.button_state) state.active_page = (state.active_page + 1) % 9;
         }
         if (IsKeyPressed(KEY_Q)) {
             state.button_state = !state.button_state;
-            state.active_page = (state.active_page - 1 + 7) % 7;
+            state.active_page = (state.active_page - 1 + 9) % 9;
         }
 
         bool inc = IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP);
@@ -121,6 +126,8 @@ int main() {
             else if (state.active_page == 4) state.midi_cc_num = std::min(127, state.midi_cc_num + 1);
             else if (state.active_page == 5) state.osc.pm_depth = std::min(5.0f, state.osc.pm_depth + 0.1f);
             else if (state.active_page == 6) state.turing.mutation_prob = std::min(1.0f, state.turing.mutation_prob + 0.05f);
+            else if (state.active_page == 7) active_macro_index = std::min((int)state.macros.destinations.size() - 1, active_macro_index + 1);
+            else if (state.active_page == 8) state.macros.destinations[active_macro_index].scale = std::min(2.0f, state.macros.destinations[active_macro_index].scale + 0.1f);
         }
         if (dec) {
             if (state.active_page == 0) state.osc.shape = static_cast<PhaseOscillator::WaveShape>((state.osc.shape + 3) % 4);
@@ -130,6 +137,8 @@ int main() {
             else if (state.active_page == 4) state.midi_cc_num = std::max(0, state.midi_cc_num - 1);
             else if (state.active_page == 5) state.osc.pm_depth = std::max(0.0f, state.osc.pm_depth - 0.1f);
             else if (state.active_page == 6) state.turing.mutation_prob = std::max(0.0f, state.turing.mutation_prob - 0.05f);
+            else if (state.active_page == 7) active_macro_index = std::max(0, active_macro_index - 1);
+            else if (state.active_page == 8) state.macros.destinations[active_macro_index].scale = std::max(-2.0f, state.macros.destinations[active_macro_index].scale - 0.1f);
         }
 
         if (IsKeyPressed(KEY_T) || IsKeyPressed(KEY_SPACE)) {
@@ -171,7 +180,6 @@ int main() {
                 current_sample = (1.0f - state.turing.mutation_prob) * current_sample + state.turing.mutation_prob * turing_norm;
             }
 
-            // Evaluate all weighted macro destinations from the single LFO source
             auto evaluated_macros = state.macros.evaluate(current_sample);
 
             #ifdef __APPLE__
@@ -184,18 +192,17 @@ int main() {
             last_cc_time = now;
         }
 
-        DrawOLEDDisplay(oled_target, state);
+        DrawOLEDDisplay(oled_target, state, active_macro_index);
 
         BeginDrawing();
         ClearBackground(Color{ 20, 20, 25, 255 });
 
-        DrawText("PHASE BOX - MACRO ENGINE SIMULATOR", 40, 20, 20, RAYWHITE);
+        DrawText("PHASE BOX - INTERACTIVE MACRO MENU", 40, 20, 20, RAYWHITE);
         
-        // Display multi-destination status in green header text
         auto preview_macros = state.macros.evaluate(state.osc.evaluateCC(0.0f, state.adc_expression));
-        std::string macro_status = "Streaming Macros -> ";
+        std::string macro_status = "Macros -> ";
         for (size_t i = 0; i < preview_macros.size(); ++i) {
-            macro_status += "CC" + std::to_string(preview_macros[i].cc) + ":" + std::to_string(preview_macros[i].value) + " ";
+            macro_status += "[D" + std::to_string(i+1) + " CC" + std::to_string(preview_macros[i].cc) + ":" + std::to_string(preview_macros[i].value) + "] ";
         }
         DrawText(macro_status.c_str(), 40, 45, 12, GREEN);
 
@@ -208,8 +215,8 @@ int main() {
         DrawRectangleLines(40, 410, 720, 125, DARKGRAY);
 
         DrawText("CONTROLS & CONFIGURATION:", 55, 422, 12, ORANGE);
-        DrawText(TextFormat("[E] Next Page | [Q] Prev Page (Active Page: P%d)", state.active_page + 1), 55, 442, 12, LIGHTGRAY);
-        DrawText("[W/S or Up/Down] Adjust Active Parameter Value", 55, 462, 12, LIGHTGRAY);
+        DrawText(TextFormat("[E] Next Page | [Q] Prev Page (Active Page: P%d - Editing Dest %d)", state.active_page + 1, active_macro_index + 1), 55, 442, 12, LIGHTGRAY);
+        DrawText("[W/S or Up/Down] Adjust Value (Change Destination or Scale Weight)", 55, 462, 12, LIGHTGRAY);
         DrawText("[T / Space] Tap Tempo  |  [1-3] Expression", 55, 482, 12, LIGHTGRAY);
         DrawText("[ESC] Quit", 680, 442, 12, RED);
 
