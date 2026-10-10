@@ -31,7 +31,6 @@ public:
         }
     }
 
-    // Returns normalized value [0.0 to 1.0] for MIDI CC generation
     float evaluateCC(float t_offset, float adc_expression) {
         float t = phase + t_offset + phase_offset;
         t = std::fmod(t, 2.0f * static_cast<float>(M_PI));
@@ -49,18 +48,18 @@ public:
             }
         }
         val *= (0.5f + 0.5f * adc_expression);
-        // Map [-1, 1] to [0, 1]
         return (val * 0.5f) + 0.5f;
     }
 };
 
 struct PhaseBoxState {
     PhaseOscillator osc;
-    int active_page = 0;
+    int active_page = 0;        // 0: Wave, 1: BPM, 2: Phase, 3: MIDI Chan, 4: MIDI CC
     bool button_state = false;
     float adc_expression = 0.0f;
-    int last_sent_cc = -1;
-    std::string midi_status_msg = "Virtual MIDI Out Active";
+    int midi_channel = 1;       // 1 to 16
+    int midi_cc_num = 16;       // 0 to 127
+    int last_sent_cc_val = -1;
 };
 
 #ifdef __APPLE__
@@ -74,7 +73,7 @@ void SendMIDIControlChange(int channel, int control, int value) {
     MIDIPacketList *packetList = (MIDIPacketList*)buffer;
     MIDIPacket *packet = MIDIPacketListInit(packetList);
     
-    Byte midiMessage[3] = { (Byte)(0xB0 | (channel & 0x0F)), (Byte)(control & 0x7F), (Byte)(value & 0x7F) };
+    Byte midiMessage[3] = { (Byte)(0xB0 | ((channel - 1) & 0x0F)), (Byte)(control & 0x7F), (Byte)(value & 0x7F) };
     packet = MIDIPacketListAdd(packetList, sizeof(buffer), packet, 0, 3, midiMessage);
     
     MIDIReceived(g_virtualOutput, packetList);
@@ -89,7 +88,7 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
     DrawLine(0, 14, 128, 14, WHITE);
     DrawLine(0, 50, 128, 50, WHITE);
 
-    const char* page_names[] = {"P1: WAVE", "P2: BPM", "P3: PHASE"};
+    const char* page_names[] = {"P1: WAVE", "P2: BPM", "P3: PHASE", "P4: CHAN", "P5: CC"};
     std::string header = std::string(page_names[state.active_page]) + (state.button_state ? "*" : "");
     DrawText(header.c_str(), 4, 3, 10, WHITE);
 
@@ -112,9 +111,17 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
 
     std::string footer = "";
     const char* wave_names[] = {"SINE", "SAW", "SQR", "TRI"};
-    if (state.active_page == 0) footer = "VAL: " + std::string(wave_names[state.osc.shape]);
-    else if (state.active_page == 1) footer = "VAL: " + std::to_string(static_cast<int>(state.osc.bpm)) + " BPM";
-    else footer = "VAL: " + std::string(TextFormat("%.2f", state.osc.phase_offset));
+    if (state.active_page == 0) {
+        footer = "VAL: " + std::string(wave_names[state.osc.shape]);
+    } else if (state.active_page == 1) {
+        footer = "VAL: " + std::to_string(static_cast<int>(state.osc.bpm)) + " BPM";
+    } else if (state.active_page == 2) {
+        footer = "VAL: " + std::string(TextFormat("%.2f", state.osc.phase_offset));
+    } else if (state.active_page == 3) {
+        footer = "VAL: CH " + std::to_string(state.midi_channel);
+    } else if (state.active_page == 4) {
+        footer = "VAL: CC " + std::to_string(state.midi_cc_num);
+    }
     DrawText(footer.c_str(), 4, 53, 8, WHITE);
 
     EndTextureMode();
@@ -123,15 +130,15 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state) {
 int main() {
     const int screenWidth = 800;
     const int screenHeight = 560;
-    InitWindow(screenWidth, screenHeight, "Phase Box - MIDI Generator Simulator");
+    InitWindow(screenWidth, screenHeight, "Phase Box - Configurable MIDI Generator");
     SetTargetFPS(60);
 
     PhaseBoxState state;
+    std::vector<std::chrono::steady_clock::time_point> tap_times;
 
 #ifdef __APPLE__
     MIDIClientCreate(CFSTR("PhaseBox MIDI Generator"), NULL, NULL, &g_midiClient);
     MIDISourceCreate(g_midiClient, CFSTR("Phase Box Virtual Out"), &g_virtualOutput);
-    std::cout << "Created virtual MIDI source: Phase Box Virtual Out\n";
 #endif
 
     RenderTexture2D oled_target = LoadRenderTexture(128, 64);
@@ -140,10 +147,11 @@ int main() {
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
-        // --- INPUT HANDLING ---
         if (IsKeyPressed(KEY_E)) {
             state.button_state = !state.button_state;
-            if (state.button_state) state.active_page = (state.active_page + 1) % 3;
+            if (state.button_state) {
+                state.active_page = (state.active_page + 1) % 5;
+            }
         }
 
         bool inc = IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP);
@@ -153,33 +161,54 @@ int main() {
             if (state.active_page == 0) state.osc.shape = static_cast<PhaseOscillator::WaveShape>((state.osc.shape + 1) % 4);
             else if (state.active_page == 1) state.osc.bpm = std::min(300.0f, state.osc.bpm + 5.0f);
             else if (state.active_page == 2) state.osc.phase_offset += 0.2f;
+            else if (state.active_page == 3) state.midi_channel = std::min(16, state.midi_channel + 1);
+            else if (state.active_page == 4) state.midi_cc_num = std::min(127, state.midi_cc_num + 1);
         }
         if (dec) {
             if (state.active_page == 0) state.osc.shape = static_cast<PhaseOscillator::WaveShape>((state.osc.shape + 3) % 4);
             else if (state.active_page == 1) state.osc.bpm = std::max(40.0f, state.osc.bpm - 5.0f);
             else if (state.active_page == 2) state.osc.phase_offset -= 0.2f;
+            else if (state.active_page == 3) state.midi_channel = std::max(1, state.midi_channel - 1);
+            else if (state.active_page == 4) state.midi_cc_num = std::max(0, state.midi_cc_num - 1);
+        }
+
+        if (IsKeyPressed(KEY_T) || IsKeyPressed(KEY_SPACE)) {
+            auto now = std::chrono::steady_clock::now();
+            if (!tap_times.empty() && std::chrono::duration_cast<std::chrono::milliseconds>(now - tap_times.back()).count() > 2500) {
+                tap_times.clear();
+            }
+            tap_times.push_back(now);
+            if (tap_times.size() > 4) tap_times.erase(tap_times.begin());
+            if (tap_times.size() >= 2) {
+                double total_ms = 0;
+                for (size_t i = 1; i < tap_times.size(); ++i) {
+                    total_ms += std::chrono::duration_cast<std::chrono::milliseconds>(tap_times[i] - tap_times[i-1]).count();
+                }
+                double avg_ms = total_ms / (tap_times.size() - 1);
+                if (avg_ms > 0) {
+                    state.osc.bpm = static_cast<float>(60000.0 / avg_ms);
+                    state.osc.bpm = std::clamp(state.osc.bpm, 40.0f, 300.0f);
+                }
+            }
         }
 
         if (IsKeyPressed(KEY_ONE)) state.adc_expression = 0.0f;
         if (IsKeyPressed(KEY_TWO)) state.adc_expression = 0.5f;
         if (IsKeyPressed(KEY_THREE)) state.adc_expression = 1.0f;
 
-        // --- UPDATE DSP & TRANSMIT MIDI CC ---
         state.osc.update(dt);
 
-        // Throttle MIDI CC transmission to ~30Hz to prevent flooding MIDI ports
         auto now = std::chrono::steady_clock::now();
         if (std::chrono::duration_cast<std::chrono::milliseconds>(now - last_cc_time).count() > 30) {
             float current_sample = state.osc.evaluateCC(0.0f, state.adc_expression);
             int midi_val = static_cast<int>(current_sample * 127.0f);
             midi_val = std::clamp(midi_val, 0, 127);
 
-            // Send CC 16 on Channel 1 representing phase output
             #ifdef __APPLE__
-            SendMIDIControlChange(0, 16, midi_val);
+            SendMIDIControlChange(state.midi_channel, state.midi_cc_num, midi_val);
             #endif
 
-            state.last_sent_cc = midi_val;
+            state.last_sent_cc_val = midi_val;
             last_cc_time = now;
         }
 
@@ -189,7 +218,7 @@ int main() {
         ClearBackground(Color{ 20, 20, 25, 255 });
 
         DrawText("PHASE BOX - MIDI LFO GENERATOR SIMULATOR", 40, 20, 20, RAYWHITE);
-        DrawText(TextFormat("Streaming MIDI CC 16 Value: %d (Virtual Port Active)", state.last_sent_cc), 40, 45, 12, GREEN);
+        DrawText(TextFormat("Streaming CH:%d | CC:%d | Value:%d", state.midi_channel, state.midi_cc_num, state.last_sent_cc_val), 40, 45, 12, GREEN);
 
         Rectangle sourceRec = { 0.0f, 0.0f, (float)oled_target.texture.width, (float)-oled_target.texture.height };
         Rectangle destRec = { (screenWidth - 640) / 2.0f, 75.0f, 640.0f, 320.0f };
@@ -199,11 +228,12 @@ int main() {
         DrawRectangle(40, 410, 720, 125, Color{ 30, 30, 38, 255 });
         DrawRectangleLines(40, 410, 720, 125, DARKGRAY);
 
-        DrawText("CONTROLS & GENERATOR PARAMS:", 55, 422, 12, ORANGE);
-        DrawText(TextFormat("[E] Click Encoder (Active Page: P%d)", state.active_page + 1), 55, 442, 12, LIGHTGRAY);
-        DrawText("[W/S or Up/Down] Adjust Active Parameter (Wave, BPM, Phase)", 55, 462, 12, LIGHTGRAY);
-        DrawText("[1-3] Expression / Amplitude Scale", 55, 482, 12, LIGHTGRAY);
-        DrawText("Outputs MIDI CC 16 to 'Phase Box Virtual Out'", 55, 505, 12, YELLOW);
+        DrawText("CONTROLS & CONFIGURATION:", 55, 422, 12, ORANGE);
+        DrawText(TextFormat("[E] Click Encoder (Active Page: P%d - %s)", state.active_page + 1, 
+                  state.active_page == 0 ? "WAVE" : state.active_page == 1 ? "BPM" : state.active_page == 2 ? "PHASE" : state.active_page == 3 ? "CHAN" : "CC"), 55, 442, 12, LIGHTGRAY);
+        DrawText("[W/S or Up/Down] Adjust Active Parameter Value", 55, 462, 12, LIGHTGRAY);
+        DrawText("[T / Space] Tap Tempo  |  [1-3] Expression", 55, 482, 12, LIGHTGRAY);
+        DrawText("Outputs to 'Phase Box Virtual Out'", 55, 505, 12, YELLOW);
         DrawText("[ESC] Quit", 680, 442, 12, RED);
 
         EndDrawing();
