@@ -1,0 +1,1 @@
+/usr/bin/cc -O3 -DNDEBUG -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -nostdlib -Xlinker --script=/Users/ww/src/pico-sdk/src/rp2040/boot_stage2/boot_stage2.ld -Xlinker -Map=/Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.elf.map CMakeFiles/bs2_default.dir/compile_time_choice.S.o -o bs2_default.elf

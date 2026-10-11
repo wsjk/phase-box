@@ -6,19 +6,22 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
 add_executable(phase_box_firmware
-src/firmware_main.cpp
-../src/PhaseOscillator.cpp
+    src/firmware_main.cpp
+    src/usb_descriptors.c
+    ../src/PhaseOscillator.cpp
 )
 
 target_include_directories(phase_box_firmware PRIVATE
-../include
-include
+    ../include
+    include
 )
 
 target_link_libraries(phase_box_firmware
-pico_stdlib
-hardware_i2c
-pico_multicore
+    pico_stdlib
+    hardware_i2c
+    pico_multicore
+    tinyusb_device
+    tinyusb_board
 )
 
 pico_add_extra_outputs(phase_box_firmware)
