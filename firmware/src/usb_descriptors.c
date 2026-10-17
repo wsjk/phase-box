@@ -1,4 +1,5 @@
 #include "usb_descriptors.h"
+#include <string.h>
 
 #define DESC_DEVICE 1
 #define DESC_CONFIGURATION 2
@@ -35,8 +36,8 @@ uint8_t const * tud_descriptor_device_cb(void) {
 #define CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_MIDI_DESC_LEN)
 
 uint8_t const desc_configuration[] = {
-    TUD_CONFIG_DESC(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
-    TUD_MIDI_DESC_ITF(ITF_NUM_MIDI, 0, EPNUM_MIDI_OUT, EPNUM_MIDI_IN, 64)
+    TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
+    TUD_MIDI_DESCRIPTOR(ITF_NUM_MIDI, 0, EPNUM_MIDI_OUT, EPNUM_MIDI_IN, 64)
 };
 
 uint8_t const * tud_descriptor_configuration_cb(uint8_t index) {

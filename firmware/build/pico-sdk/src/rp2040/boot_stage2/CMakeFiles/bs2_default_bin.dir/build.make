@@ -70,7 +70,7 @@ pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_bin: pico-sdk/src/rp2040/
 
 pico-sdk/src/rp2040/boot_stage2/bs2_default.bin: pico-sdk/src/rp2040/boot_stage2/bs2_default.elf
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating bs2_default.bin"
-	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && CMAKE_OBJCOPY-NOTFOUND -Obinary /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.elf /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.bin
+	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && /Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-objcopy -Obinary /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.elf /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.bin
 
 pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_bin.dir/codegen:
 .PHONY : pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_bin.dir/codegen

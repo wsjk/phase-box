@@ -71,11 +71,11 @@ include pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/flags
 
 pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S: pico-sdk/src/rp2040/boot_stage2/bs2_default.bin
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating bs2_default_padded_checksummed.S"
-	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && /Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9 /Users/ww/src/pico-sdk/src/rp2040/boot_stage2/pad_checksum -s 0xffffffff /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.bin /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S
+	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && /usr/bin/python3 /Users/ww/src/pico-sdk/src/rp2040/boot_stage2/pad_checksum -s 0xffffffff /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.bin /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S
 
 pico-sdk/src/rp2040/boot_stage2/bs2_default.bin: pico-sdk/src/rp2040/boot_stage2/bs2_default.elf
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating bs2_default.bin"
-	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && CMAKE_OBJCOPY-NOTFOUND -Obinary /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.elf /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.bin
+	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && /Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-objcopy -Obinary /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.elf /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default.bin
 
 pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/codegen:
 .PHONY : pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/codegen
@@ -83,15 +83,15 @@ pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/codegen:
 pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.o: pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/flags.make
 pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.o: pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building ASM object pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.o"
-	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && /usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.o -c /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S
+	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && /Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.o   -c /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S
 
 pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.i"
-	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && /usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S > CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.i
+	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && /Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S > CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.i
 
 pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.s"
-	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && /usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S -o CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.s
+	cd /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2 && /Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/phase-box/firmware/build/pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S -o CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.s
 
 bs2_default_library: pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.o
 bs2_default_library: pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/build.make

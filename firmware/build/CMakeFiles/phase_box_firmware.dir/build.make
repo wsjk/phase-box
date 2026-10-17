@@ -76,1249 +76,1249 @@ CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o: CMakeFiles/phase_box_
 CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o: /Users/ww/src/phase-box/firmware/src/firmware_main.cpp
 CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o -MF CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o.d -o CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o -c /Users/ww/src/phase-box/firmware/src/firmware_main.cpp
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o -MF CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o.d -o CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o -c /Users/ww/src/phase-box/firmware/src/firmware_main.cpp
 
 CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ww/src/phase-box/firmware/src/firmware_main.cpp > CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ww/src/phase-box/firmware/src/firmware_main.cpp > CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.i
 
 CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ww/src/phase-box/firmware/src/firmware_main.cpp -o CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ww/src/phase-box/firmware/src/firmware_main.cpp -o CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.s
 
 CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o: /Users/ww/src/phase-box/firmware/src/usb_descriptors.c
 CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o -MF CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o.d -o CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o -c /Users/ww/src/phase-box/firmware/src/usb_descriptors.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o -MF CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o.d -o CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o -c /Users/ww/src/phase-box/firmware/src/usb_descriptors.c
 
 CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/phase-box/firmware/src/usb_descriptors.c > CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/phase-box/firmware/src/usb_descriptors.c > CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.i
 
 CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/phase-box/firmware/src/usb_descriptors.c -o CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/phase-box/firmware/src/usb_descriptors.c -o CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o: /Users/ww/src/phase-box/src/PhaseOscillator.cpp
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o -c /Users/ww/src/phase-box/src/PhaseOscillator.cpp
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o -c /Users/ww/src/phase-box/src/PhaseOscillator.cpp
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ww/src/phase-box/src/PhaseOscillator.cpp > CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ww/src/phase-box/src/PhaseOscillator.cpp > CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ww/src/phase-box/src/PhaseOscillator.cpp -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ww/src/phase-box/src/PhaseOscillator.cpp -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o -c /Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o -c /Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o: /Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o -c /Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o -c /Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o: /Users/ww/src/pico-sdk/src/common/pico_sync/sem.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o -c /Users/ww/src/pico-sdk/src/common/pico_sync/sem.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o -c /Users/ww/src/pico-sdk/src/common/pico_sync/sem.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_sync/sem.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_sync/sem.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_sync/sem.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_sync/sem.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o: /Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o -c /Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o -c /Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o: /Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o -c /Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o -c /Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o: /Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o -c /Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o -c /Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o: /Users/ww/src/pico-sdk/src/common/pico_time/time.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o -c /Users/ww/src/pico-sdk/src/common/pico_time/time.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o -c /Users/ww/src/pico-sdk/src/common/pico_time/time.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_time/time.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_time/time.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_time/time.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_time/time.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o: /Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o -c /Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o -c /Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o: /Users/ww/src/pico-sdk/src/common/pico_util/datetime.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o -c /Users/ww/src/pico-sdk/src/common/pico_util/datetime.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o -c /Users/ww/src/pico-sdk/src/common/pico_util/datetime.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_util/datetime.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_util/datetime.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_util/datetime.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_util/datetime.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o: /Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o -c /Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o -c /Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o: /Users/ww/src/pico-sdk/src/common/pico_util/pheap.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o -c /Users/ww/src/pico-sdk/src/common/pico_util/pheap.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o -c /Users/ww/src/pico-sdk/src/common/pico_util/pheap.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_util/pheap.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_util/pheap.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_util/pheap.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_util/pheap.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o: /Users/ww/src/pico-sdk/src/common/pico_util/queue.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o -c /Users/ww/src/pico-sdk/src/common/pico_util/queue.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o -c /Users/ww/src/pico-sdk/src/common/pico_util/queue.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_util/queue.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/common/pico_util/queue.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_util/queue.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/common/pico_util/queue.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building CXX object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building ASM object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o   -c /Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing ASM source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.i"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling ASM source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.s"
-	/usr/bin/cc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_84) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_85) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_86) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o: /Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_87) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o -c /Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o: /Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_88) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_89) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o: CMakeFiles/phase_box_firmware.dir/flags.make
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o: /Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o: CMakeFiles/phase_box_firmware.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_90) "Building C object CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o -MF CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o.d -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o -c /Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.i
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c > CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.i
 
 CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.s
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c -o CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.s
 
 # Object files for target phase_box_firmware
 phase_box_firmware_OBJECTS = \
@@ -1416,154 +1416,154 @@ phase_box_firmware_OBJECTS = \
 # External object files for target phase_box_firmware
 phase_box_firmware_EXTERNAL_OBJECTS =
 
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/build.make
-phase_box_firmware: pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.o
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/memmap_default.ld
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/script_include/memory_psram.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/script_include/section_boot2.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/script_include/section_platform_end.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/script_include/sections_default_text.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/script_include/sections_psram.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/default_rodata_excludes.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/default_text_excludes.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memmap_default.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_aliases_flash.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_extra.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_flash.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_generated.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_ram.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_scratch.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_xip_ram.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_binary_info.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_default_data.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_default_rodata.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_default_text.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_end.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_extra_post_data.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_extra_post_end.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_extra_post_platform_end.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_extra_post_scratch.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_extra_post_text.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_flash_begin.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_flash_end.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_generated_post_data.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_generated_post_end.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_generated_post_platform_end.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_generated_post_scratch.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_generated_post_text.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_heap.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_persistent_data.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_ram_vector_table.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_tls.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_uninitialized_data.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_xip_ram.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/sections_arm_ex.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/sections_default.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/sections_default_data.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/sections_scratch.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/sections_stack.incl
-phase_box_firmware: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/set_memory_locations.incl
-phase_box_firmware: CMakeFiles/phase_box_firmware.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_91) "Linking CXX executable phase_box_firmware"
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/src/firmware_main.cpp.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/src/usb_descriptors.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/phase-box/src/PhaseOscillator.cpp.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2040/pico_platform/platform.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_common/common.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/hardware_claim/claim.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync/sync.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/sem.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/lock_core.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/mutex.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_sync/critical_section.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/time.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_time/timeout_helper.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_timer/timer.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/datetime.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/fixed_bitset.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/pheap.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/common/pico_util/queue.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_uart/uart.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_pll/pll.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_flash/flash.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_divider/divider.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_divider/divider_hardware.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_aeabi_rp2040.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_init_rom_rp2040.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_math.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_init_rom_rp2040.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_math.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim_rp2040.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_printf/printf.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_clib_interface/cxa_guard.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_thread_local/thread_local.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_multicore/multicore.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/tusb.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/lib/tinyusb/hw/bsp/rp2040/family.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_flash/flash.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/hardware_xip_cache/xip_cache.c.o
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/build.make
+phase_box_firmware.elf: pico-sdk/src/rp2040/boot_stage2/CMakeFiles/bs2_default_library.dir/bs2_default_padded_checksummed.S.o
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/memmap_default.ld
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/script_include/memory_psram.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/script_include/section_boot2.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/script_include/section_platform_end.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/script_include/sections_default_text.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2040/pico_platform/script_include/sections_psram.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/default_rodata_excludes.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/default_text_excludes.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memmap_default.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_aliases_flash.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_extra.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_flash.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_generated.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_ram.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_scratch.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/memory_xip_ram.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_binary_info.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_default_data.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_default_rodata.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_default_text.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_end.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_extra_post_data.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_extra_post_end.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_extra_post_platform_end.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_extra_post_scratch.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_extra_post_text.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_flash_begin.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_flash_end.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_generated_post_data.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_generated_post_end.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_generated_post_platform_end.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_generated_post_scratch.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_generated_post_text.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_heap.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_persistent_data.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_ram_vector_table.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_tls.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_uninitialized_data.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/section_xip_ram.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/sections_arm_ex.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/sections_default.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/sections_default_data.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/sections_scratch.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/sections_stack.incl
+phase_box_firmware.elf: /Users/ww/src/pico-sdk/src/rp2_common/pico_standard_link/script_include/set_memory_locations.incl
+phase_box_firmware.elf: CMakeFiles/phase_box_firmware.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/ww/src/phase-box/firmware/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_91) "Linking CXX executable phase_box_firmware.elf"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/phase_box_firmware.dir/link.txt --verbose=$(VERBOSE)
-	/usr/bin/objdump -h /Users/ww/src/phase-box/firmware/build/phase_box_firmware > phase_box_firmware.dis
-	/usr/bin/objdump -d /Users/ww/src/phase-box/firmware/build/phase_box_firmware >> phase_box_firmware.dis
-	CMAKE_OBJCOPY-NOTFOUND -Oihex /Users/ww/src/phase-box/firmware/build/phase_box_firmware phase_box_firmware.hex
-	CMAKE_OBJCOPY-NOTFOUND -Obinary /Users/ww/src/phase-box/firmware/build/phase_box_firmware phase_box_firmware.bin
-	_deps/picotool/picotool uf2 convert --quiet /Users/ww/src/phase-box/firmware/build/phase_box_firmware phase_box_firmware.uf2 --family rp2040 --platform rp2040
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-objdump -h /Users/ww/src/phase-box/firmware/build/phase_box_firmware.elf > phase_box_firmware.dis
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-objdump -d /Users/ww/src/phase-box/firmware/build/phase_box_firmware.elf >> phase_box_firmware.dis
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-objcopy -Oihex /Users/ww/src/phase-box/firmware/build/phase_box_firmware.elf phase_box_firmware.hex
+	/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin/arm-none-eabi-objcopy -Obinary /Users/ww/src/phase-box/firmware/build/phase_box_firmware.elf phase_box_firmware.bin
+	_deps/picotool/picotool uf2 convert --quiet /Users/ww/src/phase-box/firmware/build/phase_box_firmware.elf phase_box_firmware.uf2 --family rp2040 --platform rp2040
 
 # Rule to build all files generated by this target.
-CMakeFiles/phase_box_firmware.dir/build: phase_box_firmware
+CMakeFiles/phase_box_firmware.dir/build: phase_box_firmware.elf
 .PHONY : CMakeFiles/phase_box_firmware.dir/build
 
 CMakeFiles/phase_box_firmware.dir/clean:

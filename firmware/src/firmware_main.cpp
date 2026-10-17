@@ -1,8 +1,11 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
+#include "bsp/board_api.h"
 #include "tusb.h"
 #include "PhaseOscillator.hpp"
 #include "MacroEngine.hpp"
+#include "PhaseBoxState.hpp"
+#include "PresetManager.hpp"
 
 // Core 1 background worker: handles non-blocking UI/OLED tasks
 void core1_entry() {
@@ -11,7 +14,6 @@ void core1_entry() {
     }
 }
 
-// Helper to send standard MIDI Control Change over TinyUSB
 void send_usb_midi_cc(uint8_t channel, uint8_t cc, uint8_t value) {
     uint8_t msg[3] = {
         (uint8_t)(0xB0 | ((channel - 1) & 0x0F)),
@@ -24,30 +26,43 @@ void send_usb_midi_cc(uint8_t channel, uint8_t cc, uint8_t value) {
 int main() {
     stdio_init_all();
     board_init();
-    tusb_init(); // Initialize TinyUSB stack
+    tusb_init();
 
-    // Launch Core 1 background runner
     multicore_launch_core1(core1_entry);
 
-    PhaseOscillator osc;
-    MacroEngine macros;
+    PhaseBoxState state;
     
+    // Attempt to load default preset slot 1 on boot
+    if (!PresetManager::loadPreset(1, state)) {
+        // Fallback default save if no preset exists yet
+        PresetManager::savePreset(1, state);
+    }
+
     absolute_time_t next_frame = get_absolute_time();
-    const uint32_t dt_us = 16667; // ~60 FPS tick rate
+    const uint32_t dt_us = 16667;
+    
+    uint32_t auto_save_counter = 0;
+    bool is_dirty = false;
 
-    // Core 0 real-time deterministic DSP & MIDI loop
     while (true) {
-        tud_task(); // TinyUSB device task handler (must be called frequently)
+        tud_task();
 
-        osc.update(0.0166f);
+        state.osc.update(0.0166f);
+        auto evaluated_macros = state.macros.evaluate(state.osc.phase, 0.0166f, state.adc_expression);
 
-        // Evaluate multi-destination polyrhythmic macros
-        auto evaluated_macros = macros.evaluate(osc.phase, 0.0166f, 0.0f);
-
-        // Transmit over USB MIDI if connected
         if (tud_midi_mounted()) {
             for (const auto& m : evaluated_macros) {
                 send_usb_midi_cc(m.channel, m.cc, m.value);
+            }
+        }
+
+        // Background auto-save dirty state watcher (commits 2s after last tweak)
+        if (is_dirty) {
+            auto_save_counter++;
+            if (auto_save_counter > 120) { // ~2 seconds at 60Hz
+                PresetManager::savePreset(1, state);
+                is_dirty = false;
+                auto_save_counter = 0;
             }
         }
 

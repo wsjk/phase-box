@@ -19,9 +19,9 @@ project(picotool-populate NONE)
 # Pass through things we've already detected in the main project to avoid
 # paying the cost of redetecting them again in ExternalProject_Add()
 set(GIT_EXECUTABLE [==[/usr/bin/git]==])
-set(Git_VERSION [==[2.37.1 (Apple Git-137.1)]==])
+set(Git_VERSION [==[2.39.2 (Apple Git-143)]==])
 set_property(GLOBAL PROPERTY _CMAKE_FindGit_GIT_EXECUTABLE_VERSION
-  [==[/usr/bin/git;2.37.1 (Apple Git-137.1)]==]
+  [==[/usr/bin/git;2.39.2 (Apple Git-143)]==]
 )
 
 

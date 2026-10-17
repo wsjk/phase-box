@@ -1,6 +1,4 @@
 /Users/ww/src/phase-box/firmware/build/CMakeFiles/phase_box_firmware.dir
-/Users/ww/src/phase-box/firmware/build/CMakeFiles/picotoolForceReconfigure.dir
-/Users/ww/src/phase-box/firmware/build/CMakeFiles/picotoolBuild.dir
 /Users/ww/src/phase-box/firmware/build/CMakeFiles/edit_cache.dir
 /Users/ww/src/phase-box/firmware/build/CMakeFiles/rebuild_cache.dir
 /Users/ww/src/phase-box/firmware/build/pico-sdk/CMakeFiles/edit_cache.dir

@@ -21,7 +21,7 @@ set(CMAKE_DEPENDS_CHECK_ASM
   "/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S" "/Users/ww/src/phase-box/firmware/build/CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o"
   "/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S" "/Users/ww/src/phase-box/firmware/build/CMakeFiles/phase_box_firmware.dir/Users/ww/src/pico-sdk/src/rp2_common/pico_platform_panic/custom_panic_function.S.o"
   )
-set(CMAKE_ASM_COMPILER_ID "AppleClang")
+set(CMAKE_ASM_COMPILER_ID "GNU")
 
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_ASM
@@ -87,6 +87,7 @@ set(CMAKE_TARGET_DEFINITIONS_ASM
   "PICO_RP2040=1"
   "PICO_RP2040_USB_DEVICE_UFRAME_FIX=1"
   [[PICO_TARGET_NAME="phase_box_firmware"]]
+  "PICO_THREAD_LOCAL_EMUTLS_CONFIRMED=1"
   "PICO_THREAD_LOCAL_MODE_PER_THREAD=1"
   "PICO_USE_BLOCKED_RAM=0"
   "PICO_XIP_RAM=0"
