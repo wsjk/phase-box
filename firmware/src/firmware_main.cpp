@@ -6,12 +6,11 @@
 #include "MacroEngine.hpp"
 #include "PhaseBoxState.hpp"
 #include "PresetManager.hpp"
+#include "screensaver.hpp"
 
-// Core 1 background worker: handles non-blocking UI/OLED tasks
+// Core 1 background worker: handles non-blocking UI/OLED tasks and burn-in protection
 void core1_entry() {
-    while (true) {
-        tight_loop_contents();
-    }
+    core1_ui_loop();
 }
 
 void send_usb_midi_cc(uint8_t channel, uint8_t cc, uint8_t value) {

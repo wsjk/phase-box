@@ -8,6 +8,7 @@ pico_sdk_init()
 add_executable(phase_box_firmware
     src/firmware_main.cpp
     src/usb_descriptors.c
+    src/screensaver.cpp
     ../src/PhaseOscillator.cpp
 )
 
