@@ -14,10 +14,10 @@ void HalDisplay::init(uint8_t sda_pin, uint8_t scl_pin) {
 
 void HalDisplay::clear() {
     buffer_.fill(0);
-    render_count_++;
 }
 
 void HalDisplay::render() {
+    render_count_++;
     // Host mock render or I2C transfer
 }
 

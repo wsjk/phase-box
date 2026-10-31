@@ -1,8 +1,10 @@
 build-native/
 build-host/
 build-pico/
+firmware/build/*
 docs/.DS_Store
 .DS_Store
 generate_*.py
 build-pico/
 build-host/
+build-test
