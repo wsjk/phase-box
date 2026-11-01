@@ -38,10 +38,11 @@ public:
             }
             case Waveform::Triangle: {
                 uint32_t top = phase_ >> 24;
+                // top is 0..255; rise 0->127 then fall 127->0 (MIDI data range is 0..127)
                 if (top < 128) {
-                    return static_cast<uint8_t>(top * 2);
+                    return static_cast<uint8_t>(top);
                 } else {
-                    return static_cast<uint8_t>((255 - top) * 2);
+                    return static_cast<uint8_t>(255 - top);
                 }
             }
             case Waveform::Square: {

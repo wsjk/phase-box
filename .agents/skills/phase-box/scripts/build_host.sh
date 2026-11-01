@@ -6,11 +6,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
 cd "${REPO_ROOT}"
 
-echo "==> Configuring Host Tests (macOS / GoogleTest)..."
-/Applications/CMake.app/Contents/bin/cmake -B build-host -DBUILD_HOST_TESTS=ON
+CMAKE="${CMAKE:-cmake}"
 
-echo "==> Building Host Tests..."
-/Applications/CMake.app/Contents/bin/cmake --build build-host -j4
+echo "==> Configuring host tests (GoogleTest is fetched on first configure; needs network)..."
+"${CMAKE}" -S tests -B build-host -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
-echo "==> Running Host Unit Tests..."
-./build-host/tests/run_host_tests
+echo "==> Building host tests..."
+"${CMAKE}" --build build-host -j4
+
+echo "==> Running host unit tests..."
+./build-host/run_host_tests

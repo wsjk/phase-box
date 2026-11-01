@@ -37,9 +37,9 @@ Use for fast simulation, math verification, and regression testing without hardw
 ./.agents/skills/phase-box/scripts/build_host.sh
 
 # Or manual execution:
-/Applications/CMake.app/Contents/bin/cmake -B build-host -DBUILD_HOST_TESTS=ON
-/Applications/CMake.app/Contents/bin/cmake --build build-host -j4
-./build-host/tests/run_host_tests
+cmake -S tests -B build-host -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+cmake --build build-host -j4
+./build-host/run_host_tests
 ```
 
 ### 2. RP2040 Target Firmware Build (`.uf2`)
@@ -51,13 +51,13 @@ Use for cross-compiling the deployable firmware for Raspberry Pi Pico.
 ./.agents/skills/phase-box/scripts/build_pico.sh
 
 # Or manual execution:
-export PATH="/Applications/CMake.app/Contents/bin:/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin:$PATH"
-cmake -B build-pico -DBUILD_HOST_TESTS=OFF -DPICO_SDK_PATH=/Users/ww/tools/pico-sdk
-cmake --build build-pico -j4
+export PICO_SDK_PATH=/path/to/pico-sdk   # and make arm-none-eabi-gcc available on PATH
+cmake -S firmware -B firmware/build -DPICO_SDK_PATH="$PICO_SDK_PATH"
+cmake --build firmware/build -j4
 ```
-Output artifacts in `build-pico/`:
-* `phase_box.uf2`: Ready for drag-and-drop USB flashing.
-* `phase_box.elf`: For Picoprobe/GDB debugging.
+Output artifacts in `firmware/build/`:
+* `phase_box_firmware.uf2`: Ready for drag-and-drop USB flashing.
+* `phase_box_firmware.elf`: For Picoprobe/GDB debugging.
 
 ---
 
@@ -86,7 +86,7 @@ See detailed notes in [Architecture Reference](./references/architecture.md).
 All roadmap phases from the Handover Document and ADR are fully implemented and verified:
 
 * **Step 1 (Fix Assertions)**: Vector index access in tests resolved.
-* **Step 2 (Host Test Harness)**: GoogleTest suite established with 24 passing unit tests across 8 suites.
+* **Step 2 (Host Test Harness)**: GoogleTest suite with 41 unit tests (20 original + 21 regression tests in `tests/test_regressions.cpp` and `tests/test_hal_interfaces.cpp`).
 * **Step 3 (Core 0 Real-Time Engine)**: 1000 Hz hardware repeating timer interrupt, 4-channel LFO calculation, UART MIDI at 31250 baud on GP0, 24 PPQN external MIDI clock fallback, and tap tempo / phase reset.
 * **Step 4 (Core 1 UI & Drivers)**: SSD1306 128x32 OLED driver at 1 MHz I2C, 4-state rotary menu machine (Telemetry, Param Edit, Hold-to-Save, Tap Sync), and SPI NOR flash preset storage.
 * **Macro Engine & ADC**: GP26 analog expression pedal reading, bipolar weighted matrix scaling across channels, and nested LFO cross-modulation.

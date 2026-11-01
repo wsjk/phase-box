@@ -12,23 +12,23 @@ namespace phasebox::hal {
 class PicoHalGpio : public HalGpio {
 public:
     // Default GPIO pin mapping on RP2040
-    static constexpr uint PIN_ENC_A = 2;
-    static constexpr uint PIN_ENC_B = 3;
-    static constexpr uint PIN_ENC_SW = 6;
-    static constexpr uint PIN_FS_TAP = 10;
-    static constexpr uint PIN_FS_MUT = 11;
+    static constexpr unsigned PIN_ENC_A = 2;
+    static constexpr unsigned PIN_ENC_B = 3;
+    static constexpr unsigned PIN_ENC_SW = 6;
+    static constexpr unsigned PIN_FS_TAP = 10;
+    static constexpr unsigned PIN_FS_MUT = 11;
 
 #if defined(PHASEBOX_PICO_GPIO_AVAILABLE)
-    PicoHalGpio(uint pin_enc_a = PIN_ENC_A, uint pin_enc_b = PIN_ENC_B,
-                uint pin_enc_sw = PIN_ENC_SW, uint pin_fs_tap = PIN_FS_TAP,
-                uint pin_fs_mut = PIN_FS_MUT)
+    PicoHalGpio(unsigned pin_enc_a = PIN_ENC_A, unsigned pin_enc_b = PIN_ENC_B,
+                unsigned pin_enc_sw = PIN_ENC_SW, unsigned pin_fs_tap = PIN_FS_TAP,
+                unsigned pin_fs_mut = PIN_FS_MUT)
         : pin_enc_a_(pin_enc_a), pin_enc_b_(pin_enc_b), pin_enc_sw_(pin_enc_sw),
           pin_fs_tap_(pin_fs_tap), pin_fs_mut_(pin_fs_mut) {}
 
     void init() {
         // Configure tactile buttons & encoder switch with pull-ups (active low)
-        uint pins[] = {pin_enc_a_, pin_enc_b_, pin_enc_sw_, pin_fs_tap_, pin_fs_mut_};
-        for (uint p : pins) {
+        unsigned pins[] = {pin_enc_a_, pin_enc_b_, pin_enc_sw_, pin_fs_tap_, pin_fs_mut_};
+        for (unsigned p : pins) {
             gpio_init(p);
             gpio_set_dir(p, GPIO_IN);
             gpio_pull_up(p);
@@ -66,11 +66,11 @@ public:
     }
 
 private:
-    uint pin_enc_a_;
-    uint pin_enc_b_;
-    uint pin_enc_sw_;
-    uint pin_fs_tap_;
-    uint pin_fs_mut_;
+    unsigned pin_enc_a_;
+    unsigned pin_enc_b_;
+    unsigned pin_enc_sw_;
+    unsigned pin_fs_tap_;
+    unsigned pin_fs_mut_;
     bool last_state_a_{true};
 
 #else

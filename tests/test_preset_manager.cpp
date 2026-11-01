@@ -11,6 +11,7 @@ TEST(PresetManagerTest, SlotValidation) {
     EXPECT_FALSE(pm.save_preset(0, patch)); // Slot 0 invalid
     EXPECT_FALSE(pm.save_preset(9, patch)); // Slot 9 invalid
     EXPECT_TRUE(pm.save_preset(1, patch));  // Slot 1 valid
+    std::remove("patch1.bin");
 }
 
 TEST(PresetManagerTest, SaveAndLoadPresetCycle) {

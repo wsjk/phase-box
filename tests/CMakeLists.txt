@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -17,16 +20,20 @@ add_executable(run_host_tests
     test_hal_encoder.cpp
     test_hal_display.cpp
     test_preset_manager.cpp
+    test_regressions.cpp
+    test_hal_interfaces.cpp
     ../src/hal/hal_adc.cpp
     ../src/hal/hal_encoder.cpp
     ../src/hal/hal_display.cpp
     ../src/storage/preset_manager.cpp
+    ../src/ui/ui_controller.cpp
+    ../src/PhaseOscillator.cpp
 )
 
 # Enable host-build simulation code in headers/sources
 target_compile_definitions(run_host_tests PRIVATE HOST_BUILD)
 
-target_include_directories(run_host_tests PRIVATE ../include)
+target_include_directories(run_host_tests PRIVATE ../include ../firmware/include)
 target_link_libraries(run_host_tests gtest_main)
 
 include(GoogleTest)

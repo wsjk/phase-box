@@ -8,3 +8,6 @@ generate_*.py
 build-pico/
 build-host/
 build-test
+# files written by tests / presets
+patch*.bin
+preset_*.bin

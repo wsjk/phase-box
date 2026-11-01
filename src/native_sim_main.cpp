@@ -49,13 +49,14 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state, int act
     const int start_x = 4;
     const int start_y = 16;
 
+    TuringMachine turing_preview = state.turing; // preview must not advance the real register
     std::vector<Vector2> points;
     for (int x = 0; x < wave_width; ++x) {
         float sample_offset = (static_cast<float>(x) / wave_width) * 2.0f * static_cast<float>(M_PI);
         float cc_val = state.osc.evaluateCC(sample_offset, state.adc_expression);
         
         if (state.turing.mutation_prob > 0.0f) {
-            float turing_norm = static_cast<float>(state.turing.step() % 128) / 127.0f;
+            float turing_norm = static_cast<float>(turing_preview.step() % 128) / 127.0f;
             cc_val = (1.0f - state.turing.mutation_prob) * cc_val + state.turing.mutation_prob * turing_norm;
         }
 
@@ -105,14 +106,8 @@ int main() {
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
-        if (IsKeyPressed(KEY_E)) {
-            state.button_state = !state.button_state;
-            if (state.button_state) state.active_page = (state.active_page + 1) % 9;
-        }
-        if (IsKeyPressed(KEY_Q)) {
-            state.button_state = !state.button_state;
-            state.active_page = (state.active_page - 1 + 9) % 9;
-        }
+        if (IsKeyPressed(KEY_E)) state.active_page = (state.active_page + 1) % 9;
+        if (IsKeyPressed(KEY_Q)) state.active_page = (state.active_page - 1 + 9) % 9;
 
         bool inc = IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP);
         bool dec = IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN);

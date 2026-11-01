@@ -113,13 +113,13 @@ namespace font5x7 {
     };
 }
 
-class PicoHalDisplay : public HalDisplay {
+class PicoHalDisplay : public DisplayInterface {
 public:
     static constexpr uint8_t DEFAULT_I2C_ADDR = 0x3C;
     static constexpr uint32_t I2C_SPEED_FAST_PLUS = 1000000; // 1 MHz Fast-Mode Plus
 
 #if defined(PHASEBOX_PICO_I2C_AVAILABLE)
-    PicoHalDisplay(i2c_inst_t* i2c = i2c0, uint sda_pin = 4, uint scl_pin = 5,
+    PicoHalDisplay(i2c_inst_t* i2c = i2c0, unsigned sda_pin = 4, unsigned scl_pin = 5,
                    uint8_t addr = DEFAULT_I2C_ADDR, uint16_t width = 128, uint16_t height = 32)
         : i2c_(i2c), sda_pin_(sda_pin), scl_pin_(scl_pin), addr_(addr), width_(width), height_(height) {
         buffer_size_ = width_ * (height_ / 8);
@@ -236,8 +236,8 @@ private:
     }
 
     i2c_inst_t* i2c_;
-    uint sda_pin_;
-    uint scl_pin_;
+    unsigned sda_pin_;
+    unsigned scl_pin_;
     uint8_t addr_;
     uint16_t width_;
     uint16_t height_;

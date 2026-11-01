@@ -30,6 +30,7 @@ int main() {
     multicore_launch_core1(core1_entry);
 
     PhaseBoxState state;
+    state.turing.seed(time_us_32()); // different generative sequence each boot
     
     // Attempt to load default preset slot 1 on boot
     if (!PresetManager::loadPreset(1, state)) {

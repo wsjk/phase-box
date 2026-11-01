@@ -2,6 +2,7 @@
 #define PHASEBOX_HAL_ENCODER_HPP
 
 #include <cstdint>
+#include "hal/pinout.hpp"
 
 namespace phasebox::hal {
 
@@ -12,7 +13,7 @@ public:
     /**
      * @brief Initialize GPIO pins for rotary encoder (Phase A, Phase B, Switch).
      */
-    void init(uint8_t pin_a = 2, uint8_t pin_b = 3, uint8_t pin_sw = 4);
+    void init(uint8_t pin_a = pins::ENC_A, uint8_t pin_b = pins::ENC_B, uint8_t pin_sw = pins::ENC_SW);
 
     /**
      * @brief Poll encoder hardware or update state.
@@ -52,9 +53,9 @@ public:
 #endif
 
 private:
-    uint8_t pin_a_{2};
-    uint8_t pin_b_{3};
-    uint8_t pin_sw_{4};
+    uint8_t pin_a_{pins::ENC_A};
+    uint8_t pin_b_{pins::ENC_B};
+    uint8_t pin_sw_{pins::ENC_SW};
 
     int delta_accum_{0};
     bool button_pressed_{false};

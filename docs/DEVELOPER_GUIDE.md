@@ -1,5 +1,12 @@
 # Phase Box: Developer Architecture & C++ Engineering Guide
 
+> **Implementation status (read first).** The repository currently contains two parallel code stacks:
+> the *legacy flat stack* (`PhaseOscillator`, `PhaseBoxState`, `MacroEngine.hpp`, `firmware/`, the native simulator), which is what the firmware and simulator actually build, and
+> the *layered stack* (`core/`, `hal/`, `ui/`, `storage/`, `src/main.cpp`), which is covered by the host tests but is not built into the firmware (`src/main.cpp` is in no CMake target).
+> The pipeline diagram below mixes both. `Core0Task`, `Core1Task` and the `Mock*` / `Pico*` ADC and display headers now compile on the host (they use the small `AdcInput` / `DisplayInterface` interfaces; `HalAdc` and `HalDisplay` stay concrete for the unit tests), but the layered stack is still not wired into the firmware build.
+> Persistence is `fopen`-based (no LittleFS is linked), and `PicoHalFlash` writes need multicore lockout before they are safe alongside Core 0.
+
+
 This document is the comprehensive architectural specification and developer guide for the **Phase Box** firmware. It details the internal signal flow, dual-core operational model, and code layout.
 
 > [!TIP]
@@ -68,12 +75,12 @@ flowchart TD
    Phase is tracked in a 32-bit unsigned integer (`uint32_t phase_`). Overflows automatically wrap around $2\pi$ seamlessly without expensive modulo math.
 
 2. **Waveform Synthesis:**
-   - **Sine:** Evaluated using a 256-entry precomputed lookup table ([LUT](file:///Users/ww/src/phase-box/include/core/phase_lfo.hpp#L90-L96)) with fixed 8-bit quantization.
+   - **Sine:** Evaluated using a 256-entry precomputed lookup table ([LUT](../include/core/phase_lfo.hpp#L90-L96)) with fixed 8-bit quantization.
    - **Sawtooth / Triangle / Square:** Evaluated directly via bit shifts and linear normalization.
    - **Phase Modulation (PM):** Modulates the lookup index by an offset: $\theta_{effective} = \theta + \text{depth} \cdot \sin(2\theta)$.
 
 3. **Turing Mutation Shift Register:**
-   A 16-bit Galois Linear Feedback Shift Register ([LFSR](file:///Users/ww/src/phase-box/include/TuringMachine.hpp#L20-L30)). On every complete cycle of the master phase accumulator, the top bit is fed back into bit 0. With probability $P_{\text{mutation}}$, the bit is inverted.
+   A 16-bit recirculating shift register ([Turing machine](../include/TuringMachine.hpp#L20-L30)). On every complete cycle of the master phase accumulator, the top bit is fed back into bit 0. With probability $P_{\text{mutation}}$, the bit is inverted.
 
 4. **Polyrhythmic Macro Destination Evaluation:**
    Each destination tracks an effective phase:
@@ -241,7 +248,7 @@ register_bits = (register_bits << 1) | feedback_bit;
 
 ### Recipe 1: Adding a New Waveform Shape
 
-1. **Add Enum Value:** In [include/core/phase_lfo.hpp](file:///Users/ww/src/phase-box/include/core/phase_lfo.hpp#L8-L14), add your new waveform to the `Waveform` enum:
+1. **Add Enum Value:** In [include/core/phase_lfo.hpp](../include/core/phase_lfo.hpp#L8-L14), add your new waveform to the `Waveform` enum:
    ```cpp
    enum class Waveform {
        Sine,
@@ -261,17 +268,17 @@ register_bits = (register_bits << 1) | feedback_bit;
    }
    ```
 
-3. **Expose in UI:** In [include/PhaseOscillator.hpp](file:///Users/ww/src/phase-box/include/PhaseOscillator.hpp) and the OLED display strings in [native_sim_main.cpp](file:///Users/ww/src/phase-box/src/native_sim_main.cpp#L71), add the name label `"EXP"` to the waveform list.
+3. **Expose in UI:** In [include/PhaseOscillator.hpp](../include/PhaseOscillator.hpp) and the OLED display strings in [native_sim_main.cpp](../src/native_sim_main.cpp#L71), add the name label `"EXP"` to the waveform list.
 
 ---
 
 ### Recipe 2: Adjusting Hardware Pinout
 
 Hardware pin mappings are defined in the HAL headers and drivers. To change a pin, update the corresponding default argument or constant:
-* **MIDI TX/RX:** [include/hal/pico_hal_midi.hpp](file:///Users/ww/src/phase-box/include/hal/pico_hal_midi.hpp) (Default: GP0 TX, GP1 RX).
-* **Rotary Encoder:** [src/main.cpp](file:///Users/ww/src/phase-box/src/main.cpp#L106) (Default: GP2 A, GP3 B, GP6 Pushbutton).
-* **OLED I2C:** [firmware/src/screensaver.cpp](file:///Users/ww/src/phase-box/firmware/src/screensaver.cpp#L10-L16) (Default: GP4 SDA, GP5 SCL on `i2c0`).
-* **Expression ADC:** [src/main.cpp](file:///Users/ww/src/phase-box/src/main.cpp#L74) (Default: GP26 / ADC0).
+* **MIDI TX/RX:** [include/hal/pico_hal_midi.hpp](../include/hal/pico_hal_midi.hpp) (Default: GP0 TX, GP1 RX).
+* **Rotary Encoder:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP2 A, GP3 B, GP6 Pushbutton).
+* **OLED I2C:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) for the layered stack and [firmware/src/screensaver.cpp](../firmware/src/screensaver.cpp#L10-L16) for the firmware build (Default: GP4 SDA, GP5 SCL on `i2c0`). Keep both in sync.
+* **Expression ADC:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP26 / ADC0).
 
 ---
 

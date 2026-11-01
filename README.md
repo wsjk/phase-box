@@ -10,9 +10,9 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 
 ## 📚 Documentation Quick Links
 
-* 📖 **[User Guide & Operating Manual](file:///Users/ww/src/phase-box/docs/USER_GUIDE.md)**: Hardware controls, menu pages, tap tempo, footswitches, expression pedal, screensaver, and desktop simulator guide.
-* 🛠️ **[Developer & Architecture Guide](file:///Users/ww/src/phase-box/docs/DEVELOPER_GUIDE.md)**: Dual-core architecture, signal flow diagrams, **"C++ Crash Course for Python Programmers"**, and step-by-step contribution recipes.
-* 📐 **[Context Handover Blueprint](file:///Users/ww/src/phase-box/docs/phase_box_context_handover_blueprint.md)**: Complete implementation state and execution phases.
+* 📖 **[User Guide & Operating Manual](docs/USER_GUIDE.md)**: Hardware controls, menu pages, tap tempo, footswitches, expression pedal, screensaver, and desktop simulator guide.
+* 🛠️ **[Developer & Architecture Guide](docs/DEVELOPER_GUIDE.md)**: Dual-core architecture, signal flow diagrams, **"C++ Crash Course for Python Programmers"**, and step-by-step contribution recipes.
+* 📐 **[Context Handover Blueprint](docs/phase_box_context_handover_blueprint.md)**: Complete implementation state and execution phases.
 
 ---
 
@@ -25,7 +25,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 - **Bipolar Expression Scaling:** Full expression pedal integration with EMA smoothing and deadband clamping.
 - **Dual MIDI Output:** Hardware serial MIDI (31,250 baud on GP0) and plug-and-play USB-MIDI class compliance (TinyUSB).
 - **Desktop Simulator:** Native Raylib desktop visualizer connecting directly to macOS `CoreMIDI`.
-- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with 100% passing GoogleTest host test suite.
+- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 41 tests).
 
 ---
 

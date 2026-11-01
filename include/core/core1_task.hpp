@@ -22,24 +22,34 @@ class Core1Task {
 public:
     static constexpr uint32_t RENDER_INTERVAL_US = 33333; // ~30 FPS (33.3 ms)
 
+    /// Called at ~30 FPS to draw the current UI state (set by main; no heap, no std::function).
+    using RenderFn = void (*)(void* ctx, uint32_t time_us);
+
     Core1Task(ui::UIController& ui_controller, hal::HalGpio& gpio)
         : ui_controller_(ui_controller), gpio_(gpio) {}
 
+    void set_render_callback(RenderFn fn, void* ctx) {
+        render_fn_ = fn;
+        render_ctx_ = ctx;
+    }
+
     void step(uint32_t current_time_us) {
+        // The tap-tempo footswitch is owned by Core0Task (real-time side); handling it here
+        // as well would apply every tap twice, from two cores.
         int32_t delta = gpio_.read_encoder_delta();
         bool enc_btn = gpio_.read_button(hal::ButtonId::EncoderSwitch);
-        bool tap_btn = gpio_.read_button(hal::ButtonId::FootswitchTapMode);
 
-        if (tap_btn && !last_tap_button_) {
-            ui_controller_.trigger_clock_sync_event(current_time_us);
+        if (delta != 0) {
+            ui_controller_.handle_encoder_turn(delta, current_time_us);
         }
-        last_tap_button_ = tap_btn;
-
-        ui_controller_.handle_input(delta, enc_btn, current_time_us);
+        if (enc_btn && !last_enc_button_) {
+            ui_controller_.handle_encoder_click();
+        }
+        last_enc_button_ = enc_btn;
 
         // Throttle OLED rendering to 30 FPS (render first frame immediately on boot)
         if (!has_rendered_ || (current_time_us - last_render_time_us_ >= RENDER_INTERVAL_US)) {
-            ui_controller_.render(current_time_us);
+            if (render_fn_ != nullptr) render_fn_(render_ctx_, current_time_us);
             last_render_time_us_ = current_time_us;
             has_rendered_ = true;
             render_count_++;
@@ -69,7 +79,9 @@ private:
     ui::UIController& ui_controller_;
     hal::HalGpio& gpio_;
 
-    bool last_tap_button_{false};
+    bool last_enc_button_{false};
+    RenderFn render_fn_{nullptr};
+    void* render_ctx_{nullptr};
     bool has_rendered_{false};
     uint32_t last_render_time_us_{0};
     uint32_t step_count_{0};

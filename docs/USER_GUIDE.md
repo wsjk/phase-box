@@ -1,5 +1,14 @@
 # Phase Box: User Guide & Operating Manual
 
+> **Implementation status (read first).** This guide describes the intended design. Not implemented yet:
+> P4 `CHAN` / P5 `CC` change values that are not used for output (MIDI uses each macro destination's own channel and CC);
+> P10 `MAC DIV` does not exist (clock multipliers cannot be edited from any UI);
+> Turing mutation only affects the simulator's waveform preview and is not sent as MIDI;
+> hold-to-save, auto-save and the `SAVED` confirmation are not implemented;
+> the firmware build does not yet wire up the OLED menu, encoder, footswitches or expression-pedal ADC.
+> The simulator sends MIDI only on macOS (CoreMIDI); on Linux/Windows it runs without MIDI output.
+
+
 Welcome to the **Phase Box** operating manual. Phase Box is a dedicated hardware modulation synthesizer powered by the Raspberry Pi RP2040 microcontroller. It translates complex algorithmic waveforms, generative shift registers, and polyrhythmic macro scaling into real-time MIDI Control Change (CC) data streams for video synthesizers (such as LZX Industries, Auto Waaaves, and r_e_c_u_r), audio synthesizers, and Digital Audio Workstations (DAWs).
 
 ---

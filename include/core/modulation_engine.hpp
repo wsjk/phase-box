@@ -5,7 +5,6 @@
 #include "core/midi_router.hpp"
 #include "core/macro_engine.hpp"
 #include <array>
-#include <vector>
 #include <algorithm>
 
 namespace phasebox::core {
@@ -20,13 +19,13 @@ public:
                 cross_mod_[i][j] = 0.0f;
             }
         }
+        // LFOs start at the clock's BPM instead of frozen at 0 Hz.
+        apply_bpm(clock_manager_.get_bpm());
     }
 
     void set_bpm(float bpm) {
         clock_manager_.set_bpm(bpm);
-        for (auto& lfo : lfos_) {
-            lfo.set_frequency(bpm / 60.0f);
-        }
+        apply_bpm(clock_manager_.get_bpm());
     }
 
     float get_bpm() const { return clock_manager_.get_bpm(); }
@@ -73,8 +72,18 @@ public:
         return 0.0f;
     }
 
-    std::vector<MidiMessage> tick(uint32_t current_time_us) {
+    /**
+     * @brief Advance all LFOs one step and return one CC message per LFO.
+     * Returns a fixed-size array (no heap allocation) so it is safe in a timer ISR.
+     */
+    std::array<MidiMessage, 4> tick(uint32_t current_time_us) {
         clock_manager_.update(current_time_us);
+
+        // Tap tempo / external MIDI clock only change ClockManager's BPM;
+        // propagate it to the LFO increments whenever it differs.
+        if (clock_manager_.get_bpm() != applied_bpm_) {
+            apply_bpm(clock_manager_.get_bpm());
+        }
 
         // 1. Sample raw LFO outputs
         std::array<uint8_t, 4> raw_vals;
@@ -101,18 +110,25 @@ public:
         }
 
         // 3. Apply expression macro scaling and generate MIDI messages
-        std::vector<MidiMessage> messages;
-        messages.reserve(4);
+        std::array<MidiMessage, 4> messages{};
 
         for (size_t i = 0; i < lfos_.size(); ++i) {
             uint8_t scaled_val = macro_engine_.apply(static_cast<uint8_t>(i), nested_vals[i]);
-            messages.push_back(router_.generate_cc_message(static_cast<uint8_t>(i), scaled_val));
+            messages[i] = router_.generate_cc_message(static_cast<uint8_t>(i), scaled_val);
         }
 
         return messages;
     }
 
 private:
+    void apply_bpm(float bpm) {
+        applied_bpm_ = bpm;
+        for (auto& lfo : lfos_) {
+            lfo.set_frequency(bpm / 60.0f);
+        }
+    }
+
+    float applied_bpm_{0.0f};
     std::array<PhaseLFO, 4> lfos_;
     ClockManager clock_manager_;
     MidiRouter router_;

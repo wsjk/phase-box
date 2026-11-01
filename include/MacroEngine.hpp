@@ -48,12 +48,42 @@ public:
         return messages;
     }
 
+    /// Zero the destination phase accumulators (call alongside a master phase reset / tap).
+    void reset_phases() {
+        dest_phases_.clear();
+        have_last_master_ = false;
+    }
+
     std::vector<EvaluatedMIDI> evaluate(float master_phase, float dt, float expression) {
         (void)dt;
+        const float two_pi = 2.0f * static_cast<float>(M_PI);
+
+        // Each destination integrates the master's forward motion scaled by its clock_mult,
+        // so 0.5x really takes two master cycles and 0.75x has no jump at the master wrap.
+        if (dest_phases_.size() != destinations.size()) {
+            dest_phases_.assign(destinations.size(), 0.0f);
+            have_last_master_ = false;
+        }
+        float delta = 0.0f;
+        if (have_last_master_) {
+            delta = std::fmod(master_phase - last_master_phase_, two_pi);
+            if (delta < 0.0f) delta += two_pi;
+        }
+        for (size_t i = 0; i < destinations.size(); ++i) {
+            float p = have_last_master_
+                ? dest_phases_[i] + delta * destinations[i].clock_mult
+                : master_phase * destinations[i].clock_mult;
+            p = std::fmod(p, two_pi);
+            if (p < 0.0f) p += two_pi;
+            dest_phases_[i] = p;
+        }
+        last_master_phase_ = master_phase;
+        have_last_master_ = true;
+
         std::vector<EvaluatedMIDI> messages;
-        for (const auto& dest : destinations) {
-            float dest_phase = std::fmod(master_phase * dest.clock_mult, 2.0f * static_cast<float>(M_PI));
-            if (dest_phase < 0.0f) dest_phase += 2.0f * static_cast<float>(M_PI);
+        for (size_t i = 0; i < destinations.size(); ++i) {
+            const auto& dest = destinations[i];
+            float dest_phase = dest_phases_[i];
 
             float norm_lfo = (std::sin(dest_phase) * 0.5f) + 0.5f;
             float scaled = (norm_lfo * dest.scale * (0.5f + 0.5f * expression)) + dest.offset;
@@ -64,4 +94,9 @@ public:
         }
         return messages;
     }
+
+private:
+    std::vector<float> dest_phases_;
+    float last_master_phase_ = 0.0f;
+    bool have_last_master_ = false;
 };
