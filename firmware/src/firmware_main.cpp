@@ -6,6 +6,7 @@
 #include "MacroEngine.hpp"
 #include "PhaseBoxState.hpp"
 #include "PresetManager.hpp"
+#include "PresetSession.hpp"
 #include "screensaver.hpp"
 
 // Core 1 background worker: handles non-blocking UI/OLED tasks and burn-in protection
@@ -32,17 +33,15 @@ int main() {
     PhaseBoxState state;
     state.turing.seed(time_us_32()); // different generative sequence each boot
     
-    // Attempt to load default preset slot 1 on boot
-    if (!PresetManager::loadPreset(1, state)) {
-        // Fallback default save if no preset exists yet
-        PresetManager::savePreset(1, state);
-    }
+    // Presets: restore slot 1 on boot, auto-save 2 s after the last change (see PresetSession).
+    // NOTE: FilePresetStorage needs a filesystem, which the RP2040 build does not have yet, so nothing
+    // persists on the device until a flash-backed PresetStorage is plugged in here.
+    FilePresetStorage preset_storage;
+    PresetSession presets(preset_storage);
+    presets.load(state, to_ms_since_boot(get_absolute_time()));
 
     absolute_time_t next_frame = get_absolute_time();
     const uint32_t dt_us = 16667;
-    
-    uint32_t auto_save_counter = 0;
-    bool is_dirty = false;
 
     while (true) {
         tud_task();
@@ -56,15 +55,8 @@ int main() {
             }
         }
 
-        // Background auto-save dirty state watcher (commits 2s after last tweak)
-        if (is_dirty) {
-            auto_save_counter++;
-            if (auto_save_counter > 120) { // ~2 seconds at 60Hz
-                PresetManager::savePreset(1, state);
-                is_dirty = false;
-                auto_save_counter = 0;
-            }
-        }
+        // Auto-save watcher: any change to a saved setting restarts a 2 s timer, then it writes.
+        presets.update(state, to_ms_since_boot(get_absolute_time()));
 
         next_frame = delayed_by_us(next_frame, dt_us);
         sleep_until(next_frame);

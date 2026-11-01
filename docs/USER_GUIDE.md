@@ -2,7 +2,7 @@
 
 > **Implementation status (read first).** This guide describes the intended design. Current limitations:
 > the OLED pages, encoder and footswitches exist only in the desktop simulator (pages P1–P11 all change the MIDI it sends; the firmware loop shares the same engine but has no menu yet);
-> hold-to-save, auto-save and the `SAVED` confirmation are not implemented;
+> auto-save, hold-to-save, the `SAVED` confirmation and restore-on-start all work in the simulator (settings are files); the RP2040 firmware has no flash-backed storage plugged in yet, so nothing is kept across power cycles on the device;
 > the firmware build does not yet wire up the OLED menu, encoder, footswitches or expression-pedal ADC.
 > The simulator sends MIDI only on macOS (CoreMIDI); on Linux/Windows it runs without MIDI output.
 
@@ -108,9 +108,13 @@ To protect OLED displays during long stage performances or static studio session
 - Touching or turning any control **instantly wakes** the display back to full operational brightness (`0xCF`) with zero latency.
 
 ### 3.5 Auto-Save & Preset Persistence
-- **Automatic Background Save:** Whenever you tweak any parameter, an internal "dirty-state" timer begins. If no further adjustments are made for **2 seconds**, Phase Box silently writes your current configuration to flash storage.
-- **Manual Save:** Press and hold the encoder button for 1 second until the screen confirms `SAVED`.
-- Settings automatically restore on power-up.
+- **Automatic Background Save:** Whenever you tweak any saved parameter, an internal "dirty-state" timer begins. If no further adjustments are made for **2 seconds**, Phase Box silently writes your current configuration to the current preset slot. Anything that is not part of a preset (the page you are on, the pedal position, the running phase) never triggers a save.
+- **Manual Save:** Press and hold the encoder button for 1 second until the screen confirms `SAVED` (a bar fills along the divider while you hold). A shorter press is an ordinary short press and saves nothing.
+- Settings automatically restore on power-up, silently.
+- **Unsaved marker:** the top-right of the screen shows the slot, for example `S1`, and `S1*` while there are changes that have not been written yet.
+- **Slots 1–8:** `[` and `]` in the simulator. Switching first saves any pending edits to the slot you are leaving, then loads the new one (`LOADED`). An empty slot (`EMPTY`) keeps your current settings and writes nothing until you change something or hold-save, so browsing empty slots never creates files.
+- **If a save fails** the screen shows `SAVE FAILED`; auto-save then waits 10 seconds before retrying, and a manual hold-save always tries immediately. A damaged preset file shows `BAD PRESET` and is ignored.
+- **Simulator files:** presets are stored as `preset_1.bin` … `preset_8.bin` in the current directory, or in `$PHASE_BOX_PRESET_DIR` if set.
 
 ---
 
@@ -133,6 +137,8 @@ If you do not have physical hardware in front of you, Phase Box includes a real-
 | **`[S]` or `[Down Arrow]`** | Decrease Current Parameter Value |
 | **`[T]` or `[Space]`** | Tap Tempo |
 | **`[M]`** | Step the Turing machine now (Mutate footswitch) |
+| **`[Enter]`** (hold 1 s) | Save the current settings (`SAVED`) |
+| **`[`** / **`]`** | Previous / next preset slot (1–8) |
 | **`[1]`** | Simulate Expression Pedal at 0% (Heel down) |
 | **`[2]`** | Simulate Expression Pedal at 50% (Midway) |
 | **`[3]`** | Simulate Expression Pedal at 100% (Toe down) |

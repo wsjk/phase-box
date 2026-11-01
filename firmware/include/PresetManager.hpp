@@ -12,6 +12,15 @@
 // (version 3; version 2 files from earlier builds are rejected and defaults are used)
 // Loading validates magic, version, length, CRC and every field's range, and only
 // then commits to the live state (a bad file never half-applies).
+/// Where encoded presets are kept: files on the desktop; a flash backend can implement this for the device.
+class PresetStorage {
+public:
+    virtual ~PresetStorage() = default;
+    virtual bool write(int slot, const uint8_t* data, size_t n) = 0;
+    /// Bytes read into `out`, or 0 if the slot is empty or unreadable.
+    virtual size_t read(int slot, uint8_t* out, size_t cap) = 0;
+};
+
 class PresetManager {
 public:
     // Directory prefix for preset files ("/" on the device filesystem; tests override).
@@ -21,9 +30,11 @@ public:
     static constexpr uint16_t FORMAT_VERSION = 3; // v3 adds turing_mix
     static constexpr uint32_t MAX_MACROS = 16;
 
-    static bool savePreset(int slot, const PhaseBoxState& state) {
-        if (slot < 1 || slot > 99) return false;
-        static uint8_t buf[512];
+    static constexpr size_t MAX_BYTES = 512;
+
+    /// Serialise `state` into `buf` (needs MAX_BYTES of room). Returns the byte count, or 0 on failure.
+    static size_t encode(const PhaseBoxState& state, uint8_t* buf, size_t cap) {
+        if (cap < MAX_BYTES) return 0;
         size_t n = 0;
         put(buf, n, MAGIC);
         put(buf, n, FORMAT_VERSION);
@@ -37,7 +48,7 @@ public:
         put(buf, n, state.turing_mix);
 
         const size_t count = state.macros.destinations.size();
-        if (count > MAX_MACROS) return false;
+        if (count > MAX_MACROS) return 0;
         put(buf, n, static_cast<uint32_t>(count));
         for (const auto& d : state.macros.destinations) {
             put(buf, n, static_cast<int32_t>(d.cc_number));
@@ -47,23 +58,12 @@ public:
             put(buf, n, d.clock_mult);
         }
         put(buf, n, crc32(buf, n));
-
-        FILE* f = fopen(filename(slot).c_str(), "wb");
-        if (!f) return false;
-        bool ok = fwrite(buf, 1, n, f) == n;
-        ok = (fclose(f) == 0) && ok;
-        return ok;
+        return n;
     }
 
-    static bool loadPreset(int slot, PhaseBoxState& state) {
-        if (slot < 1 || slot > 99) return false;
-        static uint8_t buf[512];
-        FILE* f = fopen(filename(slot).c_str(), "rb");
-        if (!f) return false;
-        size_t n = fread(buf, 1, sizeof(buf), f);
-        bool too_big = !feof(f); // file longer than our buffer
-        fclose(f);
-        if (too_big || n < 10) return false;
+    /// Validate `buf` (magic, version, length, CRC, every range) and only then commit it to `state`.
+    static bool decode(const uint8_t* buf, size_t n, PhaseBoxState& state) {
+        if (n < 10) return false;
 
         uint32_t stored_crc;
         std::memcpy(&stored_crc, buf + n - 4, 4);
@@ -117,6 +117,37 @@ public:
         return true;
     }
 
+    static bool savePreset(int slot, const PhaseBoxState& state) {
+        if (slot < 1 || slot > 99) return false;
+        static uint8_t buf[MAX_BYTES];
+        size_t n = encode(state, buf, sizeof(buf));
+        return n != 0 && fileWrite(slot, buf, n);
+    }
+
+    static bool loadPreset(int slot, PhaseBoxState& state) {
+        if (slot < 1 || slot > 99) return false;
+        static uint8_t buf[MAX_BYTES];
+        size_t n = fileRead(slot, buf, sizeof(buf));
+        return n != 0 && decode(buf, n, state);
+    }
+
+    static bool fileWrite(int slot, const uint8_t* data, size_t n) {
+        FILE* f = fopen(filename(slot).c_str(), "wb");
+        if (!f) return false;
+        bool ok = fwrite(data, 1, n, f) == n;
+        ok = (fclose(f) == 0) && ok;
+        return ok;
+    }
+
+    static size_t fileRead(int slot, uint8_t* out, size_t cap) {
+        FILE* f = fopen(filename(slot).c_str(), "rb");
+        if (!f) return 0;
+        size_t n = fread(out, 1, cap, f);
+        bool too_big = !feof(f); // file longer than our buffer
+        fclose(f);
+        return too_big ? 0 : n;
+    }
+
 private:
     static std::string filename(int slot) {
         char tail[32];
@@ -146,4 +177,11 @@ private:
         }
         return ~crc;
     }
+};
+
+/// File-backed storage (desktop simulator and tests); files live under PresetManager::path_prefix.
+class FilePresetStorage : public PresetStorage {
+public:
+    bool write(int slot, const uint8_t* data, size_t n) override { return PresetManager::fileWrite(slot, data, n); }
+    size_t read(int slot, uint8_t* out, size_t cap) override { return PresetManager::fileRead(slot, out, cap); }
 };

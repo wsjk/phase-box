@@ -5,7 +5,7 @@
 > the *layered stack* (`core/`, `hal/`, `ui/`, `storage/`, `src/main.cpp`), which is covered by the host tests but is not built into the firmware (`src/main.cpp` is in no CMake target).
 > The pipeline diagram below mixes both. `Core0Task`, `Core1Task` and the `Mock*` / `Pico*` ADC and display headers now compile on the host (they use the small `AdcInput` / `DisplayInterface` interfaces; `HalAdc` and `HalDisplay` stay concrete for the unit tests), but the layered stack is still not wired into the firmware build.
 > The legacy stack's `PhaseBoxState::advance()` / `evaluateMacros()` are shared by the simulator and the firmware loop: waveform shape, phase offset, PM depth, per-destination clock multiplier, and the Turing blend (`turing_mix`) all reach the MIDI output there. The layered stack (`core/`) has not been given these yet.
-> Persistence is `fopen`-based (no LittleFS is linked), and `PicoHalFlash` writes need multicore lockout before they are safe alongside Core 0.
+> Saving: `PresetSession` (`include/PresetSession.hpp`) owns auto-save (2 s of quiet), hold-to-save (1 s), slots 1–8 and the on-screen status, and takes an explicit millisecond clock so it is unit-tested with a fake clock. It talks to a `PresetStorage` (`FilePresetStorage` for the simulator and tests). The device has no flash-backed `PresetStorage` yet (no LittleFS is linked), and `PicoHalFlash` writes need multicore lockout before they are safe alongside Core 0.
 
 
 This document is the comprehensive architectural specification and developer guide for the **Phase Box** firmware. It details the internal signal flow, dual-core operational model, and code layout.
@@ -127,7 +127,7 @@ phase-box/
 │   ├── src/firmware_main.cpp    # Target firmware main entry
 │   ├── src/screensaver.cpp      # OLED burn-in protection driver
 │   ├── src/usb_descriptors.c    # USB MIDI class-compliant endpoints
-│   └── include/PresetManager.hpp# Flash auto-save serializer
+│   └── include/PresetManager.hpp# Preset encode/decode (validated, CRC) + PresetStorage interface
 ├── tests/                       # GoogleTest Host Unit Tests
 │   ├── CMakeLists.txt           # Standalone test runner build
 │   ├── test_macro_engine.cpp    # Verifies macro scaling & bounding

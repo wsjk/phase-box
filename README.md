@@ -25,7 +25,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 - **Bipolar Expression Scaling:** Full expression pedal integration with EMA smoothing and deadband clamping.
 - **Dual MIDI Output:** Hardware serial MIDI (31,250 baud on GP0) and plug-and-play USB-MIDI class compliance (TinyUSB).
 - **Desktop Simulator:** Native Raylib desktop visualizer connecting directly to macOS `CoreMIDI`.
-- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 56 tests).
+- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 70 tests).
 
 ---
 

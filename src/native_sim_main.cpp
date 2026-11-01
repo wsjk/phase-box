@@ -1,6 +1,8 @@
 #include "raylib.h"
 #include "PhaseBoxState.hpp"
 #include "SimControls.hpp"
+#include "PresetSession.hpp"
+#include <cstdlib>
 #include <vector>
 #include <string>
 #include <chrono>
@@ -35,7 +37,8 @@ void SendMIDIControlChange(int channel, int control, int value) {
 
 // The 128x64 OLED shows exactly what the active destination emits: waveform shape (P1), phase
 // offset (P3), phase modulation (P6), clock multiplier (P10), Turing blend (P11), weight (P9).
-void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, int active_dest) {
+void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, int active_dest,
+                     const PresetSession& session, uint32_t now_ms) {
     BeginTextureMode(oled_target);
     ClearBackground(BLACK);
 
@@ -44,8 +47,11 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, i
     DrawLine(0, 50, 128, 50, WHITE);
 
     std::string header = simui::page_name(state.active_page);
-    header += "  D" + std::to_string(active_dest + 1);
+    header += " D" + std::to_string(active_dest + 1);
     DrawText(header.c_str(), 4, 3, 10, WHITE);
+    // Preset slot, with '*' while there are edits that are not saved yet.
+    std::string slot_tag = "S" + std::to_string(session.slot()) + (session.dirty() ? "*" : "");
+    DrawText(slot_tag.c_str(), 104, 3, 10, WHITE);
 
     const int wave_width = 120;
     const int wave_height = 33;
@@ -67,7 +73,11 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, i
         DrawCircle(start_x + mx, (int)points[mx].y, 2.0f, WHITE);
     }
 
-    std::string footer = simui::footer(state, state.active_page, active_dest);
+    // Hold progress grows along the divider; a save/load message replaces the footer for 1.5 s.
+    float hold = session.hold_progress(now_ms);
+    if (hold > 0.0f) DrawRectangle(0, 49, (int)(128 * hold), 3, WHITE);
+    const char* status = session.status(now_ms);
+    std::string footer = status ? std::string(status) : simui::footer(state, state.active_page, active_dest);
     DrawText(footer.c_str(), 4, 53, 8, WHITE);
 
     EndTextureMode();
@@ -84,6 +94,17 @@ int main() {
     int active_dest = 0;
     std::vector<std::chrono::steady_clock::time_point> tap_times;
 
+    // Presets are files in $PHASE_BOX_PRESET_DIR (default: the current directory): preset_1.bin .. preset_8.bin
+    static std::string preset_dir;
+    const char* env_dir = std::getenv("PHASE_BOX_PRESET_DIR");
+    preset_dir = (env_dir && *env_dir) ? env_dir : "./";
+    if (preset_dir.back() != '/') preset_dir += '/';
+    PresetManager::path_prefix = preset_dir.c_str();
+    FilePresetStorage preset_storage;
+    PresetSession session(preset_storage);
+    double clock_ms = 0.0;                   // frame-time clock: deterministic and wrap-free
+    session.load(state, 0);                  // settings restore on power-up
+
 #ifdef __APPLE__
     MIDIClientCreate(CFSTR("PhaseBox MIDI Generator"), NULL, NULL, &g_midiClient);
     MIDISourceCreate(g_midiClient, CFSTR("Phase Box Virtual Out"), &g_virtualOutput);
@@ -94,6 +115,8 @@ int main() {
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
+        clock_ms += dt * 1000.0;
+        const uint32_t now_ms = static_cast<uint32_t>(clock_ms);
 
         if (IsKeyPressed(KEY_E)) state.active_page = simui::next_page(state.active_page, +1);
         if (IsKeyPressed(KEY_Q)) state.active_page = simui::next_page(state.active_page, -1);
@@ -102,6 +125,8 @@ int main() {
         if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) simui::adjust(state, active_dest, state.active_page, -1);
 
         if (IsKeyPressed(KEY_M)) state.step_turing(); // same as the Mutate footswitch
+        if (IsKeyPressed(KEY_LEFT_BRACKET))  session.select_slot(session.slot() - 1, state, now_ms);
+        if (IsKeyPressed(KEY_RIGHT_BRACKET)) session.select_slot(session.slot() + 1, state, now_ms);
 
         if (IsKeyPressed(KEY_T) || IsKeyPressed(KEY_SPACE)) {
             auto now = std::chrono::steady_clock::now();
@@ -142,7 +167,10 @@ int main() {
             last_cc_time = now;
         }
 
-        DrawOLEDDisplay(oled_target, state, active_dest);
+        session.update(state, now_ms);                              // auto-save 2 s after the last edit
+        session.button(IsKeyDown(KEY_ENTER), state, now_ms);        // hold 1 s = save
+
+        DrawOLEDDisplay(oled_target, state, active_dest, session, now_ms);
 
         BeginDrawing();
         ClearBackground(Color{ 20, 20, 25, 255 });
@@ -181,11 +209,12 @@ int main() {
         DrawText(TextFormat("[E] Next Page | [Q] Prev Page   (now: %s, editing Dest %d)", simui::page_name(state.active_page), active_dest + 1), 55, 553, 12, LIGHTGRAY);
         DrawText("[W/S or Up/Down] Adjust value   (P4 CHAN, P5 CC, P9 WGT, P10 DIV edit the active dest; pick it on P8)", 55, 573, 12, LIGHTGRAY);
         DrawText("[T / Space] Tap Tempo  |  [1-3] Expression 0 / 0.5 / 1  |  [M] Step Turing now", 55, 593, 12, LIGHTGRAY);
-        DrawText("P1 WAVE  P2 BPM  P3 PHASE  P4 CHAN  P5 CC  P6 PM  P7 MUTE  P8 DEST  P9 WGT  P10 DIV  P11 MIX", 55, 613, 10, GRAY);
+        DrawText(TextFormat("[Enter] hold 1 s = SAVE  |  [ and ] = preset slot (now %d)  |  auto-saves 2 s after your last edit", session.slot()), 55, 613, 12, LIGHTGRAY);
+        DrawText("P1 WAVE  P2 BPM  P3 PHASE  P4 CHAN  P5 CC  P6 PM  P7 MUTE  P8 DEST  P9 WGT  P10 DIV  P11 MIX", 55, 633, 10, GRAY);
 #ifdef __APPLE__
-        DrawText("MIDI out: \"Phase Box Virtual Out\" (CoreMIDI)", 55, 635, 12, GREEN);
+        DrawText("MIDI out: \"Phase Box Virtual Out\" (CoreMIDI)", 55, 649, 12, GREEN);
 #else
-        DrawText("MIDI out: macOS only (this build runs without MIDI output)", 55, 635, 12, YELLOW);
+        DrawText("MIDI out: macOS only (this build runs without MIDI output)", 55, 649, 12, YELLOW);
 #endif
         DrawText("[ESC] Quit", 680, 553, 12, RED);
 
