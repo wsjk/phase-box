@@ -2,6 +2,8 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include "PhaseOscillator.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -54,7 +56,45 @@ public:
         have_last_master_ = false;
     }
 
+    /// Everything that shapes a destination's waveform besides its own scale/offset/multiplier.
+    /// A default-constructed Source gives a plain sine with no Turing blend (the original behaviour).
+    struct Source {
+        const PhaseOscillator* osc = nullptr; // shape (P1), phase offset (P3), phase modulation (P6)
+        float turing_norm = 0.0f;             // latest Turing value, 0..1
+        float turing_mix = 0.0f;              // 0 = pure waveform, 1 = pure Turing sequence (P11)
+    };
+
+    /// Output of one destination at its own phase, before conversion to 0..127. Result is clamped to [0, 1].
+    static float sample(const MacroDestination& dest, float dest_phase, float expression, const Source& src) {
+        float wave = src.osc ? src.osc->normalizedAt(dest_phase)
+                             : (std::sin(dest_phase) * 0.5f) + 0.5f;
+        float mix = std::clamp(src.turing_mix, 0.0f, 1.0f);
+        float norm_lfo = (1.0f - mix) * wave + mix * std::clamp(src.turing_norm, 0.0f, 1.0f);
+        float scaled = (norm_lfo * dest.scale * (0.5f + 0.5f * expression)) + dest.offset;
+        return std::clamp(scaled, 0.0f, 1.0f);
+    }
+
+    /// Musical ladder for the clock multiplier (P10): 1/8x .. 8x.
+    static float step_clock_mult(float current, int dir) {
+        static constexpr float ladder[] = {0.125f, 0.25f, 0.5f, 0.75f, 1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 8.0f};
+        constexpr int n = static_cast<int>(sizeof(ladder) / sizeof(ladder[0]));
+        constexpr float eps = 1e-4f;
+        if (dir > 0) {
+            for (int i = 0; i < n; ++i) if (ladder[i] > current + eps) return ladder[i];
+            return ladder[n - 1];
+        }
+        for (int i = n - 1; i >= 0; --i) if (ladder[i] < current - eps) return ladder[i];
+        return ladder[0];
+    }
+
+    /// Current phase of destination i (0 .. 2*pi), for UI playheads.
+    float dest_phase(size_t i) const { return i < dest_phases_.size() ? dest_phases_[i] : 0.0f; }
+
     std::vector<EvaluatedMIDI> evaluate(float master_phase, float dt, float expression) {
+        return evaluate(master_phase, dt, expression, Source{});
+    }
+
+    std::vector<EvaluatedMIDI> evaluate(float master_phase, float dt, float expression, const Source& src) {
         (void)dt;
         const float two_pi = 2.0f * static_cast<float>(M_PI);
 
@@ -85,9 +125,7 @@ public:
             const auto& dest = destinations[i];
             float dest_phase = dest_phases_[i];
 
-            float norm_lfo = (std::sin(dest_phase) * 0.5f) + 0.5f;
-            float scaled = (norm_lfo * dest.scale * (0.5f + 0.5f * expression)) + dest.offset;
-            scaled = std::clamp(scaled, 0.0f, 1.0f);
+            float scaled = sample(dest, dest_phase, expression, src);
             int midi_val = static_cast<int>(scaled * 127.0f);
             midi_val = std::clamp(midi_val, 0, 127);
             messages.push_back({dest.midi_channel, dest.cc_number, midi_val});

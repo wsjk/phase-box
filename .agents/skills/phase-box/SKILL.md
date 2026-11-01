@@ -86,7 +86,7 @@ See detailed notes in [Architecture Reference](./references/architecture.md).
 All roadmap phases from the Handover Document and ADR are fully implemented and verified:
 
 * **Step 1 (Fix Assertions)**: Vector index access in tests resolved.
-* **Step 2 (Host Test Harness)**: GoogleTest suite with 41 unit tests (20 original + 21 regression tests in `tests/test_regressions.cpp` and `tests/test_hal_interfaces.cpp`).
+* **Step 2 (Host Test Harness)**: GoogleTest suite with 56 unit tests (20 original + 36 regression tests in `tests/test_regressions.cpp`, `tests/test_hal_interfaces.cpp` and `tests/test_sim_controls.cpp`).
 * **Step 3 (Core 0 Real-Time Engine)**: 1000 Hz hardware repeating timer interrupt, 4-channel LFO calculation, UART MIDI at 31250 baud on GP0, 24 PPQN external MIDI clock fallback, and tap tempo / phase reset.
 * **Step 4 (Core 1 UI & Drivers)**: SSD1306 128x32 OLED driver at 1 MHz I2C, 4-state rotary menu machine (Telemetry, Param Edit, Hold-to-Save, Tap Sync), and SPI NOR flash preset storage.
 * **Macro Engine & ADC**: GP26 analog expression pedal reading, bipolar weighted matrix scaling across channels, and nested LFO cross-modulation.

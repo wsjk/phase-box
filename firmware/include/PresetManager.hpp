@@ -9,6 +9,7 @@
 // Preset file format (little-endian, fixed-width so files are portable between
 // the RP2040 and the desktop simulator):
 //   u32 magic "PBX1" | u16 version | payload | u32 CRC-32 of everything before it
+// (version 3; version 2 files from earlier builds are rejected and defaults are used)
 // Loading validates magic, version, length, CRC and every field's range, and only
 // then commits to the live state (a bad file never half-applies).
 class PresetManager {
@@ -17,7 +18,7 @@ public:
     static inline const char* path_prefix = "/";
 
     static constexpr uint32_t MAGIC = 0x31584250u; // 'P','B','X','1'
-    static constexpr uint16_t FORMAT_VERSION = 2;
+    static constexpr uint16_t FORMAT_VERSION = 3; // v3 adds turing_mix
     static constexpr uint32_t MAX_MACROS = 16;
 
     static bool savePreset(int slot, const PhaseBoxState& state) {
@@ -33,6 +34,7 @@ public:
         put(buf, n, static_cast<int32_t>(state.midi_channel));
         put(buf, n, static_cast<int32_t>(state.midi_cc_num));
         put(buf, n, state.turing.mutation_prob);
+        put(buf, n, state.turing_mix);
 
         const size_t count = state.macros.destinations.size();
         if (count > MAX_MACROS) return false;
@@ -73,17 +75,19 @@ public:
         if (!get(buf, pos, end, magic) || magic != MAGIC) return false;
         if (!get(buf, pos, end, version) || version != FORMAT_VERSION) return false;
 
-        int32_t shape, channel, cc; float bpm, phase_offset, pm_depth, mutation; uint32_t count;
+        int32_t shape, channel, cc; float bpm, phase_offset, pm_depth, mutation, mix; uint32_t count;
         if (!get(buf, pos, end, shape) || !get(buf, pos, end, bpm) ||
             !get(buf, pos, end, phase_offset) || !get(buf, pos, end, pm_depth) ||
             !get(buf, pos, end, channel) || !get(buf, pos, end, cc) ||
-            !get(buf, pos, end, mutation) || !get(buf, pos, end, count)) return false;
+            !get(buf, pos, end, mutation) || !get(buf, pos, end, mix) ||
+            !get(buf, pos, end, count)) return false;
 
         if (shape < 0 || shape > 3) return false;
         if (!std::isfinite(bpm) || bpm < 20.0f || bpm > 300.0f) return false;
         if (!std::isfinite(phase_offset) || !std::isfinite(pm_depth)) return false;
         if (channel < 1 || channel > 16 || cc < 0 || cc > 127) return false;
         if (!std::isfinite(mutation) || mutation < 0.0f || mutation > 1.0f) return false;
+        if (!std::isfinite(mix) || mix < 0.0f || mix > 1.0f) return false;
         if (count > MAX_MACROS || count > state.macros.destinations.size()) return false;
 
         MacroDestination parsed[MAX_MACROS];
@@ -107,6 +111,7 @@ public:
         state.midi_channel = channel;
         state.midi_cc_num = cc;
         state.turing.mutation_prob = mutation;
+        state.turing_mix = mix;
         for (uint32_t i = 0; i < count; ++i) state.macros.destinations[i] = parsed[i];
         state.macros.reset_phases();
         return true;

@@ -22,6 +22,7 @@ add_executable(run_host_tests
     test_preset_manager.cpp
     test_regressions.cpp
     test_hal_interfaces.cpp
+    test_sim_controls.cpp
     ../src/hal/hal_adc.cpp
     ../src/hal/hal_encoder.cpp
     ../src/hal/hal_display.cpp

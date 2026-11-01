@@ -4,6 +4,7 @@
 > the *legacy flat stack* (`PhaseOscillator`, `PhaseBoxState`, `MacroEngine.hpp`, `firmware/`, the native simulator), which is what the firmware and simulator actually build, and
 > the *layered stack* (`core/`, `hal/`, `ui/`, `storage/`, `src/main.cpp`), which is covered by the host tests but is not built into the firmware (`src/main.cpp` is in no CMake target).
 > The pipeline diagram below mixes both. `Core0Task`, `Core1Task` and the `Mock*` / `Pico*` ADC and display headers now compile on the host (they use the small `AdcInput` / `DisplayInterface` interfaces; `HalAdc` and `HalDisplay` stay concrete for the unit tests), but the layered stack is still not wired into the firmware build.
+> The legacy stack's `PhaseBoxState::advance()` / `evaluateMacros()` are shared by the simulator and the firmware loop: waveform shape, phase offset, PM depth, per-destination clock multiplier, and the Turing blend (`turing_mix`) all reach the MIDI output there. The layered stack (`core/`) has not been given these yet.
 > Persistence is `fopen`-based (no LittleFS is linked), and `PicoHalFlash` writes need multicore lockout before they are safe alongside Core 0.
 
 

@@ -1,9 +1,7 @@
 # Phase Box: User Guide & Operating Manual
 
-> **Implementation status (read first).** This guide describes the intended design. Not implemented yet:
-> P4 `CHAN` / P5 `CC` change values that are not used for output (MIDI uses each macro destination's own channel and CC);
-> P10 `MAC DIV` does not exist (clock multipliers cannot be edited from any UI);
-> Turing mutation only affects the simulator's waveform preview and is not sent as MIDI;
+> **Implementation status (read first).** This guide describes the intended design. Current limitations:
+> the OLED pages, encoder and footswitches exist only in the desktop simulator (pages P1–P11 all change the MIDI it sends; the firmware loop shares the same engine but has no menu yet);
 > hold-to-save, auto-save and the `SAVED` confirmation are not implemented;
 > the firmware build does not yet wire up the OLED menu, encoder, footswitches or expression-pedal ADC.
 > The simulator sends MIDI only on macOS (CoreMIDI); on Linux/Windows it runs without MIDI output.
@@ -66,16 +64,17 @@ The OLED interface is structured into pages. Turn the encoder to navigate or adj
 
 | Page | Parameter | Range / Values | Description |
 | :--- | :--- | :--- | :--- |
-| **`P1: WAVE`** | Waveform Shape | `SINE`, `SAW`, `SQR`, `TRI` | Selects base oscillator waveform geometry. |
+| **`P1: WAVE`** | Waveform Shape | `SINE`, `SAW`, `SQR`, `TRI` | Selects the waveform every destination plays (shared by all destinations). |
 | **`P2: BPM`** | Master Tempo | `20.0` – `300.0` BPM | Sets the base oscillator speed. Click encoder to toggle between **Fine** (0.1 BPM) and **Coarse** (1.0–5.0 BPM) adjustment. |
-| **`P3: PHASE`** | Phase Offset | $0.00$ – $6.28$ ($2\pi$ rad) | Static phase rotation relative to the master clock. |
-| **`P4: CHAN`** | Target MIDI Channel | `1` – `16` | MIDI Channel assigned to the active destination. |
-| **`P5: CC`** | Target MIDI CC | `0` – `127` | MIDI CC number assigned to the active destination. |
-| **`P6: PM`** | Phase Modulation | `0.00` – `5.00` | Depth of secondary internal phase modulation (through-zero FM/PM style waveform folding). |
-| **`P7: MUT`** | Turing Mutation | `0.00` – `1.00` ($0\% - 100\%$) | Probability that shift register feedback bits invert on each clock cycle, transitioning from locked loops to pure entropy. |
+| **`P3: PHASE`** | Phase Offset | $0.00$ – $6.28$ ($2\pi$ rad) | Static phase rotation relative to the master clock, applied to every destination. Wraps around at $2\pi$. |
+| **`P4: CHAN`** | Target MIDI Channel | `1` – `16` | MIDI Channel of the destination chosen on `P8` (each destination has its own). |
+| **`P5: CC`** | Target MIDI CC | `0` – `127` | MIDI CC number of the destination chosen on `P8`. |
+| **`P6: PM`** | Phase Modulation | `0.00` – `5.00` | Depth of internal phase modulation (waveform folding), applied to every destination. |
+| **`P7: MUT`** | Turing Mutation | `0.00` – `1.00` ($0\% - 100\%$) | Probability that the Turing shift register inverts its feedback bit on each master cycle: `0.00` repeats a locked 16-step loop, around `0.50` is the most random, and `1.00` flips every time, which gives a fixed alternating pattern (not noise). Only audible when `P11` mix is above zero. |
 | **`P8: MAC SEL`** | Active Macro Target | `Dest 1`, `Dest 2`, `Dest 3` | Selects which macro destination is currently active for configuration. |
-| **`P9: MAC WGT`** | Macro Scale / Weight | `-2.00` to `+2.00` | Bipolar scaling factor applied to the active macro output. Negative values invert the modulation envelope. |
-| **`P10: MAC DIV`**| Polyrhythmic Multiplier | `0.125x` to `8.0x` | Independent clock multiplier/subdivision ratio for the active destination ($1/4\times$, $1/2\times$, $1\times$, $1.5\times$, $2\times$, etc.). |
+| **`P9: MAC WGT`** | Macro Scale / Weight | `-2.00` to `+2.00` | Bipolar scaling factor of the destination chosen on `P8`. Negative values invert its waveform. |
+| **`P10: MAC DIV`**| Polyrhythmic Multiplier | `0.125x` to `8.0x` | Clock multiplier of the destination chosen on `P8`, stepped through `0.125, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 8`. One master cycle is one beat, so `0.5x` takes two beats per cycle and `4x` makes four cycles per beat. The OLED widens or narrows its window so you can see the ratio. |
+| **`P11: TUR MIX`**| Turing Mix | `0.00` – `1.00` | How much of the Turing sequence replaces each destination's waveform (`0.00` = waveform only, `1.00` = Turing sequence only). The sequence steps once per master cycle. |
 
 ---
 
@@ -87,20 +86,21 @@ Unlike conventional LFOs that send synchronized lock-step modulation, Phase Box 
 - Each destination possesses its own **Clock Multiplier** (`MAC DIV`). For example:
   - **Destination 1:** Multiplier `1.0x` on CC 16 (Channels the main beat).
   - **Destination 2:** Multiplier `1.5x` (dotted feel) on CC 74 (Filter Cutoff).
-  - **Destination 3:** Multiplier `0.25x` (long 4-bar swell) on CC 10 (Pan / Color).
-- When combined, the resulting modulation streams weave into complex polyrhythms that keep video feedback patterns and synthesizer timbres continuously evolving without repetitive cycling.
+  - **Destination 3:** Multiplier `0.5x` (a slow two-beat swell) on CC 10, Channel 2 (Pan / Color).
+- When combined, the resulting modulation streams weave into complex polyrhythms that take several beats to line up again, so patterns and timbres keep evolving.
 
 ### 3.2 Bipolar Expression Pedal Control
 Plugging a standard expression pedal into the 1/4" input allows hands-free master morphing:
-- At **heel down (0.0)**: Modulation depths attenuate to baseline offsets.
-- At **toe down (1.0)**: Modulation expands to maximum peak-to-peak amplitude.
-- If a destination has a **negative weight** (e.g. `-1.0`), pushing the expression pedal down *inverts* that specific channel's output while channels with positive weights scale upwards.
+- At **heel down (0.0)**: Modulation depth is halved (50%).
+- At **toe down (1.0)**: Modulation is at full depth.
+- The pedal only scales depth. A destination with a **negative weight** is inverted at every pedal position, not just when the pedal moves.
 
 ### 3.3 Turing Machine Generative Mutation
-By navigating to `P7: MUT` or tapping **Footswitch 2 (Mutate)**:
-- At **$0\%$ mutation**: The Turing shift register locks into an exact, repeating 16-step rhythmic sequence.
-- At **$5\% - 20\%$ mutation**: The sequence remains structured and musical, but subtly mutates individual steps over time.
-- At **$100\%$ mutation**: The sequence becomes completely chaotic and unpredictable white noise / random sample-and-hold.
+The Turing machine takes one step per master cycle and its value is blended into every destination by `P11: TUR MIX` (default `0.00`, so nothing changes until you raise it). `P7: MUT` sets how much the sequence mutates; **Footswitch 2** (key `[M]` in the simulator) steps it immediately.
+- At **$0\%$ mutation**: The shift register locks into an exact, repeating 16-step sequence.
+- At **$5\% - 20\%$ mutation**: The sequence stays structured and musical, but individual steps drift over time.
+- At **$50\%$ mutation**: The most random setting.
+- At **$100\%$ mutation**: The feedback bit flips every time, so you get a fixed alternating pattern rather than noise.
 
 ### 3.4 Screen Burn-In Protection (Screensaver)
 To protect OLED displays during long stage performances or static studio sessions:
@@ -127,11 +127,12 @@ If you do not have physical hardware in front of you, Phase Box includes a real-
 
 | Key | Action |
 | :--- | :--- |
-| **`[E]`** | Next Page (Forward through P1–P9) |
-| **`[Q]`** | Previous Page (Backward through P1–P9) |
+| **`[E]`** | Next Page (Forward through P1–P11) |
+| **`[Q]`** | Previous Page (Backward through P1–P11) |
 | **`[W]` or `[Up Arrow]`** | Increase Current Parameter Value |
 | **`[S]` or `[Down Arrow]`** | Decrease Current Parameter Value |
-| **`[T]` or `[Space]`** | Tap Tempo & Phase Reset |
+| **`[T]` or `[Space]`** | Tap Tempo |
+| **`[M]`** | Step the Turing machine now (Mutate footswitch) |
 | **`[1]`** | Simulate Expression Pedal at 0% (Heel down) |
 | **`[2]`** | Simulate Expression Pedal at 50% (Midway) |
 | **`[3]`** | Simulate Expression Pedal at 100% (Toe down) |

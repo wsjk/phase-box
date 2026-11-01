@@ -47,8 +47,8 @@ int main() {
     while (true) {
         tud_task();
 
-        state.osc.update(0.0166f);
-        auto evaluated_macros = state.macros.evaluate(state.osc.phase, 0.0166f, state.adc_expression);
+        state.advance(0.0166f);
+        auto evaluated_macros = state.evaluateMacros(0.0166f);
 
         if (tud_midi_mounted()) {
             for (const auto& m : evaluated_macros) {

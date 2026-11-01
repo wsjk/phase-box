@@ -147,7 +147,7 @@ protected:
 
 TEST_F(RegressionPreset, RoundTrip) {
     PhaseBoxState a; a.osc.bpm = 143.5f; a.midi_channel = 5; a.midi_cc_num = 74;
-    a.macros.destinations[1].clock_mult = 0.75f;
+    a.macros.destinations[1].clock_mult = 0.75f; a.turing_mix = 0.35f;
     ASSERT_TRUE(::PresetManager::savePreset(7, a));
     PhaseBoxState b;
     ASSERT_TRUE(::PresetManager::loadPreset(7, b));
@@ -155,6 +155,7 @@ TEST_F(RegressionPreset, RoundTrip) {
     EXPECT_EQ(b.midi_channel, 5);
     EXPECT_EQ(b.midi_cc_num, 74);
     EXPECT_FLOAT_EQ(b.macros.destinations[1].clock_mult, 0.75f);
+    EXPECT_FLOAT_EQ(b.turing_mix, 0.35f);
 }
 
 TEST_F(RegressionPreset, CorruptTruncatedAndOutOfRangeFilesAreRejectedWithoutSideEffects) {
