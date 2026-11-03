@@ -26,6 +26,7 @@ add_executable(run_host_tests
     test_preset_session.cpp
     test_device_blocks.cpp
     test_device_app.cpp
+    test_midi_router.cpp
     ../src/hal/hal_adc.cpp
     ../src/hal/hal_encoder.cpp
     ../src/hal/hal_display.cpp

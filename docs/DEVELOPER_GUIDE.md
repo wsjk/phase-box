@@ -114,6 +114,8 @@ phase-box/
 │   ├── storage/                 # State persistence & LittleFS serializers
 │   ├── ui/                      # Layered-stack menu state machine (not used by the device)
 │   ├── DeviceApp.hpp            # The whole device behaviour, hardware injected (host-tested)
+│   ├── MidiRouter.hpp           # Simulator MIDI target selection/reconnect logic (OS-independent, host-tested)
+│   ├── CoreMidiBackend.hpp      # macOS CoreMIDI adapter for MidiRouter (Apple only)
 │   ├── OledRenderer.hpp         # Screen layout for 128x32 and 128x64 panels
 │   ├── SimControls.hpp          # Pages P1-P11: edit rules, footers, waveform preview
 │   ├── PresetSession.hpp        # Auto-save, hold-to-save, slots, status messages
@@ -125,7 +127,7 @@ phase-box/
 │   ├── hal/                     # Concrete HAL implementations
 │   ├── ui/ui_controller.cpp    # Menu navigation & velocity acceleration
 │   ├── storage/preset_manager.cpp # Flash sector read/write implementation
-│   ├── native_sim_main.cpp      # Standalone Raylib desktop simulator (macOS CoreMIDI)
+│   ├── native_sim_main.cpp      # Standalone Raylib desktop simulator (macOS CoreMIDI, direct destination)
 │   └── main.cpp                 # NOT BUILT: early layered-engine experiment (see the note at its top)
 ├── firmware/                    # Standalone RP2040 Pico SDK Target (TinyUSB + LittleFS)
 │   ├── CMakeLists.txt           # Cross-compilation CMake configuration

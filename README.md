@@ -25,7 +25,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 - **Bipolar Expression Scaling:** Full expression pedal integration with EMA smoothing and deadband clamping.
 - **Dual MIDI Output:** Hardware serial MIDI (31,250 baud on GP0) and plug-and-play USB-MIDI class compliance (TinyUSB).
 - **Desktop Simulator:** Native Raylib desktop visualizer connecting directly to macOS `CoreMIDI`.
-- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 108 tests).
+- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 126 tests).
 
 ---
 
@@ -49,7 +49,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 ```bash
 ./build-native/phase_box_native_sim
 ```
-*Creates a virtual MIDI device called **`Phase Box Virtual Out`** that instantly connects to Ableton, Logic, VCV Rack, or hardware synths.*
+*Sends MIDI straight to the hardware destination named **`Melodee FM-1`** (change it with `PHASE_BOX_MIDI_DEST="Some Synth"`; `PHASE_BOX_MIDI_DEST=virtual` gives a virtual port for a DAW). `--list-midi` shows what CoreMIDI sees. If macOS MIDI is stuck, see `bash scripts/reset_coremidi.sh`.*
 
 ### 2. Run Host Unit Tests (GoogleTest)
 ```bash

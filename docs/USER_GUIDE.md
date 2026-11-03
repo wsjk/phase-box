@@ -4,7 +4,7 @@
 > the firmware has been written and unit-tested on a computer but has **not yet been built or run on a real board** (first build: `firmware/` with the Pico SDK; check the OLED height and encoder direction, see the Developer Guide);
 > the firmware has no flash-backed preset storage yet, so on the device the screen shows `NO STORAGE` when you hold to save and nothing survives power-off (the simulator saves real files);
 > the firmware does not follow external MIDI clock, and preset slots 2–8 are simulator-only for now (`[` / `]`);
-> the simulator sends MIDI only on macOS (CoreMIDI); on Linux/Windows it runs without MIDI output.
+> the simulator sends MIDI only on macOS (CoreMIDI), straight to the destination named by `PHASE_BOX_MIDI_DEST` (default `Melodee FM-1`); on Linux/Windows it runs without MIDI output.
 
 
 Welcome to the **Phase Box** operating manual. Phase Box is a dedicated hardware modulation synthesizer powered by the Raspberry Pi RP2040 microcontroller. It translates complex algorithmic waveforms, generative shift registers, and polyrhythmic macro scaling into real-time MIDI Control Change (CC) data streams for video synthesizers (such as LZX Industries, Auto Waaaves, and r_e_c_u_r), audio synthesizers, and Digital Audio Workstations (DAWs).
@@ -145,6 +145,10 @@ If you do not have physical hardware in front of you, Phase Box includes a real-
 | **`[ESC]`** | Exit Simulator |
 
 ### Connecting Simulator to Hardware & DAWs
-The simulator creates a virtual MIDI device called **`Phase Box Virtual Out`**:
-- **In Ableton / Logic / Reaper:** Open *Preferences $\rightarrow$ MIDI*, find `Phase Box Virtual Out`, and enable *Track / Remote*. Use standard MIDI Learn to map knobs.
-- **To External Hardware Synths:** Route `Phase Box Virtual Out` to your USB-to-MIDI interface using free utilities like [Snoize MIDI Monitor](https://www.snoize.com/midimonitor/) or [MIDI Patchbay](https://notahat.com/midi_patchbay/).
+By default the simulator sends MIDI **straight to a hardware destination named `Melodee FM-1`**. It creates no virtual port, and nothing needs patching in Audio MIDI Setup. The bottom line of the window shows where it is going, for example `MIDI out: -> Melodee FM-1`.
+- **Find the device by name:** set `PHASE_BOX_MIDI_DEST` to any part of the name, e.g. `PHASE_BOX_MIDI_DEST="Other Synth" ./build-native/phase_box_native_sim`. Capitals, spaces and dashes don't matter (`melodee fm 1` matches). If nothing matches, **nothing is sent** (it never falls back to another device) and the window lists the destinations it did see.
+- **Plug in later or re-plug:** it looks again every second, notices when the device is unplugged, and reconnects (resending every value) when it is back.
+- **What does CoreMIDI see?** `./build-native/phase_box_native_sim --list-midi` prints the destinations and sources and exits. It works even when the Audio MIDI Setup window is blank.
+- **To feed a DAW instead** (Ableton / Logic / Reaper), start it with `PHASE_BOX_MIDI_DEST=virtual`. That creates the virtual source `Phase Box Virtual Out`, which you enable in the DAW's MIDI preferences; routing it to hardware needs a patchbay such as [MIDI Patchbay](https://notahat.com/midi_patchbay/).
+- **To control the FM-1's parameters:** each destination has its own channel and CC. On `P8` pick a destination, then set `P4` (channel) and `P5` (CC). Changes are saved automatically.
+- **If macOS MIDI is stuck** (blank MIDI Studio, red outlines, missing devices): `bash scripts/reset_coremidi.sh --dry-run` shows what it would do, then run it without `--dry-run`. It moves the Audio MIDI Setup preferences and saved layouts into a backup folder (nothing is deleted) and restarts the MIDI services.
