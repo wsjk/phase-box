@@ -221,3 +221,28 @@ TEST(Slots, WorksWithRealFilesToo) {
     EXPECT_NEAR(back.osc.bpm, 144.0f, 0.001f);
     std::remove("./preset_3.bin");
 }
+
+TEST(NoStorageTest, EditsStayUnsavedQuietlyAndHoldSaysNoStorage) {
+    NoStorage none; PresetSession ps(none); PhaseBoxState s;
+    ps.update(s, 0);
+    s.osc.bpm = 140.0f; ps.update(s, 0);
+    for (uint32_t t = 16; t < 20000; t += 16) ps.update(s, t);
+    EXPECT_EQ(ps.write_attempts(), 0u);                  // never tries, never shows SAVE FAILED
+    EXPECT_TRUE(ps.dirty());
+    EXPECT_TRUE(ps.status(20000) == nullptr);
+    ps.button(true, s, 30000);
+    ps.button(true, s, 31000);
+    EXPECT_TRUE(same(ps.status(31000), "NO STORAGE"));
+    EXPECT_EQ(ps.write_attempts(), 0u);
+    EXPECT_FALSE(ps.load(s, 40000));                     // nothing to restore, and no complaint
+    EXPECT_TRUE(ps.status(40000) == nullptr || same(ps.status(40000), "NO STORAGE"));
+}
+
+TEST(NoStorageTest, SwitchingSlotsDoesNotTryToWrite) {
+    NoStorage none; PresetSession ps(none); PhaseBoxState s;
+    ps.update(s, 0);
+    s.osc.bpm = 99.0f; ps.update(s, 0);
+    EXPECT_TRUE(ps.select_slot(2, s, 100));
+    EXPECT_EQ(ps.write_attempts(), 0u);
+    EXPECT_NEAR(s.osc.bpm, 99.0f, 0.001f);
+}

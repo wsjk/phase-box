@@ -197,3 +197,27 @@ TEST(SimPreview, CurveFollowsTuringMixAndPlayheadMatchesCycles) {
     s.macros.destinations[0].clock_mult = 3.0f;
     EXPECT_EQ(preview_markers(s, 0, 120).size(), 3u);
 }
+
+TEST(SimPages, BpmStepsByOneWhenTurnedSlowlyAndByFiveWhenSpun) {
+    PhaseBoxState s; int d = 0;
+    adjust(s, d, P_BPM, +1, /*fast=*/false);
+    EXPECT_NEAR(s.osc.bpm, 121.0f, 0.001f);
+    adjust(s, d, P_BPM, +1, /*fast=*/true);
+    EXPECT_NEAR(s.osc.bpm, 126.0f, 0.001f);
+    adjust(s, d, P_BPM, -1);                            // default stays 5 so the simulator keys are unchanged
+    EXPECT_NEAR(s.osc.bpm, 121.0f, 0.001f);
+    for (int i = 0; i < 400; ++i) adjust(s, d, P_BPM, +1, false);
+    EXPECT_NEAR(s.osc.bpm, 300.0f, 0.001f);             // clamps at 300
+}
+
+TEST(SimPages, RestartPhasePutsEveryLfoBackAtZero) {
+    PhaseBoxState s; s.adc_expression = 1.0f;
+    for (int i = 0; i < 80; ++i) { s.advance(0.01f); s.evaluateMacros(0.01f); }   // 0.8 s = 1.6 cycles at 120 BPM
+    EXPECT_TRUE(s.osc.phase > 1.0f);
+    s.restart_phase();
+    EXPECT_NEAR(s.osc.phase, 0.0f, 0.0001f);
+    EXPECT_NEAR(s.macros.dest_phase(1), 0.0f, 0.0001f);
+    int before = s.turing.step(); (void)before;
+    s.advance(0.001f);                                  // restarting must not look like a cycle wrap
+    EXPECT_TRUE(s.osc.phase > 0.0f);
+}

@@ -113,6 +113,12 @@ namespace font5x7 {
     };
 }
 
+// I2C clock for the panel. 400 kHz is the SSD1306's rated speed and what the earlier firmware used;
+// pass -DPHASEBOX_OLED_I2C_HZ=1000000 only if your module is happy at Fast-Mode Plus.
+#ifndef PHASEBOX_OLED_I2C_HZ
+#define PHASEBOX_OLED_I2C_HZ 400000
+#endif
+
 class PicoHalDisplay : public DisplayInterface {
 public:
     static constexpr uint8_t DEFAULT_I2C_ADDR = 0x3C;
@@ -132,7 +138,7 @@ public:
     }
 
     void init() {
-        i2c_init(i2c_, I2C_SPEED_FAST_PLUS);
+        i2c_init(i2c_, PHASEBOX_OLED_I2C_HZ);
         gpio_set_function(sda_pin_, GPIO_FUNC_I2C);
         gpio_set_function(scl_pin_, GPIO_FUNC_I2C);
         gpio_pull_up(sda_pin_);
@@ -229,6 +235,16 @@ public:
     uint16_t get_width() const override { return width_; }
     uint16_t get_height() const override { return height_; }
 
+    /// Replace the whole frame with `n` bytes in SSD1306 page layout (call update() to show it).
+    void load_frame(const uint8_t* data, size_t n) {
+        std::memcpy(buffer_, data, std::min(n, buffer_size_));
+    }
+
+    void set_contrast(uint8_t value) {
+        send_cmd(0x81);
+        send_cmd(value);
+    }
+
 private:
     void send_cmd(uint8_t cmd) {
         uint8_t buf[2] = {0x00, cmd}; // Co = 0, D/C# = 0 (Command)
@@ -252,6 +268,8 @@ private:
     void draw_pixel(int16_t, int16_t, bool) override {}
     void draw_string(int16_t, int16_t, const char*) override {}
     void update() override {}
+    void load_frame(const uint8_t*, size_t) {}
+    void set_contrast(uint8_t) {}
     uint16_t get_width() const override { return 128; }
     uint16_t get_height() const override { return 32; }
 #endif

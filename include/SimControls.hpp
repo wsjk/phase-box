@@ -28,7 +28,8 @@ inline float round2(float v) { return std::round(v * 100.0f) / 100.0f; }
 
 /// Apply one encoder step (dir = +1 / -1) to whatever the given page edits.
 /// Pages 4, 5, 9, 10 edit the destination chosen on page 8 (`active_dest`).
-inline void adjust(PhaseBoxState& s, int& active_dest, int page, int dir) {
+/// `fast` = the encoder is being spun quickly: BPM then moves 5 per step instead of 1.
+inline void adjust(PhaseBoxState& s, int& active_dest, int page, int dir, bool fast = true) {
     const int d = dir > 0 ? 1 : -1;
     const int last_dest = static_cast<int>(s.macros.destinations.size()) - 1;
     active_dest = std::clamp(active_dest, 0, std::max(0, last_dest));
@@ -37,7 +38,7 @@ inline void adjust(PhaseBoxState& s, int& active_dest, int page, int dir) {
 
     switch (page) {
         case P_WAVE:    s.osc.shape = static_cast<PhaseOscillator::WaveShape>(((int)s.osc.shape + d + 4) % 4); break;
-        case P_BPM:     s.osc.bpm = std::clamp(s.osc.bpm + 5.0f * d, 40.0f, 300.0f); break;
+        case P_BPM:     s.osc.bpm = std::clamp(s.osc.bpm + (fast ? 5.0f : 1.0f) * d, 40.0f, 300.0f); break;
         case P_PHASE: {
             float v = std::fmod(round2(s.osc.phase_offset + 0.2f * d), two_pi);
             s.osc.phase_offset = v < 0.0f ? v + two_pi : v;

@@ -24,6 +24,8 @@ add_executable(run_host_tests
     test_hal_interfaces.cpp
     test_sim_controls.cpp
     test_preset_session.cpp
+    test_device_blocks.cpp
+    test_device_app.cpp
     ../src/hal/hal_adc.cpp
     ../src/hal/hal_encoder.cpp
     ../src/hal/hal_display.cpp
@@ -36,7 +38,8 @@ add_executable(run_host_tests
 target_compile_definitions(run_host_tests PRIVATE HOST_BUILD)
 
 target_include_directories(run_host_tests PRIVATE ../include ../firmware/include)
-target_link_libraries(run_host_tests gtest_main)
+find_package(Threads REQUIRED)
+target_link_libraries(run_host_tests gtest_main Threads::Threads)
 
 include(GoogleTest)
 gtest_discover_tests(run_host_tests)

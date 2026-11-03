@@ -16,6 +16,8 @@
 class PresetStorage {
 public:
     virtual ~PresetStorage() = default;
+    /// False for a backend that cannot store anything (the device until flash storage is added).
+    virtual bool available() const { return true; }
     virtual bool write(int slot, const uint8_t* data, size_t n) = 0;
     /// Bytes read into `out`, or 0 if the slot is empty or unreadable.
     virtual size_t read(int slot, uint8_t* out, size_t cap) = 0;
@@ -184,4 +186,13 @@ class FilePresetStorage : public PresetStorage {
 public:
     bool write(int slot, const uint8_t* data, size_t n) override { return PresetManager::fileWrite(slot, data, n); }
     size_t read(int slot, uint8_t* out, size_t cap) override { return PresetManager::fileRead(slot, out, cap); }
+};
+
+/// Placeholder for builds with no storage at all: reads find nothing, writes are refused, and
+/// PresetSession shows "NO STORAGE" instead of pretending to save.
+class NoStorage : public PresetStorage {
+public:
+    bool available() const override { return false; }
+    bool write(int, const uint8_t*, size_t) override { return false; }
+    size_t read(int, uint8_t*, size_t) override { return 0; }
 };

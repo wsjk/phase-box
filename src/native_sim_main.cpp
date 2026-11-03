@@ -2,6 +2,7 @@
 #include "PhaseBoxState.hpp"
 #include "SimControls.hpp"
 #include "PresetSession.hpp"
+#include "TapTempo.hpp"
 #include <cstdlib>
 #include <vector>
 #include <string>
@@ -92,7 +93,7 @@ int main() {
     PhaseBoxState state;
     state.turing.seed(static_cast<uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()));
     int active_dest = 0;
-    std::vector<std::chrono::steady_clock::time_point> tap_times;
+    TapTempo tap_tempo;
 
     // Presets are files in $PHASE_BOX_PRESET_DIR (default: the current directory): preset_1.bin .. preset_8.bin
     static std::string preset_dir;
@@ -129,23 +130,9 @@ int main() {
         if (IsKeyPressed(KEY_RIGHT_BRACKET)) session.select_slot(session.slot() + 1, state, now_ms);
 
         if (IsKeyPressed(KEY_T) || IsKeyPressed(KEY_SPACE)) {
-            auto now = std::chrono::steady_clock::now();
-            if (!tap_times.empty() && std::chrono::duration_cast<std::chrono::milliseconds>(now - tap_times.back()).count() > 2500) {
-                tap_times.clear();
-            }
-            tap_times.push_back(now);
-            if (tap_times.size() > 4) tap_times.erase(tap_times.begin());
-            if (tap_times.size() >= 2) {
-                double total_ms = 0;
-                for (size_t i = 1; i < tap_times.size(); ++i) {
-                    total_ms += std::chrono::duration_cast<std::chrono::milliseconds>(tap_times[i] - tap_times[i-1]).count();
-                }
-                double avg_ms = total_ms / (tap_times.size() - 1);
-                if (avg_ms > 0) {
-                    state.osc.bpm = static_cast<float>(60000.0 / avg_ms);
-                    state.osc.bpm = std::clamp(state.osc.bpm, 40.0f, 300.0f);
-                }
-            }
+            float tapped_bpm;
+            if (tap_tempo.tap(now_ms, tapped_bpm)) state.osc.bpm = tapped_bpm;
+            state.restart_phase();   // every tap restarts the LFOs at 0 degrees (Footswitch 1)
         }
 
         if (IsKeyPressed(KEY_ONE)) state.adc_expression = 0.0f;

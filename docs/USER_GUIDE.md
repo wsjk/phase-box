@@ -1,10 +1,10 @@
 # Phase Box: User Guide & Operating Manual
 
-> **Implementation status (read first).** This guide describes the intended design. Current limitations:
-> the OLED pages, encoder and footswitches exist only in the desktop simulator (pages P1–P11 all change the MIDI it sends; the firmware loop shares the same engine but has no menu yet);
-> auto-save, hold-to-save, the `SAVED` confirmation and restore-on-start all work in the simulator (settings are files); the RP2040 firmware has no flash-backed storage plugged in yet, so nothing is kept across power cycles on the device;
-> the firmware build does not yet wire up the OLED menu, encoder, footswitches or expression-pedal ADC.
-> The simulator sends MIDI only on macOS (CoreMIDI); on Linux/Windows it runs without MIDI output.
+> **Implementation status (read first).** The desktop simulator and the RP2040 firmware now share the same engine, pages P1–P11, tap tempo, Turing machine and preset logic, and the same unit tests cover both. Current limitations:
+> the firmware has been written and unit-tested on a computer but has **not yet been built or run on a real board** (first build: `firmware/` with the Pico SDK; check the OLED height and encoder direction, see the Developer Guide);
+> the firmware has no flash-backed preset storage yet, so on the device the screen shows `NO STORAGE` when you hold to save and nothing survives power-off (the simulator saves real files);
+> the firmware does not follow external MIDI clock, and preset slots 2–8 are simulator-only for now (`[` / `]`);
+> the simulator sends MIDI only on macOS (CoreMIDI); on Linux/Windows it runs without MIDI output.
 
 
 Welcome to the **Phase Box** operating manual. Phase Box is a dedicated hardware modulation synthesizer powered by the Raspberry Pi RP2040 microcontroller. It translates complex algorithmic waveforms, generative shift registers, and polyrhythmic macro scaling into real-time MIDI Control Change (CC) data streams for video synthesizers (such as LZX Industries, Auto Waaaves, and r_e_c_u_r), audio synthesizers, and Digital Audio Workstations (DAWs).
@@ -38,8 +38,8 @@ Phase Box features an intuitive physical control surface designed for live audio
 | Component | Hardware Pin | Purpose & Operation |
 | :--- | :--- | :--- |
 | **OLED Display** | GP4 (SDA), GP5 (SCL) | 128×32 / 128×64 graphical display showing active page, live waveform visualizer, and parameter values. |
-| **Rotary Encoder** | GP2 (A), GP3 (B) | Turn clockwise/counter-clockwise to navigate pages and adjust numeric parameters. Features dynamic velocity acceleration (turning faster changes values in larger increments). |
-| **Encoder Pushbutton** | GP6 (Switch) | **Short Press:** Toggle sub-modes (e.g. Coarse vs. Fine BPM tuning).<br/>**Long Press (1 Second):** Trigger non-volatile preset save. |
+| **Rotary Encoder** | GP2 (A), GP3 (B) | Turn to change the value on the current page (clockwise = up). On the BPM page one click is 1 BPM, and spinning the knob quickly steps 5 BPM per click. |
+| **Encoder Pushbutton** | GP6 (Switch) | **Short Press:** Go to the next page (P1 … P11, then back to P1).<br/>**Long Press (1 Second):** Trigger non-volatile preset save. |
 | **Footswitch 1 (Tap / Reset)** | GP10 | **Tap Tempo:** Tap 2 or more times to synchronize BPM.<br/>**Phase Reset:** Instantly restarts all LFO accumulators to $0^\circ$ on each tap. |
 | **Footswitch 2 (Mutate)** | GP11 | Step/seed the probabilistic Turing Machine shift register to inject controlled algorithmic variation. |
 | **Expression Pedal Jack** | GP26 (ADC0) | Accepts standard TRS expression pedals (0–3.3V analog voltage) for bipolar scaling of all macro destinations. |
@@ -50,7 +50,7 @@ Phase Box features an intuitive physical control surface designed for live audio
 
 ## 2. OLED Display & Menu Pages
 
-The OLED interface is structured into pages. Turn the encoder to navigate or adjust settings:
+The OLED interface is structured into pages. Click the encoder to move to the next page and turn it to change the value:
 
 ```
 +------------------------------------+
@@ -105,7 +105,7 @@ The Turing machine takes one step per master cycle and its value is blended into
 ### 3.4 Screen Burn-In Protection (Screensaver)
 To protect OLED displays during long stage performances or static studio sessions:
 - If no encoder or footswitch activity is detected for **30 seconds**, the screen contrast automatically dims to its minimum visibility setting (`0x01`).
-- Touching or turning any control **instantly wakes** the display back to full operational brightness (`0xCF`) with zero latency.
+- Turning the encoder, pressing it, or stepping on either footswitch wakes the display back to full brightness (`0xCF`) straight away. Moving the expression pedal does not count as activity.
 
 ### 3.5 Auto-Save & Preset Persistence
 - **Automatic Background Save:** Whenever you tweak any saved parameter, an internal "dirty-state" timer begins. If no further adjustments are made for **2 seconds**, Phase Box silently writes your current configuration to the current preset slot. Anything that is not part of a preset (the page you are on, the pedal position, the running phase) never triggers a save.

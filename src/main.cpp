@@ -1,3 +1,8 @@
+// NOT BUILT. This is an early experiment that runs the layered core/ engine; it is not part of any CMake
+// target and has known problems (its own timer callback writes ~12 bytes/ms to a 3,125 byte/s MIDI port,
+// and the display is never drawn). The device firmware is firmware/src/firmware_main.cpp, which runs the
+// same engine, pages and presets as the desktop simulator.
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"

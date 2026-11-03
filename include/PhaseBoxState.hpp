@@ -24,6 +24,13 @@ struct PhaseBoxState {
     /// Step the Turing machine once (also what the Mutate footswitch / [M] key does).
     void step_turing() { turing_norm = static_cast<float>(turing.step()) / 127.0f; }
 
+    /// Footswitch 1: put every LFO back at 0 degrees so the next beat lines up with the tap.
+    void restart_phase() {
+        osc.phase = 0.0f;
+        last_phase = 0.0f;
+        macros.reset_phases();
+    }
+
     /// Advance the master oscillator; the Turing machine steps on every master cycle.
     void advance(float dt) {
         osc.update(dt);

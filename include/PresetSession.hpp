@@ -51,7 +51,7 @@ public:
         if (slot < MIN_SLOT || slot > MAX_SLOT) return false;
         if (slot == slot_) return true;
         uint32_t fp;
-        if (has_baseline_ && fingerprint(s, fp) && fp != saved_fp_) write_encoded(fp, now_ms, false);
+        if (storage_.available() && has_baseline_ && fingerprint(s, fp) && fp != saved_fp_) write_encoded(fp, now_ms, false);
         slot_ = slot;
         load(s, now_ms, true);
         return true;
@@ -65,6 +65,7 @@ public:
         if (fp != last_seen_fp_) { last_seen_fp_ = fp; last_change_ms_ = now_ms; }  // every edit restarts the timer
         if (fp == saved_fp_) return;
         if (elapsed(now_ms, last_change_ms_) < AUTOSAVE_QUIET_MS) return;
+        if (!storage_.available()) return;                                           // nothing to save to: stay dirty, stay quiet
         if (retry_wait_ && elapsed(now_ms, fail_ms_) < RETRY_MS) return;             // don't hammer a failing store
         write_encoded(fp, now_ms, false);
     }
@@ -115,6 +116,7 @@ private:
     }
 
     bool save_now(const PhaseBoxState& s, uint32_t now_ms) {
+        if (!storage_.available()) { set_status("NO STORAGE", now_ms); return false; }
         uint32_t fp;
         if (!fingerprint(s, fp)) return false;
         return write_encoded(fp, now_ms, true);

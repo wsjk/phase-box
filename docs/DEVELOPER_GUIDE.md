@@ -112,7 +112,12 @@ phase-box/
 │   │   ├── hal_midi.hpp         # UART MIDI transmit/receive interface
 │   │   └── mock_*.hpp           # GoogleTest mock implementations for host testing
 │   ├── storage/                 # State persistence & LittleFS serializers
-│   ├── ui/                      # Menu state machine and screensaver logic
+│   ├── ui/                      # Layered-stack menu state machine (not used by the device)
+│   ├── DeviceApp.hpp            # The whole device behaviour, hardware injected (host-tested)
+│   ├── OledRenderer.hpp         # Screen layout for 128x32 and 128x64 panels
+│   ├── SimControls.hpp          # Pages P1-P11: edit rules, footers, waveform preview
+│   ├── PresetSession.hpp        # Auto-save, hold-to-save, slots, status messages
+│   ├── TapTempo.hpp  MidiChangeFilter.hpp  ScreenSaver.hpp
 │   ├── PhaseOscillator.hpp      # High-level oscillator model (used by simulator)
 │   ├── MacroEngine.hpp          # Polyrhythmic macro destinations class
 │   └── TuringMachine.hpp        # Generative LFSR shift register
@@ -121,11 +126,10 @@ phase-box/
 │   ├── ui/ui_controller.cpp    # Menu navigation & velocity acceleration
 │   ├── storage/preset_manager.cpp # Flash sector read/write implementation
 │   ├── native_sim_main.cpp      # Standalone Raylib desktop simulator (macOS CoreMIDI)
-│   └── main.cpp                 # Pico firmware entry point (UART model)
+│   └── main.cpp                 # NOT BUILT: early layered-engine experiment (see the note at its top)
 ├── firmware/                    # Standalone RP2040 Pico SDK Target (TinyUSB + LittleFS)
 │   ├── CMakeLists.txt           # Cross-compilation CMake configuration
-│   ├── src/firmware_main.cpp    # Target firmware main entry
-│   ├── src/screensaver.cpp      # OLED burn-in protection driver
+│   ├── src/firmware_main.cpp    # Pins + USB + two cores; all behaviour is in DeviceApp
 │   ├── src/usb_descriptors.c    # USB MIDI class-compliant endpoints
 │   └── include/PresetManager.hpp# Preset encode/decode (validated, CRC) + PresetStorage interface
 ├── tests/                       # GoogleTest Host Unit Tests
@@ -278,7 +282,7 @@ register_bits = (register_bits << 1) | feedback_bit;
 Hardware pin mappings are defined in the HAL headers and drivers. To change a pin, update the corresponding default argument or constant:
 * **MIDI TX/RX:** [include/hal/pico_hal_midi.hpp](../include/hal/pico_hal_midi.hpp) (Default: GP0 TX, GP1 RX).
 * **Rotary Encoder:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP2 A, GP3 B, GP6 Pushbutton).
-* **OLED I2C:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) for the layered stack and [firmware/src/screensaver.cpp](../firmware/src/screensaver.cpp#L10-L16) for the firmware build (Default: GP4 SDA, GP5 SCL on `i2c0`). Keep both in sync.
+* **OLED I2C:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP4 SDA, GP5 SCL on `i2c0`; 32 rows by default, `cmake -DPHASEBOX_OLED_HEIGHT=64` for a 64-row panel; bus speed 400 kHz, override with `-DPHASEBOX_OLED_I2C_HZ=...`).
 * **Expression ADC:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP26 / ADC0).
 
 ---
@@ -329,3 +333,25 @@ cmake --build firmware/build -j4
 #    - firmware/build/phase_box_firmware.uf2 (Drag-and-drop to Pico in BOOTSEL mode)
 #    - firmware/build/phase_box_firmware.elf (For GDB/Picoprobe debugging)
 ```
+
+---
+
+## First power-up on a real board (checklist)
+
+The firmware's behaviour is unit-tested on a computer (`DeviceApp` runs against fake pins), and `firmware_main.cpp`
+has been syntax-checked, but **it has not been built against the real Pico SDK or run on hardware yet.** Expect to
+check these on the first build:
+
+1. **Build:** `export PICO_SDK_PATH=...`, then `./.agents/skills/phase-box/scripts/build_pico.sh`. Fix any SDK-version
+   differences in `firmware_main.cpp` (it uses `time_us_64`, `to_ms_since_boot`, `multicore_launch_core1`, TinyUSB `tud_midi_*`).
+2. **USB:** the board should enumerate as a USB MIDI device and send CC messages (check with a MIDI monitor).
+3. **Screen blank?** Confirm the panel height (`cmake -DPHASEBOX_OLED_HEIGHT=64 ..` for 64 rows), the I2C address
+   (`0x3C`, some modules use `0x3D`), and SDA/SCL on GP4/GP5. The bus runs at 400 kHz; only raise it
+   (`-DPHASEBOX_OLED_I2C_HZ=1000000`) if your module is happy at that speed.
+4. **Picture mirrored or upside down?** In `PicoHalDisplay::init()` change segment remap `0xA1` to `0xA0` and scan direction `0xC8` to `0xC0`.
+5. **Encoder:** wrong direction -> `ENC_REVERSED` in `include/hal/pinout.hpp`; one click = two steps, or two clicks per step ->
+   change `ENC_TRANSITIONS_PER_DETENT` (4 or 2). All controls are wired switch-to-ground (pull-ups are enabled in firmware).
+6. **Footswitches and encoder switch** are debounced for 20 ms in software; no extra hardware is needed.
+7. **DIN/TRS MIDI:** the UART pin only drives the signal; the standard current-loop resistors are on your hardware.
+8. **Not included yet:** preset storage in flash (`NoStorage` is used, so hold-to-save shows `NO STORAGE`), external MIDI clock sync,
+   and preset slots 2-8 on the device.
