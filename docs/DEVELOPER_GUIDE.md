@@ -1,5 +1,13 @@
 # Phase Box: Developer Architecture & C++ Engineering Guide
 
+> **Implementation status (read first).** The repository currently contains two parallel code stacks:
+> the *legacy flat stack* (`PhaseOscillator`, `PhaseBoxState`, `MacroEngine.hpp`, `firmware/`, the native simulator), which is what the firmware and simulator actually build, and
+> the *layered stack* (`core/`, `hal/`, `ui/`, `storage/`, `src/main.cpp`), which is covered by the host tests but is not built into the firmware (`src/main.cpp` is in no CMake target).
+> The pipeline diagram below mixes both. `Core0Task`, `Core1Task` and the `Mock*` / `Pico*` ADC and display headers now compile on the host (they use the small `AdcInput` / `DisplayInterface` interfaces; `HalAdc` and `HalDisplay` stay concrete for the unit tests), but the layered stack is still not wired into the firmware build.
+> The legacy stack's `PhaseBoxState::advance()` / `evaluateMacros()` are shared by the simulator and the firmware loop: waveform shape, phase offset, PM depth, per-destination clock multiplier, and the Turing blend (`turing_mix`) all reach the MIDI output there. The layered stack (`core/`) has not been given these yet.
+> Saving: `PresetSession` (`include/PresetSession.hpp`) owns auto-save (2 s of quiet), hold-to-save (1 s), slots 1–8 and the on-screen status, and takes an explicit millisecond clock so it is unit-tested with a fake clock. It talks to a `PresetStorage` (`FilePresetStorage` for the simulator and tests). The device has no flash-backed `PresetStorage` yet (no LittleFS is linked), and `PicoHalFlash` writes need multicore lockout before they are safe alongside Core 0.
+
+
 This document is the comprehensive architectural specification and developer guide for the **Phase Box** firmware. It details the internal signal flow, dual-core operational model, and code layout.
 
 > [!TIP]
@@ -68,12 +76,12 @@ flowchart TD
    Phase is tracked in a 32-bit unsigned integer (`uint32_t phase_`). Overflows automatically wrap around $2\pi$ seamlessly without expensive modulo math.
 
 2. **Waveform Synthesis:**
-   - **Sine:** Evaluated using a 256-entry precomputed lookup table ([LUT](file:///Users/ww/src/phase-box/include/core/phase_lfo.hpp#L90-L96)) with fixed 8-bit quantization.
+   - **Sine:** Evaluated using a 256-entry precomputed lookup table ([LUT](../include/core/phase_lfo.hpp#L90-L96)) with fixed 8-bit quantization.
    - **Sawtooth / Triangle / Square:** Evaluated directly via bit shifts and linear normalization.
    - **Phase Modulation (PM):** Modulates the lookup index by an offset: $\theta_{effective} = \theta + \text{depth} \cdot \sin(2\theta)$.
 
 3. **Turing Mutation Shift Register:**
-   A 16-bit Galois Linear Feedback Shift Register ([LFSR](file:///Users/ww/src/phase-box/include/TuringMachine.hpp#L20-L30)). On every complete cycle of the master phase accumulator, the top bit is fed back into bit 0. With probability $P_{\text{mutation}}$, the bit is inverted.
+   A 16-bit recirculating shift register ([Turing machine](../include/TuringMachine.hpp#L20-L30)). On every complete cycle of the master phase accumulator, the top bit is fed back into bit 0. With probability $P_{\text{mutation}}$, the bit is inverted.
 
 4. **Polyrhythmic Macro Destination Evaluation:**
    Each destination tracks an effective phase:
@@ -104,7 +112,14 @@ phase-box/
 │   │   ├── hal_midi.hpp         # UART MIDI transmit/receive interface
 │   │   └── mock_*.hpp           # GoogleTest mock implementations for host testing
 │   ├── storage/                 # State persistence & LittleFS serializers
-│   ├── ui/                      # Menu state machine and screensaver logic
+│   ├── ui/                      # Layered-stack menu state machine (not used by the device)
+│   ├── DeviceApp.hpp            # The whole device behaviour, hardware injected (host-tested)
+│   ├── MidiRouter.hpp           # Simulator MIDI target selection/reconnect logic (OS-independent, host-tested)
+│   ├── CoreMidiBackend.hpp      # macOS CoreMIDI adapter for MidiRouter (Apple only)
+│   ├── OledRenderer.hpp         # Screen layout for 128x32 and 128x64 panels
+│   ├── SimControls.hpp          # Pages P1-P11: edit rules, footers, waveform preview
+│   ├── PresetSession.hpp        # Auto-save, hold-to-save, slots, status messages
+│   ├── TapTempo.hpp  MidiChangeFilter.hpp  ScreenSaver.hpp
 │   ├── PhaseOscillator.hpp      # High-level oscillator model (used by simulator)
 │   ├── MacroEngine.hpp          # Polyrhythmic macro destinations class
 │   └── TuringMachine.hpp        # Generative LFSR shift register
@@ -112,14 +127,13 @@ phase-box/
 │   ├── hal/                     # Concrete HAL implementations
 │   ├── ui/ui_controller.cpp    # Menu navigation & velocity acceleration
 │   ├── storage/preset_manager.cpp # Flash sector read/write implementation
-│   ├── native_sim_main.cpp      # Standalone Raylib desktop simulator (macOS CoreMIDI)
-│   └── main.cpp                 # Pico firmware entry point (UART model)
+│   ├── native_sim_main.cpp      # Standalone Raylib desktop simulator (macOS CoreMIDI, direct destination)
+│   └── main.cpp                 # NOT BUILT: early layered-engine experiment (see the note at its top)
 ├── firmware/                    # Standalone RP2040 Pico SDK Target (TinyUSB + LittleFS)
 │   ├── CMakeLists.txt           # Cross-compilation CMake configuration
-│   ├── src/firmware_main.cpp    # Target firmware main entry
-│   ├── src/screensaver.cpp      # OLED burn-in protection driver
+│   ├── src/firmware_main.cpp    # Pins + USB + two cores; all behaviour is in DeviceApp
 │   ├── src/usb_descriptors.c    # USB MIDI class-compliant endpoints
-│   └── include/PresetManager.hpp# Flash auto-save serializer
+│   └── include/PresetManager.hpp# Preset encode/decode (validated, CRC) + PresetStorage interface
 ├── tests/                       # GoogleTest Host Unit Tests
 │   ├── CMakeLists.txt           # Standalone test runner build
 │   ├── test_macro_engine.cpp    # Verifies macro scaling & bounding
@@ -241,7 +255,7 @@ register_bits = (register_bits << 1) | feedback_bit;
 
 ### Recipe 1: Adding a New Waveform Shape
 
-1. **Add Enum Value:** In [include/core/phase_lfo.hpp](file:///Users/ww/src/phase-box/include/core/phase_lfo.hpp#L8-L14), add your new waveform to the `Waveform` enum:
+1. **Add Enum Value:** In [include/core/phase_lfo.hpp](../include/core/phase_lfo.hpp#L8-L14), add your new waveform to the `Waveform` enum:
    ```cpp
    enum class Waveform {
        Sine,
@@ -261,17 +275,17 @@ register_bits = (register_bits << 1) | feedback_bit;
    }
    ```
 
-3. **Expose in UI:** In [include/PhaseOscillator.hpp](file:///Users/ww/src/phase-box/include/PhaseOscillator.hpp) and the OLED display strings in [native_sim_main.cpp](file:///Users/ww/src/phase-box/src/native_sim_main.cpp#L71), add the name label `"EXP"` to the waveform list.
+3. **Expose in UI:** In [include/PhaseOscillator.hpp](../include/PhaseOscillator.hpp) and the OLED display strings in [native_sim_main.cpp](../src/native_sim_main.cpp#L71), add the name label `"EXP"` to the waveform list.
 
 ---
 
 ### Recipe 2: Adjusting Hardware Pinout
 
 Hardware pin mappings are defined in the HAL headers and drivers. To change a pin, update the corresponding default argument or constant:
-* **MIDI TX/RX:** [include/hal/pico_hal_midi.hpp](file:///Users/ww/src/phase-box/include/hal/pico_hal_midi.hpp) (Default: GP0 TX, GP1 RX).
-* **Rotary Encoder:** [src/main.cpp](file:///Users/ww/src/phase-box/src/main.cpp#L106) (Default: GP2 A, GP3 B, GP6 Pushbutton).
-* **OLED I2C:** [firmware/src/screensaver.cpp](file:///Users/ww/src/phase-box/firmware/src/screensaver.cpp#L10-L16) (Default: GP4 SDA, GP5 SCL on `i2c0`).
-* **Expression ADC:** [src/main.cpp](file:///Users/ww/src/phase-box/src/main.cpp#L74) (Default: GP26 / ADC0).
+* **MIDI TX/RX:** [include/hal/pico_hal_midi.hpp](../include/hal/pico_hal_midi.hpp) (Default: GP0 TX, GP1 RX).
+* **Rotary Encoder:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP2 A, GP3 B, GP6 Pushbutton).
+* **OLED I2C:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP4 SDA, GP5 SCL on `i2c0`; 32 rows by default, `cmake -DPHASEBOX_OLED_HEIGHT=64` for a 64-row panel; bus speed 400 kHz, override with `-DPHASEBOX_OLED_I2C_HZ=...`).
+* **Expression ADC:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP26 / ADC0).
 
 ---
 
@@ -321,3 +335,25 @@ cmake --build firmware/build -j4
 #    - firmware/build/phase_box_firmware.uf2 (Drag-and-drop to Pico in BOOTSEL mode)
 #    - firmware/build/phase_box_firmware.elf (For GDB/Picoprobe debugging)
 ```
+
+---
+
+## First power-up on a real board (checklist)
+
+The firmware's behaviour is unit-tested on a computer (`DeviceApp` runs against fake pins), and `firmware_main.cpp`
+has been syntax-checked, but **it has not been built against the real Pico SDK or run on hardware yet.** Expect to
+check these on the first build:
+
+1. **Build:** `export PICO_SDK_PATH=...`, then `./.agents/skills/phase-box/scripts/build_pico.sh`. Fix any SDK-version
+   differences in `firmware_main.cpp` (it uses `time_us_64`, `to_ms_since_boot`, `multicore_launch_core1`, TinyUSB `tud_midi_*`).
+2. **USB:** the board should enumerate as a USB MIDI device and send CC messages (check with a MIDI monitor).
+3. **Screen blank?** Confirm the panel height (`cmake -DPHASEBOX_OLED_HEIGHT=64 ..` for 64 rows), the I2C address
+   (`0x3C`, some modules use `0x3D`), and SDA/SCL on GP4/GP5. The bus runs at 400 kHz; only raise it
+   (`-DPHASEBOX_OLED_I2C_HZ=1000000`) if your module is happy at that speed.
+4. **Picture mirrored or upside down?** In `PicoHalDisplay::init()` change segment remap `0xA1` to `0xA0` and scan direction `0xC8` to `0xC0`.
+5. **Encoder:** wrong direction -> `ENC_REVERSED` in `include/hal/pinout.hpp`; one click = two steps, or two clicks per step ->
+   change `ENC_TRANSITIONS_PER_DETENT` (4 or 2). All controls are wired switch-to-ground (pull-ups are enabled in firmware).
+6. **Footswitches and encoder switch** are debounced for 20 ms in software; no extra hardware is needed.
+7. **DIN/TRS MIDI:** the UART pin only drives the signal; the standard current-loop resistors are on your hardware.
+8. **Not included yet:** preset storage in flash (`NoStorage` is used, so hold-to-save shows `NO STORAGE`), external MIDI clock sync,
+   and preset slots 2-8 on the device.

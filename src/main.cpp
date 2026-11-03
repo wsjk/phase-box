@@ -1,3 +1,8 @@
+// NOT BUILT. This is an early experiment that runs the layered core/ engine; it is not part of any CMake
+// target and has known problems (its own timer callback writes ~12 bytes/ms to a 3,125 byte/s MIDI port,
+// and the display is never drawn). The device firmware is firmware/src/firmware_main.cpp, which runs the
+// same engine, pages and presets as the desktop simulator.
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -103,8 +108,8 @@ int main() {
  */
 void core1_main() {
     // Initialize Core 1 peripherals
-    g_encoder.init(2, 3, 4); // Pins 2 (CLK), 3 (DT), 4 (SW)
-    g_display.init(6, 7);    // Pins 6 (SDA), 7 (SCL)
+    g_encoder.init(hal::pins::ENC_A, hal::pins::ENC_B, hal::pins::ENC_SW);
+    g_display.init(hal::pins::OLED_SDA, hal::pins::OLED_SCL);
     g_ui_controller.init();
 
     while (true) {
@@ -117,7 +122,7 @@ void core1_main() {
         uint32_t hold_ms = g_encoder.get_button_hold_time_ms();
 
         // 2. Update UI state machine
-        g_ui_controller.handle_bpm_encoder_input(delta, time_us_32());
+        g_ui_controller.handle_encoder_turn(delta, time_us_32());
 
         // 3. Render frame to local display framebuffer and send over I2C
         g_display.clear();

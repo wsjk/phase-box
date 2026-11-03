@@ -4,6 +4,7 @@
 #include "hal/hal_gpio.hpp"
 #include "hal/hal_adc.hpp"
 #include <cstdint>
+#include <array>
 
 #if __has_include("pico/time.h")
 #include "pico/time.h"
@@ -25,8 +26,10 @@ namespace phasebox::core {
 class Core0Task {
 public:
     static constexpr uint32_t TICK_INTERVAL_US = 1000; // 1000 Hz = 1000 microseconds
+    // DIN MIDI carries ~3125 B/s. 4 channels x 3 B every 5 ms = 2400 B/s (77%).
+    static constexpr uint32_t MIN_CC_INTERVAL_US = 5000;
 
-    Core0Task(ModulationEngine& engine, hal::HalMidi& midi, hal::HalGpio* gpio = nullptr, hal::HalAdc* adc = nullptr)
+    Core0Task(ModulationEngine& engine, hal::HalMidi& midi, hal::HalGpio* gpio = nullptr, hal::AdcInput* adc = nullptr)
         : engine_(engine), midi_(midi), gpio_(gpio), adc_(adc) {}
 
     /**
@@ -60,7 +63,7 @@ public:
 
         // 3. Sample expression pedal analog input (ADC0 / GP26)
         if (adc_ != nullptr) {
-            float exp_val = adc_->read_normalized(0);
+            float exp_val = adc_->read_normalized();
             engine_.get_macro_engine().set_expression_value(exp_val);
         }
 
@@ -68,9 +71,16 @@ public:
         auto messages = engine_.tick(current_time_us);
 
         // 4. Dispatch generated MIDI CC messages via HAL
-        for (const auto& msg : messages) {
+        // Only send when the value changed, and at most once per MIN_CC_INTERVAL_US per LFO.
+        for (size_t i = 0; i < messages.size(); ++i) {
+            const auto& msg = messages[i];
+            if (msg.data2 == last_sent_value_[i]) continue;
+            if (has_sent_[i] && (current_time_us - last_sent_time_us_[i]) < MIN_CC_INTERVAL_US) continue;
             uint8_t channel = (msg.status & 0x0F) + 1; // 1-indexed MIDI channel
             midi_.send_cc(channel, msg.data1, msg.data2);
+            last_sent_value_[i] = msg.data2;
+            last_sent_time_us_[i] = current_time_us;
+            has_sent_[i] = true;
         }
 
         tick_count_++;
@@ -126,7 +136,11 @@ private:
     ModulationEngine& engine_;
     hal::HalMidi& midi_;
     hal::HalGpio* gpio_{nullptr};
-    hal::HalAdc* adc_{nullptr};
+    hal::AdcInput* adc_{nullptr};
+
+    std::array<int16_t, 4> last_sent_value_{{-1, -1, -1, -1}};
+    std::array<uint32_t, 4> last_sent_time_us_{{0, 0, 0, 0}};
+    std::array<bool, 4> has_sent_{{false, false, false, false}};
 
     bool last_tap_state_{false};
     bool last_mutate_state_{false};

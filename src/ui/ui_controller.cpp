@@ -22,6 +22,7 @@ void UIController::handle_encoder_turn(int delta, uint32_t current_time_us) {
 }
 
 void UIController::handle_bpm_encoder_input(int delta, uint32_t current_time_us) {
+    if (delta == 0) return; // don't let idle polling reset the turn-velocity timer
     uint32_t interval_ms = 100;
     if (m_last_turn_us > 0 && current_time_us > m_last_turn_us) {
         interval_ms = (current_time_us - m_last_turn_us) / 1000;
@@ -56,10 +57,8 @@ void UIController::handle_encoder_click() {
 }
 
 void UIController::handle_tap_tempo(uint32_t tap_time_us) {
-    static uint32_t last_tap_us = 0;
-
-    if (last_tap_us > 0 && tap_time_us > last_tap_us) {
-        uint32_t interval_us = tap_time_us - last_tap_us;
+    if (m_last_tap_us > 0 && tap_time_us > m_last_tap_us) {
+        uint32_t interval_us = tap_time_us - m_last_tap_us;
         uint32_t interval_ms = interval_us / 1000;
 
         // Valid tap tempo window: 200 ms (300 BPM) to 3000 ms (20 BPM)
@@ -69,7 +68,7 @@ void UIController::handle_tap_tempo(uint32_t tap_time_us) {
             m_engine.reset_phase(); // Align phase accumulator to tap
         }
     }
-    last_tap_us = tap_time_us;
+    m_last_tap_us = tap_time_us;
 }
 
 } // namespace phasebox::ui

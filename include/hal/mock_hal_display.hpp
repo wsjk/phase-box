@@ -1,11 +1,12 @@
 #pragma once
 #include "hal/hal_display.hpp"
 #include <vector>
+#include <algorithm>
 #include <string>
 
 namespace phasebox::hal {
 
-class MockHalDisplay : public HalDisplay {
+class MockHalDisplay : public DisplayInterface {
 public:
     MockHalDisplay(uint16_t width = 128, uint16_t height = 32)
         : width_(width), height_(height), buffer_(width * (height / 8), 0) {}

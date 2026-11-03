@@ -22,7 +22,7 @@ public:
     static constexpr uint8_t MIDI_TIMING_CLOCK = 0xF8;
 
 #if defined(PHASEBOX_PICO_UART_AVAILABLE)
-    PicoHalMidi(uart_inst_t* uart = uart0, uint tx_pin = 0, uint rx_pin = 1, uint baud_rate = MIDI_BAUD_RATE)
+    PicoHalMidi(uart_inst_t* uart = uart0, unsigned tx_pin = 0, unsigned rx_pin = 1, unsigned baud_rate = MIDI_BAUD_RATE)
         : uart_(uart), tx_pin_(tx_pin), rx_pin_(rx_pin), baud_rate_(baud_rate) {}
 
     void init() {
@@ -57,9 +57,9 @@ public:
 
 private:
     uart_inst_t* uart_;
-    uint tx_pin_;
-    uint rx_pin_;
-    uint baud_rate_;
+    unsigned tx_pin_;
+    unsigned rx_pin_;
+    unsigned baud_rate_;
 
 #else
     // Fallback stub for host simulation build

@@ -4,8 +4,21 @@
 #include <cstdint>
 #include <array>
 #include <cstring>
+#include "hal/pinout.hpp"
 
 namespace phasebox::hal {
+
+/// Drawing interface implemented by MockHalDisplay (tests) and PicoHalDisplay (SSD1306 over I2C).
+class DisplayInterface {
+public:
+    virtual ~DisplayInterface() = default;
+    virtual void clear() = 0;
+    virtual void draw_pixel(int16_t x, int16_t y, bool on) = 0;
+    virtual void draw_string(int16_t x, int16_t y, const char* str) = 0;
+    virtual void update() = 0;
+    virtual uint16_t get_width() const = 0;
+    virtual uint16_t get_height() const = 0;
+};
 
 class HalDisplay {
 public:
@@ -16,9 +29,9 @@ public:
     HalDisplay() = default;
 
     /**
-     * @brief Initialize I2C hardware (SDA Pin 6, SCL Pin 7, 1MHz Fast-Mode+).
+     * @brief Initialize I2C hardware (default SDA GP4, SCL GP5; see hal/pinout.hpp).
      */
-    void init(uint8_t sda_pin = 6, uint8_t scl_pin = 7);
+    void init(uint8_t sda_pin = pins::OLED_SDA, uint8_t scl_pin = pins::OLED_SCL);
 
     /**
      * @brief Clear framebuffer (set all pixels to black).
@@ -48,8 +61,8 @@ public:
 
 private:
     std::array<uint8_t, BUFFER_SIZE> buffer_{};
-    uint8_t sda_pin_{6};
-    uint8_t scl_pin_{7};
+    uint8_t sda_pin_{pins::OLED_SDA};
+    uint8_t scl_pin_{pins::OLED_SCL};
 
     uint32_t render_count_{0};
 };

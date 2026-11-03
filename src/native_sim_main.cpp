@@ -1,38 +1,27 @@
 #include "raylib.h"
 #include "PhaseBoxState.hpp"
+#include "SimControls.hpp"
+#include "PresetSession.hpp"
+#include "TapTempo.hpp"
+#include <cstdlib>
 #include <vector>
 #include <string>
 #include <chrono>
 #include <algorithm>
 #include <iostream>
 
-#ifdef __APPLE__
-#include <CoreMIDI/CoreMIDI.h>
-#endif
+#include "CoreMidiBackend.hpp"   // macOS only (empty elsewhere)
+#include "MidiChangeFilter.hpp"
+#include "MidiRouter.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
-#ifdef __APPLE__
-static MIDIClientRef g_midiClient = 0;
-static MIDIEndpointRef g_virtualOutput = 0;
-
-void SendMIDIControlChange(int channel, int control, int value) {
-    if (g_virtualOutput == 0) return;
-    
-    Byte buffer[32] = {0};
-    MIDIPacketList *packetList = (MIDIPacketList*)buffer;
-    MIDIPacket *packet = MIDIPacketListInit(packetList);
-    
-    Byte midiMessage[3] = { (Byte)(0xB0 | ((channel - 1) & 0x0F)), (Byte)(control & 0x7F), (Byte)(value & 0x7F) };
-    packet = MIDIPacketListAdd(packetList, sizeof(buffer), packet, 0, 3, midiMessage);
-    
-    MIDIReceived(g_virtualOutput, packetList);
-}
-#endif
-
-void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state, int active_macro_index) {
+// The 128x64 OLED shows exactly what the active destination emits: waveform shape (P1), phase
+// offset (P3), phase modulation (P6), clock multiplier (P10), Turing blend (P11), weight (P9).
+void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, int active_dest,
+                     const PresetSession& session, uint32_t now_ms) {
     BeginTextureMode(oled_target);
     ClearBackground(BLACK);
 
@@ -40,163 +29,154 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, PhaseBoxState& state, int act
     DrawLine(0, 14, 128, 14, WHITE);
     DrawLine(0, 50, 128, 50, WHITE);
 
-    const char* page_names[] = {"P1: WAVE", "P2: BPM", "P3: PHASE", "P4: CHAN", "P5: CC", "P6: PM", "P7: MUTE", "P8: MAC SEL", "P9: MAC WGT"};
-    std::string header = std::string(page_names[state.active_page]) + (state.button_state ? "*" : "");
+    std::string header = simui::page_name(state.active_page);
+    header += " D" + std::to_string(active_dest + 1);
     DrawText(header.c_str(), 4, 3, 10, WHITE);
+    // Preset slot, with '*' while there are edits that are not saved yet.
+    std::string slot_tag = "S" + std::to_string(session.slot()) + (session.dirty() ? "*" : "");
+    DrawText(slot_tag.c_str(), 104, 3, 10, WHITE);
 
     const int wave_width = 120;
     const int wave_height = 33;
     const int start_x = 4;
     const int start_y = 16;
 
+    std::vector<float> curve = simui::preview_curve(state, active_dest, wave_width);
     std::vector<Vector2> points;
+    points.reserve(curve.size());
     for (int x = 0; x < wave_width; ++x) {
-        float sample_offset = (static_cast<float>(x) / wave_width) * 2.0f * static_cast<float>(M_PI);
-        float cc_val = state.osc.evaluateCC(sample_offset, state.adc_expression);
-        
-        if (state.turing.mutation_prob > 0.0f) {
-            float turing_norm = static_cast<float>(state.turing.step() % 128) / 127.0f;
-            cc_val = (1.0f - state.turing.mutation_prob) * cc_val + state.turing.mutation_prob * turing_norm;
-        }
-
-        float py = start_y + wave_height - (cc_val * wave_height);
+        float py = start_y + wave_height - (curve[x] * wave_height);
         points.push_back({(float)(start_x + x), py});
     }
-
     for (size_t i = 1; i < points.size(); ++i) {
         DrawLineV(points[i-1], points[i], WHITE);
     }
+    for (int mx : simui::preview_markers(state, active_dest, wave_width)) {
+        mx = std::clamp(mx, 0, wave_width - 1);
+        DrawCircle(start_x + mx, (int)points[mx].y, 2.0f, WHITE);
+    }
 
-    std::string footer = "";
-    const char* wave_names[] = {"SINE", "SAW", "SQR", "TRI"};
-    if (state.active_page == 0) footer = "VAL: " + std::string(wave_names[state.osc.shape]);
-    else if (state.active_page == 1) footer = "VAL: " + std::to_string(static_cast<int>(state.osc.bpm)) + " BPM";
-    else if (state.active_page == 2) footer = "VAL: " + std::string(TextFormat("%.2f", state.osc.phase_offset));
-    else if (state.active_page == 3) footer = "VAL: CH " + std::to_string(state.midi_channel);
-    else if (state.active_page == 4) footer = "VAL: CC " + std::to_string(state.midi_cc_num);
-    else if (state.active_page == 5) footer = "VAL: PM " + std::string(TextFormat("%.2f", state.osc.pm_depth));
-    else if (state.active_page == 6) footer = "VAL: MUT " + std::string(TextFormat("%.2f", state.turing.mutation_prob));
-    else if (state.active_page == 7) footer = "VAL: DEST " + std::to_string(active_macro_index + 1);
-    else if (state.active_page == 8) footer = "VAL: WGT " + std::string(TextFormat("%.2f", state.macros.destinations[active_macro_index].scale));
-    
+    // Hold progress grows along the divider; a save/load message replaces the footer for 1.5 s.
+    float hold = session.hold_progress(now_ms);
+    if (hold > 0.0f) DrawRectangle(0, 49, (int)(128 * hold), 3, WHITE);
+    const char* status = session.status(now_ms);
+    std::string footer = status ? std::string(status) : simui::footer(state, state.active_page, active_dest);
     DrawText(footer.c_str(), 4, 53, 8, WHITE);
 
     EndTextureMode();
 }
 
-int main() {
+int main(int argc, char** argv) {
+    // `phase_box_native_sim --list-midi` prints what CoreMIDI reports (works even if Audio MIDI Setup is blank).
+    for (int i = 1; i < argc; ++i) {
+        if (std::string(argv[i]) == "--list-midi") {
+#ifdef __APPLE__
+            CoreMidiBackend backend;
+            backend.print_all(stdout);
+#else
+            std::printf("MIDI output is macOS only.\n");
+#endif
+            return 0;
+        }
+    }
+
     const int screenWidth = 800;
-    const int screenHeight = 560;
+    const int screenHeight = 680;
     InitWindow(screenWidth, screenHeight, "Phase Box - Polyrhythmic Macro Simulator");
     SetTargetFPS(60);
 
     PhaseBoxState state;
-    int active_macro_index = 0;
-    std::vector<std::chrono::steady_clock::time_point> tap_times;
+    state.turing.seed(static_cast<uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()));
+    int active_dest = 0;
+    TapTempo tap_tempo;
+
+    // Presets are files in $PHASE_BOX_PRESET_DIR (default: the current directory): preset_1.bin .. preset_8.bin
+    static std::string preset_dir;
+    const char* env_dir = std::getenv("PHASE_BOX_PRESET_DIR");
+    preset_dir = (env_dir && *env_dir) ? env_dir : "./";
+    if (preset_dir.back() != '/') preset_dir += '/';
+    PresetManager::path_prefix = preset_dir.c_str();
+    FilePresetStorage preset_storage;
+    PresetSession session(preset_storage);
+    double clock_ms = 0.0;                   // frame-time clock: deterministic and wrap-free
+    session.load(state, 0);                  // settings restore on power-up
 
 #ifdef __APPLE__
-    MIDIClientCreate(CFSTR("PhaseBox MIDI Generator"), NULL, NULL, &g_midiClient);
-    MIDISourceCreate(g_midiClient, CFSTR("Phase Box Virtual Out"), &g_virtualOutput);
+    // MIDI goes straight to the hardware destination named by $PHASE_BOX_MIDI_DEST (default "Melodee FM-1").
+    // No virtual port is created and no MIDI Studio patching is needed. PHASE_BOX_MIDI_DEST=virtual brings
+    // back the old "Phase Box Virtual Out" source.
+    CoreMidiBackend midi_backend;
+    midi_route::Router midi(midi_backend, midi_route::Config::from_env(std::getenv("PHASE_BOX_MIDI_DEST")));
+    MidiChangeFilter midi_filter;           // like the device: send on change, plus a 1 s refresh
+    uint32_t midi_epoch = midi.epoch();
+    if (!midi_backend.ok()) std::printf("[midi] CoreMIDI client could not be created (status %d)\n", midi_backend.error());
 #endif
 
     RenderTexture2D oled_target = LoadRenderTexture(128, 64);
-    auto last_cc_time = std::chrono::steady_clock::now();
+    uint32_t last_cc_ms = 0;                 // MIDI goes out every 30 ms of frame time
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
+        clock_ms += dt * 1000.0;
+        const uint32_t now_ms = static_cast<uint32_t>(clock_ms);
 
-        if (IsKeyPressed(KEY_E)) {
-            state.button_state = !state.button_state;
-            if (state.button_state) state.active_page = (state.active_page + 1) % 9;
-        }
-        if (IsKeyPressed(KEY_Q)) {
-            state.button_state = !state.button_state;
-            state.active_page = (state.active_page - 1 + 9) % 9;
-        }
+        if (IsKeyPressed(KEY_E)) state.active_page = simui::next_page(state.active_page, +1);
+        if (IsKeyPressed(KEY_Q)) state.active_page = simui::next_page(state.active_page, -1);
 
-        bool inc = IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP);
-        bool dec = IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN);
+        if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP))   simui::adjust(state, active_dest, state.active_page, +1);
+        if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) simui::adjust(state, active_dest, state.active_page, -1);
 
-        if (inc) {
-            if (state.active_page == 0) state.osc.shape = static_cast<PhaseOscillator::WaveShape>((state.osc.shape + 1) % 4);
-            else if (state.active_page == 1) state.osc.bpm = std::min(300.0f, state.osc.bpm + 5.0f);
-            else if (state.active_page == 2) state.osc.phase_offset += 0.2f;
-            else if (state.active_page == 3) state.midi_channel = std::min(16, state.midi_channel + 1);
-            else if (state.active_page == 4) state.midi_cc_num = std::min(127, state.midi_cc_num + 1);
-            else if (state.active_page == 5) state.osc.pm_depth = std::min(5.0f, state.osc.pm_depth + 0.1f);
-            else if (state.active_page == 6) state.turing.mutation_prob = std::min(1.0f, state.turing.mutation_prob + 0.05f);
-            else if (state.active_page == 7) active_macro_index = std::min((int)state.macros.destinations.size() - 1, active_macro_index + 1);
-            else if (state.active_page == 8) state.macros.destinations[active_macro_index].scale = std::min(2.0f, state.macros.destinations[active_macro_index].scale + 0.1f);
-        }
-        if (dec) {
-            if (state.active_page == 0) state.osc.shape = static_cast<PhaseOscillator::WaveShape>((state.osc.shape + 3) % 4);
-            else if (state.active_page == 1) state.osc.bpm = std::max(40.0f, state.osc.bpm - 5.0f);
-            else if (state.active_page == 2) state.osc.phase_offset -= 0.2f;
-            else if (state.active_page == 3) state.midi_channel = std::max(1, state.midi_channel - 1);
-            else if (state.active_page == 4) state.midi_cc_num = std::max(0, state.midi_cc_num - 1);
-            else if (state.active_page == 5) state.osc.pm_depth = std::max(0.0f, state.osc.pm_depth - 0.1f);
-            else if (state.active_page == 6) state.turing.mutation_prob = std::max(0.0f, state.turing.mutation_prob - 0.05f);
-            else if (state.active_page == 7) active_macro_index = std::max(0, active_macro_index - 1);
-            else if (state.active_page == 8) state.macros.destinations[active_macro_index].scale = std::max(-2.0f, state.macros.destinations[active_macro_index].scale - 0.1f);
-        }
+        if (IsKeyPressed(KEY_M)) state.step_turing(); // same as the Mutate footswitch
+        if (IsKeyPressed(KEY_R)) session.reset_to_defaults(state, now_ms);   // everything back to defaults
+        if (IsKeyPressed(KEY_U)) session.undo_reset(state, now_ms);          // ...and back again (until the next edit)
+        if (IsKeyPressed(KEY_LEFT_BRACKET))  session.select_slot(session.slot() - 1, state, now_ms);
+        if (IsKeyPressed(KEY_RIGHT_BRACKET)) session.select_slot(session.slot() + 1, state, now_ms);
 
         if (IsKeyPressed(KEY_T) || IsKeyPressed(KEY_SPACE)) {
-            auto now = std::chrono::steady_clock::now();
-            if (!tap_times.empty() && std::chrono::duration_cast<std::chrono::milliseconds>(now - tap_times.back()).count() > 2500) {
-                tap_times.clear();
-            }
-            tap_times.push_back(now);
-            if (tap_times.size() > 4) tap_times.erase(tap_times.begin());
-            if (tap_times.size() >= 2) {
-                double total_ms = 0;
-                for (size_t i = 1; i < tap_times.size(); ++i) {
-                    total_ms += std::chrono::duration_cast<std::chrono::milliseconds>(tap_times[i] - tap_times[i-1]).count();
-                }
-                double avg_ms = total_ms / (tap_times.size() - 1);
-                if (avg_ms > 0) {
-                    state.osc.bpm = static_cast<float>(60000.0 / avg_ms);
-                    state.osc.bpm = std::clamp(state.osc.bpm, 40.0f, 300.0f);
-                }
-            }
+            float tapped_bpm;
+            if (tap_tempo.tap(now_ms, tapped_bpm)) state.osc.bpm = tapped_bpm;
+            state.restart_phase();   // every tap restarts the LFOs at 0 degrees (Footswitch 1)
         }
 
         if (IsKeyPressed(KEY_ONE)) state.adc_expression = 0.0f;
         if (IsKeyPressed(KEY_TWO)) state.adc_expression = 0.5f;
         if (IsKeyPressed(KEY_THREE)) state.adc_expression = 1.0f;
 
-        state.osc.update(dt);
+        state.advance(dt); // master phase; Turing steps on each master cycle
 
-        if (state.osc.phase < state.last_phase) {
-            state.turing.step();
-        }
-        state.last_phase = state.osc.phase;
+#ifdef __APPLE__
+        midi.poll(now_ms);
+        if (midi.epoch() != midi_epoch) { midi_epoch = midi.epoch(); midi_filter = MidiChangeFilter(); }   // just connected: resend everything
+        for (const std::string& line : midi.take_log()) std::printf("[midi] %s\n", line.c_str());
+#endif
 
-        auto now = std::chrono::steady_clock::now();
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - last_cc_time).count() > 30) {
-            // Evaluate polyrhythmic macros with master phase and delta time
-            auto evaluated_macros = state.macros.evaluate(state.osc.phase, dt, state.adc_expression);
+        auto evaluated = state.evaluateMacros(dt);
 
+        if (static_cast<uint32_t>(now_ms - last_cc_ms) > 30) {
             #ifdef __APPLE__
-            for (const auto& msg : evaluated_macros) {
-                SendMIDIControlChange(msg.channel, msg.cc, msg.value);
+            for (size_t i = 0; i < evaluated.size(); ++i) {
+                const auto& msg = evaluated[i];
+                if (midi_filter.should_send(i, static_cast<uint8_t>(msg.channel), static_cast<uint8_t>(msg.cc), static_cast<uint8_t>(msg.value), now_ms))
+                    midi.send_cc(static_cast<uint8_t>(msg.channel), static_cast<uint8_t>(msg.cc), static_cast<uint8_t>(msg.value), now_ms);
             }
             #endif
-
-            state.last_sent_cc_val = evaluated_macros.empty() ? 0 : evaluated_macros[0].value;
-            last_cc_time = now;
+            state.last_sent_cc_val = evaluated.empty() ? 0 : evaluated[0].value;
+            last_cc_ms = now_ms;
         }
 
-        DrawOLEDDisplay(oled_target, state, active_macro_index);
+        session.update(state, now_ms);                              // auto-save 2 s after the last edit
+        session.button(IsKeyDown(KEY_ENTER), state, now_ms);        // hold 1 s = save
+
+        DrawOLEDDisplay(oled_target, state, active_dest, session, now_ms);
 
         BeginDrawing();
         ClearBackground(Color{ 20, 20, 25, 255 });
 
         DrawText("PHASE BOX - POLYRHYTHMIC MACRO SIMULATOR", 40, 20, 20, RAYWHITE);
-        
-        auto preview_macros = state.macros.evaluate(state.osc.phase, dt, state.adc_expression);
+
         std::string macro_status = "Polyrhythm -> ";
-        for (size_t i = 0; i < preview_macros.size(); ++i) {
-            macro_status += "[D" + std::to_string(i+1) + " CC" + std::to_string(preview_macros[i].cc) + ":" + std::to_string(preview_macros[i].value) + "] ";
+        for (size_t i = 0; i < evaluated.size(); ++i) {
+            macro_status += "[D" + std::to_string(i+1) + " CC" + std::to_string(evaluated[i].cc) + ":" + std::to_string(evaluated[i].value) + "] ";
         }
         DrawText(macro_status.c_str(), 40, 45, 12, GREEN);
 
@@ -205,14 +185,39 @@ int main() {
         DrawTexturePro(oled_target.texture, sourceRec, destRec, { 0, 0 }, 0.0f, WHITE);
         DrawRectangleLines((int)destRec.x - 2, (int)destRec.y - 2, (int)destRec.width + 4, (int)destRec.height + 4, DARKGRAY);
 
-        DrawRectangle(40, 410, 720, 125, Color{ 30, 30, 38, 255 });
-        DrawRectangleLines(40, 410, 720, 125, DARKGRAY);
+        // Live destination table: everything the pages edit, and what each destination outputs now.
+        DrawRectangle(40, 405, 720, 108, Color{ 30, 30, 38, 255 });
+        DrawRectangleLines(40, 405, 720, 108, DARKGRAY);
+        DrawText("DEST    CH    CC    MULT     WEIGHT    OFFSET    OUT", 55, 412, 12, ORANGE);
+        for (size_t i = 0; i < state.macros.destinations.size() && i < evaluated.size(); ++i) {
+            const MacroDestination& d = state.macros.destinations[i];
+            Color c = ((int)i == active_dest) ? GREEN : LIGHTGRAY;
+            DrawText(TextFormat("%sD%d     %2d    %3d    x%-6g  %+5.2f     %+5.2f     %3d",
+                                ((int)i == active_dest) ? ">" : " ", (int)i + 1, d.midi_channel, d.cc_number,
+                                d.clock_mult, d.scale, d.offset, evaluated[i].value),
+                     45, 430 + (int)i * 17, 12, c);
+        }
+        DrawText(TextFormat("TURING  mix %.2f   mutation %.2f   value %.2f   ([M] steps it now)",
+                            state.turing_mix, state.turing.mutation_prob, state.turing_norm), 55, 487, 12, SKYBLUE);
 
-        DrawText("CONTROLS & CONFIGURATION:", 55, 422, 12, ORANGE);
-        DrawText(TextFormat("[E] Next Page | [Q] Prev Page (Active Page: P%d - Editing Dest %d)", state.active_page + 1, active_macro_index + 1), 55, 442, 12, LIGHTGRAY);
-        DrawText("[W/S or Up/Down] Adjust Value (Change Destination or Scale Weight)", 55, 462, 12, LIGHTGRAY);
-        DrawText("[T / Space] Tap Tempo  |  [1-3] Expression", 55, 482, 12, LIGHTGRAY);
-        DrawText("[ESC] Quit", 680, 442, 12, RED);
+        DrawRectangle(40, 523, 720, 142, Color{ 30, 30, 38, 255 });
+        DrawRectangleLines(40, 523, 720, 142, DARKGRAY);
+        DrawText("CONTROLS & CONFIGURATION:", 55, 533, 12, ORANGE);
+        DrawText(TextFormat("[E] Next Page | [Q] Prev Page   (now: %s, editing Dest %d)", simui::page_name(state.active_page), active_dest + 1), 55, 553, 12, LIGHTGRAY);
+        DrawText("[W/S or Up/Down] Adjust value   (P4 CHAN, P5 CC, P9 WGT, P10 DIV edit the active dest; pick it on P8)", 55, 573, 12, LIGHTGRAY);
+        DrawText("[T/Space] Tap  |  [1-3] Pedal 0/.5/1  |  [M] Step Turing  |  [R] Reset ALL  |  [U] Undo reset", 55, 593, 12, LIGHTGRAY);
+        DrawText(TextFormat("[Enter] hold 1 s = SAVE  |  [ and ] = preset slot (now %d)  |  auto-saves 2 s after your last edit", session.slot()), 55, 613, 12, LIGHTGRAY);
+        DrawText("P1 WAVE  P2 BPM  P3 PHASE  P4 CHAN  P5 CC  P6 PM  P7 MUTE  P8 DEST  P9 WGT  P10 DIV  P11 MIX", 55, 633, 10, GRAY);
+#ifdef __APPLE__
+        {
+            std::string midi_line = "MIDI out: " + midi.status();
+            if (midi_line.size() > 100) midi_line = midi_line.substr(0, 97) + "...";
+            DrawText(midi_line.c_str(), 55, 649, 12, midi.connected() ? GREEN : YELLOW);
+        }
+#else
+        DrawText("MIDI out: macOS only (this build runs without MIDI output)", 55, 649, 12, YELLOW);
+#endif
+        DrawText("[ESC] Quit", 680, 553, 12, RED);
 
         EndDrawing();
     }

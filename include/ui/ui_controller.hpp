@@ -31,6 +31,7 @@ private:
     Screen m_current_screen{Screen::DASHBOARD};
     bool m_coarse_mode{false};
     uint32_t m_last_turn_us{0};
+    uint32_t m_last_tap_us{0};
     int m_selected_preset_slot{1};
 };
 

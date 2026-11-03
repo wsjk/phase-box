@@ -5,7 +5,14 @@
 
 namespace phasebox::hal {
 
-class HalAdc {
+/// Minimal analog-input interface so Core0Task can use the real, mock or Pico ADC.
+class AdcInput {
+public:
+    virtual ~AdcInput() = default;
+    virtual float read_normalized() = 0;   // [0.0f, 1.0f]
+};
+
+class HalAdc : public AdcInput {
 public:
     HalAdc() = default;
 
@@ -24,7 +31,7 @@ public:
      * @brief Read EMA-smoothed normalized expression value.
      * @return Float in range [0.0f, 1.0f].
      */
-    float read_normalized();
+    float read_normalized() override;
 
 #ifdef HOST_BUILD
     /**
