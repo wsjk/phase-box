@@ -42,6 +42,7 @@ public:
             set_status("BAD PRESET", now_ms);
         }
         rebase(s);
+        undo_valid_ = false;
         return ok;
     }
 
@@ -54,6 +55,40 @@ public:
         if (storage_.available() && has_baseline_ && fingerprint(s, fp) && fp != saved_fp_) write_encoded(fp, now_ms, false);
         slot_ = slot;
         load(s, now_ms, true);
+        return true;
+    }
+
+    /// Put every setting back to its default (shows "RESET"). Auto-save then stores the defaults like any other
+    /// edit, so the previous settings are kept for undo_reset().
+    void reset_to_defaults(PhaseBoxState& s, uint32_t now_ms) {
+        uint32_t before = 0;
+        const bool have_before = fingerprint(s, before);
+        if (have_before) { std::memcpy(undo_buf_, buf_, enc_len_); undo_len_ = enc_len_; }
+        s.reset_parameters();
+        uint32_t after = 0;
+        const bool have_after = fingerprint(s, after);
+        if (have_before && have_after && before == after) {
+            undo_valid_ = false;
+            set_status("ALREADY DEFAULT", now_ms);
+            return;
+        }
+        undo_valid_ = have_before && have_after;
+        undo_fp_ = after;
+        set_status("RESET", now_ms);
+    }
+
+    /// Bring back the settings from before the last reset. Only possible until you change a setting.
+    bool undo_reset(PhaseBoxState& s, uint32_t now_ms) {
+        if (!undo_valid_) { set_status("NOTHING TO UNDO", now_ms); return false; }
+        uint32_t fp = 0;
+        if (fingerprint(s, fp) && fp != undo_fp_) {
+            undo_valid_ = false;
+            set_status("EDITED SINCE RESET", now_ms);
+            return false;
+        }
+        undo_valid_ = false;
+        if (!PresetManager::decode(undo_buf_, undo_len_, s)) { set_status("UNDO FAILED", now_ms); return false; }
+        set_status("UNDONE", now_ms);
         return true;
     }
 
@@ -140,6 +175,10 @@ private:
     PresetStorage& storage_;
     int slot_;
     uint8_t buf_[PresetManager::MAX_BYTES];
+    uint8_t undo_buf_[PresetManager::MAX_BYTES];
+    size_t undo_len_ = 0;
+    bool undo_valid_ = false;
+    uint32_t undo_fp_ = 0;
     size_t enc_len_ = 0;
 
     bool has_baseline_ = false;

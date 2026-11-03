@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "SimControls.hpp"
+#include "PresetManager.hpp"
 
 using namespace simui;
 
@@ -220,4 +221,66 @@ TEST(SimPages, RestartPhasePutsEveryLfoBackAtZero) {
     int before = s.turing.step(); (void)before;
     s.advance(0.001f);                                  // restarting must not look like a cycle wrap
     EXPECT_TRUE(s.osc.phase > 0.0f);
+}
+
+// ---- reset everything to defaults ----
+namespace {
+std::vector<uint8_t> saved_bytes(const PhaseBoxState& s) {
+    uint8_t buf[PresetManager::MAX_BYTES];
+    size_t n = PresetManager::encode(s, buf, sizeof(buf));
+    return std::vector<uint8_t>(buf, buf + n);
+}
+void scramble(PhaseBoxState& s) {
+    s.osc.shape = PhaseOscillator::SQUARE; s.osc.bpm = 77.0f; s.osc.phase_offset = 2.0f; s.osc.pm_depth = 3.0f;
+    s.osc.pm_ratio = 5.0f; s.osc.phase = 4.0f;
+    s.turing.mutation_prob = 0.7f; s.turing_mix = 0.6f; s.turing_norm = 0.9f;
+    s.midi_channel = 9; s.midi_cc_num = 99;
+    s.macros.destinations[0] = {99, 9, -2.0f, 0.9f, 8.0f};
+    s.macros.destinations[1].clock_mult = 0.125f; s.macros.destinations[2].midi_channel = 16;
+    for (int i = 0; i < 5; ++i) s.step_turing();
+    s.advance(0.1f); s.evaluateMacros(0.1f);
+}
+}
+
+TEST(SimReset, EveryParameterGoesBackToItsDefault) {
+    PhaseBoxState s, fresh;
+    scramble(s);
+    ASSERT_TRUE(saved_bytes(s) != saved_bytes(fresh));       // the scramble really changed things
+    s.reset_parameters();
+    EXPECT_TRUE(saved_bytes(s) == saved_bytes(fresh));       // identical to a freshly started unit, byte for byte
+    EXPECT_NEAR(s.osc.phase, 0.0f, 0.0001f);
+    EXPECT_NEAR(s.osc.pm_ratio, 2.0f, 0.0001f);              // the unsaved oscillator settings too
+    EXPECT_NEAR(s.turing_norm, 0.5f, 0.0001f);
+    EXPECT_NEAR(s.macros.dest_phase(0), 0.0f, 0.0001f);
+    EXPECT_EQ(s.macros.destinations.size(), 3u);
+    for (int i = 0; i < 8; ++i) EXPECT_EQ(s.turing.step(), fresh.turing.step());   // same Turing pattern as a new unit
+}
+
+TEST(SimReset, LeavesInputsAndTheUiPositionAlone) {
+    PhaseBoxState s;
+    s.adc_expression = 0.7f; s.active_page = 5; s.button_state = true;
+    s.osc.bpm = 99.0f;
+    s.reset_parameters();
+    EXPECT_NEAR(s.adc_expression, 0.7f, 0.0001f);           // the pedal is an input, not a setting
+    EXPECT_EQ(s.active_page, 5);
+    EXPECT_TRUE(s.button_state);
+}
+
+TEST(SimReset, KeepsTheTuringRandomSeedChosenAtStartup) {
+    PhaseBoxState a, b;
+    a.turing.seed(42); b.turing.seed(42);
+    a.turing.mutation_prob = 0.9f;
+    a.reset_parameters();                                    // must not re-seed the generator
+    a.turing.mutation_prob = 0.5f; b.turing.mutation_prob = 0.5f;
+    for (int i = 0; i < 200; ++i) EXPECT_EQ(a.turing.step(), b.turing.step());
+}
+
+TEST(SimReset, TheMidiOutputIsTheDefaultOneAfterwards) {
+    PhaseBoxState s, fresh;
+    scramble(s);
+    s.reset_parameters(); fresh.reset_parameters();
+    auto a = s.evaluateMacros(0.001f), b = fresh.evaluateMacros(0.001f);
+    ASSERT_EQ(a.size(), b.size());
+    for (size_t i = 0; i < a.size(); ++i) { EXPECT_EQ(a[i].channel, b[i].channel); EXPECT_EQ(a[i].cc, b[i].cc); EXPECT_EQ(a[i].value, b[i].value); }
+    EXPECT_EQ(a[1].cc, 74);                                  // Destination 2 is back on CC 74
 }

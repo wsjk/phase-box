@@ -21,6 +21,21 @@ struct PhaseBoxState {
     float turing_norm = 0.5f;   // latest Turing output (0..1), updated once per master cycle
     float turing_mix = 0.0f;    // P11: 0 = LFO only, 1 = Turing sequence only
 
+    /// Every setting back to its power-up default: oscillator (wave, BPM, phase, PM), Turing (mutation, mix,
+    /// pattern), and every destination (channel, CC, weight, offset, multiplier). All LFOs restart at 0 degrees.
+    /// Not touched: the expression pedal (an input, not a setting), the current page and the preset slot.
+    void reset_parameters() {
+        osc = PhaseOscillator();
+        turing.reset();
+        macros = MacroEngine();
+        turing_norm = 0.5f;
+        turing_mix = 0.0f;
+        midi_channel = 1;
+        midi_cc_num = 16;
+        last_phase = 0.0f;
+        last_sent_cc_val = -1;
+    }
+
     /// Step the Turing machine once (also what the Mutate footswitch / [M] key does).
     void step_turing() { turing_norm = static_cast<float>(turing.step()) / 127.0f; }
 

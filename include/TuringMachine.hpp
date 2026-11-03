@@ -20,6 +20,14 @@ public:
 
     TuringMachine() = default;
 
+    /// Back to power-up settings (pattern, loop length, mutation). The random generator keeps running,
+    /// so a seed chosen at start-up is not lost.
+    void reset() {
+        register_bits = 0xACE1;
+        loop_length = 16;
+        mutation_prob = 0.0f;
+    }
+
     /// Seed the mutation RNG (e.g. from time_us_32() on the device). 0 is mapped to a valid state.
     void seed(uint32_t s) { rng_state = s ? s : 0x1234ABCDu; }
 

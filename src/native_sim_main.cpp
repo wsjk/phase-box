@@ -10,32 +10,16 @@
 #include <algorithm>
 #include <iostream>
 
-#ifdef __APPLE__
-#include <CoreMIDI/CoreMIDI.h>
-#endif
+#include "CoreMidiBackend.hpp"   // macOS only (empty elsewhere)
+#include "MidiChangeFilter.hpp"
+#include "MidiRouter.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
-#ifdef __APPLE__
-static MIDIClientRef g_midiClient = 0;
-static MIDIEndpointRef g_virtualOutput = 0;
-
-void SendMIDIControlChange(int channel, int control, int value) {
-    if (g_virtualOutput == 0) return;
-
-    Byte buffer[32] = {0};
-    MIDIPacketList *packetList = (MIDIPacketList*)buffer;
-    MIDIPacket *packet = MIDIPacketListInit(packetList);
-
-    Byte midiMessage[3] = { (Byte)(0xB0 | ((channel - 1) & 0x0F)), (Byte)(control & 0x7F), (Byte)(value & 0x7F) };
-    packet = MIDIPacketListAdd(packetList, sizeof(buffer), packet, 0, 3, midiMessage);
-
-    MIDIReceived(g_virtualOutput, packetList);
-}
-#endif
-
+// The 128x64 OLED shows exactly what the active destination emits: waveform shape (P1), phase
+// offset (P3), phase modulation (P6), clock multiplier (P10), Turing blend (P11), weight (P9).
 void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, int active_dest,
                      const PresetSession& session, uint32_t now_ms) {
     BeginTextureMode(oled_target);
@@ -47,9 +31,8 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, i
 
     std::string header = simui::page_name(state.active_page);
     header += " D" + std::to_string(active_dest + 1);
-    // Use default font for sharp pixel-art style inside the 128x64 OLED
     DrawText(header.c_str(), 4, 3, 10, WHITE);
-
+    // Preset slot, with '*' while there are edits that are not saved yet.
     std::string slot_tag = "S" + std::to_string(session.slot()) + (session.dirty() ? "*" : "");
     DrawText(slot_tag.c_str(), 104, 3, 10, WHITE);
 
@@ -73,6 +56,7 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, i
         DrawCircle(start_x + mx, (int)points[mx].y, 2.0f, WHITE);
     }
 
+    // Hold progress grows along the divider; a save/load message replaces the footer for 1.5 s.
     float hold = session.hold_progress(now_ms);
     if (hold > 0.0f) DrawRectangle(0, 49, (int)(128 * hold), 3, WHITE);
     const char* status = session.status(now_ms);
@@ -82,23 +66,31 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, i
     EndTextureMode();
 }
 
-int main() {
-    const int screenWidth = 860;
-    const int screenHeight = 740;
-    
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+int main(int argc, char** argv) {
+    // `phase_box_native_sim --list-midi` prints what CoreMIDI reports (works even if Audio MIDI Setup is blank).
+    for (int i = 1; i < argc; ++i) {
+        if (std::string(argv[i]) == "--list-midi") {
+#ifdef __APPLE__
+            CoreMidiBackend backend;
+            backend.print_all(stdout);
+#else
+            std::printf("MIDI output is macOS only.\n");
+#endif
+            return 0;
+        }
+    }
+
+    const int screenWidth = 800;
+    const int screenHeight = 680;
     InitWindow(screenWidth, screenHeight, "Phase Box - Polyrhythmic Macro Simulator");
     SetTargetFPS(60);
-
-    // Load larger Courier New font for UI and set bilinear filtering for smooth high-res scaling
-    Font courierFont = LoadFontEx("/System/Library/Fonts/Supplemental/Courier New.ttf", 28, 0, 250);
-    SetTextureFilter(courierFont.texture, TEXTURE_FILTER_BILINEAR);
 
     PhaseBoxState state;
     state.turing.seed(static_cast<uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()));
     int active_dest = 0;
     TapTempo tap_tempo;
 
+    // Presets are files in $PHASE_BOX_PRESET_DIR (default: the current directory): preset_1.bin .. preset_8.bin
     static std::string preset_dir;
     const char* env_dir = std::getenv("PHASE_BOX_PRESET_DIR");
     preset_dir = (env_dir && *env_dir) ? env_dir : "./";
@@ -106,19 +98,22 @@ int main() {
     PresetManager::path_prefix = preset_dir.c_str();
     FilePresetStorage preset_storage;
     PresetSession session(preset_storage);
-    double clock_ms = 0.0;
-    session.load(state, 0);
+    double clock_ms = 0.0;                   // frame-time clock: deterministic and wrap-free
+    session.load(state, 0);                  // settings restore on power-up
 
 #ifdef __APPLE__
-    MIDIClientCreate(CFSTR("PhaseBox MIDI Generator"), NULL, NULL, &g_midiClient);
-    MIDISourceCreate(g_midiClient, CFSTR("Phase Box Virtual Out"), &g_virtualOutput);
+    // MIDI goes straight to the hardware destination named by $PHASE_BOX_MIDI_DEST (default "Melodee FM-1").
+    // No virtual port is created and no MIDI Studio patching is needed. PHASE_BOX_MIDI_DEST=virtual brings
+    // back the old "Phase Box Virtual Out" source.
+    CoreMidiBackend midi_backend;
+    midi_route::Router midi(midi_backend, midi_route::Config::from_env(std::getenv("PHASE_BOX_MIDI_DEST")));
+    MidiChangeFilter midi_filter;           // like the device: send on change, plus a 1 s refresh
+    uint32_t midi_epoch = midi.epoch();
+    if (!midi_backend.ok()) std::printf("[midi] CoreMIDI client could not be created (status %d)\n", midi_backend.error());
 #endif
 
     RenderTexture2D oled_target = LoadRenderTexture(128, 64);
-    // Set nearest-neighbor filtering on the OLED render texture so pixel art stays razor sharp
-    SetTextureFilter(oled_target.texture, TEXTURE_FILTER_POINT);
-
-    auto last_cc_time = std::chrono::steady_clock::now();
+    uint32_t last_cc_ms = 0;                 // MIDI goes out every 30 ms of frame time
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -131,96 +126,102 @@ int main() {
         if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP))   simui::adjust(state, active_dest, state.active_page, +1);
         if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) simui::adjust(state, active_dest, state.active_page, -1);
 
-        if (IsKeyPressed(KEY_M)) state.step_turing();
+        if (IsKeyPressed(KEY_M)) state.step_turing(); // same as the Mutate footswitch
+        if (IsKeyPressed(KEY_R)) session.reset_to_defaults(state, now_ms);   // everything back to defaults
+        if (IsKeyPressed(KEY_U)) session.undo_reset(state, now_ms);          // ...and back again (until the next edit)
         if (IsKeyPressed(KEY_LEFT_BRACKET))  session.select_slot(session.slot() - 1, state, now_ms);
         if (IsKeyPressed(KEY_RIGHT_BRACKET)) session.select_slot(session.slot() + 1, state, now_ms);
 
         if (IsKeyPressed(KEY_T) || IsKeyPressed(KEY_SPACE)) {
             float tapped_bpm;
             if (tap_tempo.tap(now_ms, tapped_bpm)) state.osc.bpm = tapped_bpm;
-            state.restart_phase();
+            state.restart_phase();   // every tap restarts the LFOs at 0 degrees (Footswitch 1)
         }
 
         if (IsKeyPressed(KEY_ONE)) state.adc_expression = 0.0f;
         if (IsKeyPressed(KEY_TWO)) state.adc_expression = 0.5f;
         if (IsKeyPressed(KEY_THREE)) state.adc_expression = 1.0f;
 
-        state.advance(dt);
+        state.advance(dt); // master phase; Turing steps on each master cycle
+
+#ifdef __APPLE__
+        midi.poll(now_ms);
+        if (midi.epoch() != midi_epoch) { midi_epoch = midi.epoch(); midi_filter = MidiChangeFilter(); }   // just connected: resend everything
+        for (const std::string& line : midi.take_log()) std::printf("[midi] %s\n", line.c_str());
+#endif
+
         auto evaluated = state.evaluateMacros(dt);
 
-        auto now = std::chrono::steady_clock::now();
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - last_cc_time).count() > 30) {
+        if (static_cast<uint32_t>(now_ms - last_cc_ms) > 30) {
             #ifdef __APPLE__
-            for (const auto& msg : evaluated) {
-                SendMIDIControlChange(msg.channel, msg.cc, msg.value);
+            for (size_t i = 0; i < evaluated.size(); ++i) {
+                const auto& msg = evaluated[i];
+                if (midi_filter.should_send(i, static_cast<uint8_t>(msg.channel), static_cast<uint8_t>(msg.cc), static_cast<uint8_t>(msg.value), now_ms))
+                    midi.send_cc(static_cast<uint8_t>(msg.channel), static_cast<uint8_t>(msg.cc), static_cast<uint8_t>(msg.value), now_ms);
             }
             #endif
             state.last_sent_cc_val = evaluated.empty() ? 0 : evaluated[0].value;
-            last_cc_time = now;
+            last_cc_ms = now_ms;
         }
 
-        session.update(state, now_ms);
-        session.button(IsKeyDown(KEY_ENTER), state, now_ms);
+        session.update(state, now_ms);                              // auto-save 2 s after the last edit
+        session.button(IsKeyDown(KEY_ENTER), state, now_ms);        // hold 1 s = save
 
         DrawOLEDDisplay(oled_target, state, active_dest, session, now_ms);
 
         BeginDrawing();
         ClearBackground(Color{ 20, 20, 25, 255 });
 
-        DrawTextEx(courierFont, "PHASE BOX - POLYRHYTHMIC MACRO SIMULATOR", (Vector2){40.0f, 20.0f}, 22.0f, 1.0f, RAYWHITE);
+        DrawText("PHASE BOX - POLYRHYTHMIC MACRO SIMULATOR", 40, 20, 20, RAYWHITE);
 
         std::string macro_status = "Polyrhythm -> ";
         for (size_t i = 0; i < evaluated.size(); ++i) {
             macro_status += "[D" + std::to_string(i+1) + " CC" + std::to_string(evaluated[i].cc) + ":" + std::to_string(evaluated[i].value) + "] ";
         }
-        DrawTextEx(courierFont, macro_status.c_str(), (Vector2){40.0f, 50.0f}, 15.0f, 1.0f, GREEN);
+        DrawText(macro_status.c_str(), 40, 45, 12, GREEN);
 
         Rectangle sourceRec = { 0.0f, 0.0f, (float)oled_target.texture.width, (float)-oled_target.texture.height };
-        Rectangle destRec = { (GetScreenWidth() - 680) / 2.0f, 82.0f, 680.0f, 330.0f };
+        Rectangle destRec = { (screenWidth - 640) / 2.0f, 75.0f, 640.0f, 320.0f };
         DrawTexturePro(oled_target.texture, sourceRec, destRec, { 0, 0 }, 0.0f, WHITE);
         DrawRectangleLines((int)destRec.x - 2, (int)destRec.y - 2, (int)destRec.width + 4, (int)destRec.height + 4, DARKGRAY);
 
-        // Larger destination table section
-        DrawRectangle(40, 424, 780, 128, Color{ 30, 30, 38, 255 });
-        DrawRectangleLines(40, 424, 780, 128, DARKGRAY);
-        DrawTextEx(courierFont, "DEST    CH    CC    MULT     WEIGHT    OFFSET    OUT", (Vector2){55.0f, 432.0f}, 15.0f, 1.0f, ORANGE);
+        // Live destination table: everything the pages edit, and what each destination outputs now.
+        DrawRectangle(40, 405, 720, 108, Color{ 30, 30, 38, 255 });
+        DrawRectangleLines(40, 405, 720, 108, DARKGRAY);
+        DrawText("DEST    CH    CC    MULT     WEIGHT    OFFSET    OUT", 55, 412, 12, ORANGE);
         for (size_t i = 0; i < state.macros.destinations.size() && i < evaluated.size(); ++i) {
             const MacroDestination& d = state.macros.destinations[i];
             Color c = ((int)i == active_dest) ? GREEN : LIGHTGRAY;
-            std::string line = TextFormat("%sD%d     %2d    %3d    x%-6g  %+5.2f     %+5.2f     %3d",
-                                          ((int)i == active_dest) ? ">" : " ", (int)i + 1, d.midi_channel, d.cc_number,
-                                          d.clock_mult, d.scale, d.offset, evaluated[i].value);
-            DrawTextEx(courierFont, line.c_str(), (Vector2){45.0f, (float)(454 + (int)i * 21)}, 15.0f, 1.0f, c);
+            DrawText(TextFormat("%sD%d     %2d    %3d    x%-6g  %+5.2f     %+5.2f     %3d",
+                                ((int)i == active_dest) ? ">" : " ", (int)i + 1, d.midi_channel, d.cc_number,
+                                d.clock_mult, d.scale, d.offset, evaluated[i].value),
+                     45, 430 + (int)i * 17, 12, c);
         }
-        std::string turing_str = TextFormat("TURING  mix %.2f   mutation %.2f   value %.2f   ([M] steps it now)",
-                                            state.turing_mix, state.turing.mutation_prob, state.turing_norm);
-        DrawTextEx(courierFont, turing_str.c_str(), (Vector2){55.0f, 518.0f}, 14.0f, 1.0f, SKYBLUE);
+        DrawText(TextFormat("TURING  mix %.2f   mutation %.2f   value %.2f   ([M] steps it now)",
+                            state.turing_mix, state.turing.mutation_prob, state.turing_norm), 55, 487, 12, SKYBLUE);
 
-        // Larger controls section
-        DrawRectangle(40, 562, 780, 162, Color{ 30, 30, 38, 255 });
-        DrawRectangleLines(40, 562, 780, 162, DARKGRAY);
-        DrawTextEx(courierFont, "CONTROLS & CONFIGURATION:", (Vector2){55.0f, 570.0f}, 15.0f, 1.0f, ORANGE);
-        
-        std::string c1 = TextFormat("[E] Next Page | [Q] Prev Page   (now: %s, editing Dest %d)", simui::page_name(state.active_page), active_dest + 1);
-        DrawTextEx(courierFont, c1.c_str(), (Vector2){55.0f, 594.0f}, 14.0f, 1.0f, LIGHTGRAY);
-        DrawTextEx(courierFont, "[W/S or Up/Down] Adjust value   (P4 CHAN, P5 CC, P9 WGT, P10 DIV edit active dest; pick on P8)", (Vector2){55.0f, 616.0f}, 14.0f, 1.0f, LIGHTGRAY);
-        DrawTextEx(courierFont, "[T / Space] Tap Tempo  |  [1-3] Expression 0 / 0.5 / 1  |  [M] Step Turing now", (Vector2){55.0f, 638.0f}, 14.0f, 1.0f, LIGHTGRAY);
-        
-        std::string c4 = TextFormat("[Enter] hold 1 s = SAVE  |  [ and ] = preset slot (now %d)  |  auto-saves after 2 s", session.slot());
-        DrawTextEx(courierFont, c4.c_str(), (Vector2){55.0f, 660.0f}, 14.0f, 1.0f, LIGHTGRAY);
-        DrawTextEx(courierFont, "P1 WAVE  P2 BPM  P3 PHASE  P4 CHAN  P5 CC  P6 PM  P7 MUTE  P8 DEST  P9 WGT  P10 DIV  P11 MIX", (Vector2){55.0f, 682.0f}, 12.0f, 1.0f, GRAY);
-        
+        DrawRectangle(40, 523, 720, 142, Color{ 30, 30, 38, 255 });
+        DrawRectangleLines(40, 523, 720, 142, DARKGRAY);
+        DrawText("CONTROLS & CONFIGURATION:", 55, 533, 12, ORANGE);
+        DrawText(TextFormat("[E] Next Page | [Q] Prev Page   (now: %s, editing Dest %d)", simui::page_name(state.active_page), active_dest + 1), 55, 553, 12, LIGHTGRAY);
+        DrawText("[W/S or Up/Down] Adjust value   (P4 CHAN, P5 CC, P9 WGT, P10 DIV edit the active dest; pick it on P8)", 55, 573, 12, LIGHTGRAY);
+        DrawText("[T/Space] Tap  |  [1-3] Pedal 0/.5/1  |  [M] Step Turing  |  [R] Reset ALL  |  [U] Undo reset", 55, 593, 12, LIGHTGRAY);
+        DrawText(TextFormat("[Enter] hold 1 s = SAVE  |  [ and ] = preset slot (now %d)  |  auto-saves 2 s after your last edit", session.slot()), 55, 613, 12, LIGHTGRAY);
+        DrawText("P1 WAVE  P2 BPM  P3 PHASE  P4 CHAN  P5 CC  P6 PM  P7 MUTE  P8 DEST  P9 WGT  P10 DIV  P11 MIX", 55, 633, 10, GRAY);
 #ifdef __APPLE__
-        DrawTextEx(courierFont, "MIDI out: \"Phase Box Virtual Out\" (CoreMIDI)", (Vector2){55.0f, 704.0f}, 13.0f, 1.0f, GREEN);
+        {
+            std::string midi_line = "MIDI out: " + midi.status();
+            if (midi_line.size() > 100) midi_line = midi_line.substr(0, 97) + "...";
+            DrawText(midi_line.c_str(), 55, 649, 12, midi.connected() ? GREEN : YELLOW);
+        }
 #else
-        DrawTextEx(courierFont, "MIDI out: macOS only (this build runs without MIDI output)", (Vector2){55.0f, 704.0f}, 13.0f, 1.0f, YELLOW);
+        DrawText("MIDI out: macOS only (this build runs without MIDI output)", 55, 649, 12, YELLOW);
 #endif
-        DrawTextEx(courierFont, "[ESC] Quit", (Vector2){715.0f, 594.0f}, 14.0f, 1.0f, RED);
+        DrawText("[ESC] Quit", 680, 553, 12, RED);
 
         EndDrawing();
     }
 
-    UnloadFont(courierFont);
     UnloadRenderTexture(oled_target);
     CloseWindow();
     return 0;

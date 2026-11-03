@@ -139,10 +139,21 @@ If you do not have physical hardware in front of you, Phase Box includes a real-
 | **`[M]`** | Step the Turing machine now (Mutate footswitch) |
 | **`[Enter]`** (hold 1 s) | Save the current settings (`SAVED`) |
 | **`[`** / **`]`** | Previous / next preset slot (1–8) |
+| **`[R]`** | **Reset everything to defaults** (one keypress; shows `RESET`) |
+| **`[U]`** | Undo the last reset (shows `UNDONE`) |
 | **`[1]`** | Simulate Expression Pedal at 0% (Heel down) |
 | **`[2]`** | Simulate Expression Pedal at 50% (Midway) |
 | **`[3]`** | Simulate Expression Pedal at 100% (Toe down) |
 | **`[ESC]`** | Exit Simulator |
+
+### Resetting everything to defaults
+Press **`[R]`** in the simulator to put every setting back to how the unit starts up:
+- **Reset:** waveform, BPM (120), phase offset, phase modulation, Turing mutation and mix, the Turing pattern, and every destination's channel, CC, weight, offset and multiplier. All LFOs restart at 0 degrees.
+- **Not reset:** the expression pedal (`[1]`–`[3]`; it is an input, not a setting), the page you are on, which destination is selected, and which preset slot you are in.
+- **It is saved like any other edit.** About 2 seconds later auto-save writes the defaults into the current slot, which replaces what was saved there.
+- **Undo with `[U]`.** It brings back exactly what you had before the reset, even if auto-save has already stored the defaults. Undo works for one step and only until you change another setting (then it shows `EDITED SINCE RESET`, and your new change is kept). Switching preset slots also cancels it, and quitting forgets it.
+- Pressing `[R]` when everything is already at defaults shows `ALREADY DEFAULT` and changes nothing.
+- The device has no spare control for this yet, so it is simulator-only for now.
 
 ### Connecting Simulator to Hardware & DAWs
 By default the simulator sends MIDI **straight to a hardware destination named `Melodee FM-1`**. It creates no virtual port, and nothing needs patching in Audio MIDI Setup. The bottom line of the window shows where it is going, for example `MIDI out: -> Melodee FM-1`.

@@ -246,3 +246,102 @@ TEST(NoStorageTest, SwitchingSlotsDoesNotTryToWrite) {
     EXPECT_EQ(ps.write_attempts(), 0u);
     EXPECT_NEAR(s.osc.bpm, 99.0f, 0.001f);
 }
+
+// ---- reset everything + undo ----
+namespace {
+PhaseBoxState edited() {
+    PhaseBoxState s;
+    s.osc.bpm = 150.0f; s.turing_mix = 0.4f; s.macros.destinations[1].midi_channel = 3;
+    return s;
+}
+}
+
+TEST(ResetAll, RestoresDefaultsShowsResetAndAutoSavesThemLikeAnyEdit) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    ps.update(s, 0);                                     // baseline: the edited settings are the saved ones
+    ps.reset_to_defaults(s, 100);
+    EXPECT_NEAR(s.osc.bpm, 120.0f, 0.001f);
+    EXPECT_TRUE(same(ps.status(100), "RESET"));
+    ps.update(s, 100);
+    EXPECT_TRUE(ps.dirty());
+    EXPECT_EQ(m.writes, 0);                              // not written instantly...
+    ps.update(s, 2100);
+    EXPECT_EQ(m.writes, 1);                              // ...but auto-saved after the usual 2 s
+    EXPECT_NEAR(stored_bpm(m, 1), 120.0f, 0.001f);
+}
+
+TEST(ResetAll, UndoBringsTheOldSettingsBackEvenAfterTheDefaultsWereSaved) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 100);
+    ps.update(s, 100); ps.update(s, 2100);               // defaults are now on disk
+    ASSERT_NEAR(stored_bpm(m, 1), 120.0f, 0.001f);
+    EXPECT_TRUE(ps.undo_reset(s, 2200));
+    EXPECT_NEAR(s.osc.bpm, 150.0f, 0.001f);
+    EXPECT_NEAR(s.turing_mix, 0.4f, 0.001f);
+    EXPECT_EQ(s.macros.destinations[1].midi_channel, 3);
+    EXPECT_TRUE(same(ps.status(2200), "UNDONE"));
+    ps.update(s, 2200); ps.update(s, 4300);              // and auto-save writes them back
+    EXPECT_NEAR(stored_bpm(m, 1), 150.0f, 0.001f);
+}
+
+TEST(ResetAll, UndoIsOnlyOfferedUntilYouChangeSomethingElse) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 100);
+    s.osc.bpm = 133.0f;                                  // an edit after the reset
+    EXPECT_FALSE(ps.undo_reset(s, 200));
+    EXPECT_TRUE(same(ps.status(200), "EDITED SINCE RESET"));
+    EXPECT_NEAR(s.osc.bpm, 133.0f, 0.001f);              // the new edit is not thrown away
+    EXPECT_FALSE(ps.undo_reset(s, 300));
+    EXPECT_TRUE(same(ps.status(300), "NOTHING TO UNDO"));
+}
+
+TEST(ResetAll, UndoWithNothingToUndoAndUndoingTwice) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    EXPECT_FALSE(ps.undo_reset(s, 0));
+    EXPECT_TRUE(same(ps.status(0), "NOTHING TO UNDO"));
+    ps.reset_to_defaults(s, 10);
+    EXPECT_TRUE(ps.undo_reset(s, 20));
+    EXPECT_FALSE(ps.undo_reset(s, 30));                  // one step only
+    EXPECT_NEAR(s.osc.bpm, 150.0f, 0.001f);
+}
+
+TEST(ResetAll, ResettingWhenAlreadyAtDefaultsSaysSoAndLeavesNothingToUndo) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 10);
+    EXPECT_TRUE(same(ps.status(10), "ALREADY DEFAULT"));
+    EXPECT_FALSE(ps.dirty());
+    EXPECT_FALSE(ps.undo_reset(s, 20));
+    ps.update(s, 5000);
+    EXPECT_EQ(m.writes, 0);                              // nothing to save
+}
+
+TEST(ResetAll, AnAccidentalSecondResetDoesNotLoseTheFirstUndo) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 100);
+    ps.reset_to_defaults(s, 150);                        // pressed again by mistake: already default
+    EXPECT_TRUE(same(ps.status(150), "ALREADY DEFAULT"));
+    EXPECT_FALSE(ps.undo_reset(s, 200));                 // a repeat press does not keep the undo (documented)
+}
+
+TEST(ResetAll, SwitchingSlotsCancelsTheUndo) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 100);
+    ps.select_slot(2, s, 200);
+    EXPECT_FALSE(ps.undo_reset(s, 300));
+    EXPECT_TRUE(same(ps.status(300), "NOTHING TO UNDO"));
+}
+
+TEST(ResetAll, WorksWithoutStorageToo) {
+    NoStorage none; PresetSession ps(none); PhaseBoxState s = edited();
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 10);
+    EXPECT_NEAR(s.osc.bpm, 120.0f, 0.001f);
+    EXPECT_EQ(ps.write_attempts(), 0u);
+    EXPECT_TRUE(ps.undo_reset(s, 20));
+    EXPECT_NEAR(s.osc.bpm, 150.0f, 0.001f);
+}
