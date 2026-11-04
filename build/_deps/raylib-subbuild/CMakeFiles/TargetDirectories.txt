@@ -1,3 +1,0 @@
-/Users/ww/src/phase-box/build/_deps/raylib-subbuild/CMakeFiles/raylib-populate.dir
-/Users/ww/src/phase-box/build/_deps/raylib-subbuild/CMakeFiles/edit_cache.dir
-/Users/ww/src/phase-box/build/_deps/raylib-subbuild/CMakeFiles/rebuild_cache.dir

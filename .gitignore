@@ -7,7 +7,8 @@ docs/.DS_Store
 generate_*.py
 build-pico/
 build-host/
-build-test
+build-test/
+build/
 # files written by tests / presets
 patch*.bin
 preset_*.bin
