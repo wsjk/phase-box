@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
     session.load(state, 0);                  // settings restore on power-up
 
 #ifdef __APPLE__
-    // MIDI goes straight to the hardware destination named by $PHASE_BOX_MIDI_DEST (default "Melodee FM-1").
+    // MIDI goes straight to the hardware destination named by $PHASE_BOX_MIDI_DEST (default "FRASIL FM-1").
     // No virtual port is created and no MIDI Studio patching is needed. PHASE_BOX_MIDI_DEST=virtual brings
     // back the old "Phase Box Virtual Out" source.
     CoreMidiBackend midi_backend;

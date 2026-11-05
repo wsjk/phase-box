@@ -1,0 +1,2965 @@
+
+
+==================== FILE: src/ui/ui_controller.cpp ====================
+#include "ui/ui_controller.hpp"
+#include "core/modulation_engine.hpp"
+#include <algorithm>
+
+namespace phasebox::ui {
+
+void UIController::init() {
+    m_current_screen = Screen::DASHBOARD;
+    m_coarse_mode = false;
+    m_last_turn_us = 0;
+}
+
+void UIController::handle_encoder_turn(int delta, uint32_t current_time_us) {
+    if (delta == 0) return;
+
+    if (m_current_screen == Screen::BPM_SETTING) {
+        handle_bpm_encoder_input(delta, current_time_us);
+    } else if (m_current_screen == Screen::PRESET_MENU) {
+        // Preset navigation
+        m_selected_preset_slot = std::clamp(m_selected_preset_slot + delta, 1, 8);
+    }
+}
+
+void UIController::handle_bpm_encoder_input(int delta, uint32_t current_time_us) {
+    if (delta == 0) return; // don't let idle polling reset the turn-velocity timer
+    uint32_t interval_ms = 100;
+    if (m_last_turn_us > 0 && current_time_us > m_last_turn_us) {
+        interval_ms = (current_time_us - m_last_turn_us) / 1000;
+    }
+    m_last_turn_us = current_time_us;
+
+    float current_bpm = m_engine.get_bpm();
+    float step = 0.1f;
+
+    // Dynamic velocity acceleration
+    if (m_coarse_mode) {
+        step = (interval_ms < 30) ? 5.0f : 1.0f;
+    } else {
+        step = (interval_ms < 30) ? 1.0f : 0.1f;
+    }
+
+    float new_bpm = current_bpm + (delta * step);
+
+    // Enforce bounds: 0.1 BPM min to 300.0 BPM max
+    new_bpm = std::clamp(new_bpm, 0.1f, 300.0f);
+
+    m_engine.set_bpm(new_bpm);
+}
+
+void UIController::handle_encoder_click() {
+    if (m_current_screen == Screen::DASHBOARD) {
+        m_current_screen = Screen::BPM_SETTING;
+    } else if (m_current_screen == Screen::BPM_SETTING) {
+        // Toggle between Coarse and Fine adjustment modes on BPM screen
+        m_coarse_mode = !m_coarse_mode;
+    }
+}
+
+void UIController::handle_tap_tempo(uint32_t tap_time_us) {
+    if (m_last_tap_us > 0 && tap_time_us > m_last_tap_us) {
+        uint32_t interval_us = tap_time_us - m_last_tap_us;
+        uint32_t interval_ms = interval_us / 1000;
+
+        // Valid tap tempo window: 200 ms (300 BPM) to 3000 ms (20 BPM)
+        if (interval_ms >= 200 && interval_ms <= 3000) {
+            float calculated_bpm = 60000.0f / static_cast<float>(interval_ms);
+            m_engine.set_bpm(calculated_bpm);
+            m_engine.reset_phase(); // Align phase accumulator to tap
+        }
+    }
+    m_last_tap_us = tap_time_us;
+}
+
+} // namespace phasebox::ui
+
+
+==================== FILE: src/host_sim_main.cpp ====================
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <string>
+#include <chrono>
+#include <termios.h>
+#include <unistd.h>
+#include <sys/select.h>
+
+class TerminalScopeGuard {
+    struct termios old_t_;
+public:
+    TerminalScopeGuard() {
+        tcgetattr(STDIN_FILENO, &old_t_);
+        struct termios new_t = old_t_;
+        new_t.c_lflag &= ~(ICANON | ECHO);
+        tcsetattr(STDIN_FILENO, TCSANOW, &new_t);
+    }
+    ~TerminalScopeGuard() {
+        tcsetattr(STDIN_FILENO, TCSANOW, &old_t_);
+    }
+};
+
+bool kbhit() {
+    struct timeval tv = {0, 0};
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds);
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+}
+
+inline std::string render_oled_screen(int wave_type, float phase_offset, int bpm, int encoder_val, bool button_state, float adc_val) {
+    const int width = 32;
+    const int height = 7;
+    std::vector<std::string> grid(height, std::string(width, ' '));
+    
+    for (int x = 0; x < width; ++x) {
+        float t = (static_cast<float>(x) / width) * 2.0f * 3.14159265f + phase_offset;
+        float val = 0.0f;
+        switch (wave_type % 4) {
+            case 0: val = std::sin(t); break;
+            case 1: val = 1.0f - std::fmod(t / 3.14159265f, 2.0f); break;
+            case 2: val = (std::sin(t) >= 0.0f) ? 1.0f : -1.0f; break;
+            case 3: val = 2.0f * std::abs(2.0f * (t / (2.0f * 3.14159265f) - std::floor(t / (2.0f * 3.14159265f) + 0.5f))) - 1.0f; break;
+        }
+        int y = static_cast<int>((1.0f - (val + 1.0f) * 0.5f) * (height - 1));
+        if (y >= 0 && y < height) grid[y][x] = '*';
+    }
+
+    const char* wave_names[] = {"SINE", "SAW", "SQR", "TRI"};
+    
+    std::string oled = "+--------------------------------+\n";
+    char header_buf[64];
+    snprintf(header_buf, sizeof(header_buf), "| W:%-4s B:%3d E:%3d%s |\n", wave_names[wave_type%4], bpm, encoder_val, button_state ? "*" : " ");
+    oled += header_buf;
+    oled += "+--------------------------------+\n";
+    
+    for (const auto& row : grid) {
+        oled += "|" + row + "|\n";
+    }
+    
+    oled += "+--------------------------------+\n";
+    char footer_buf[64];
+    snprintf(footer_buf, sizeof(footer_buf), "| ADC:%4.2f                       |\n", adc_val);
+    oled += footer_buf;
+    oled += "+--------------------------------+\n";
+    
+    return oled;
+}
+
+int main() {
+    TerminalScopeGuard term_guard;
+    bool running = true;
+    int current_wave = 0;
+    float phase_anim = 0.0f;
+    int encoder_val = 50;
+    bool button_state = false;
+    float adc_expression = 0.0f;
+    int current_bpm = 120;
+    std::vector<std::chrono::steady_clock::time_point> tap_times;
+
+    std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+
+    while (running) {
+        if (kbhit()) {
+            int c = getchar();
+            if (c != EOF) {
+                if (c == 'w' || c == 'W') {
+                    current_wave = (current_wave + 1) % 4;
+                } else if (c == 's' || c == 'S') {
+                    current_wave = (current_wave + 3) % 4;
+                } else if (c == 'e' || c == 'E') {
+                    button_state = !button_state;
+                } else if (c == 't' || c == 'T') {
+                    auto now = std::chrono::steady_clock::now();
+                    if (!tap_times.empty() && std::chrono::duration_cast<std::chrono::milliseconds>(now - tap_times.back()).count() > 2500) {
+                        tap_times.clear();
+                    }
+                    tap_times.push_back(now);
+                    if (tap_times.size() > 4) tap_times.erase(tap_times.begin());
+                    if (tap_times.size() >= 2) {
+                        double total_ms = 0;
+                        for (size_t i = 1; i < tap_times.size(); ++i) {
+                            total_ms += std::chrono::duration_cast<std::chrono::milliseconds>(tap_times[i] - tap_times[i-1]).count();
+                        }
+                        double avg_ms = total_ms / (tap_times.size() - 1);
+                        if (avg_ms > 0) {
+                            current_bpm = static_cast<int>(60000.0 / avg_ms);
+                            if (current_bpm < 40) current_bpm = 40;
+                            if (current_bpm > 300) current_bpm = 300;
+                        }
+                    }
+                } else if (c == '1') {
+                    adc_expression = 0.0f;
+                } else if (c == '2') {
+                    adc_expression = 0.5f;
+                } else if (c == '3') {
+                    adc_expression = 1.0f;
+                } else if (c == 'q' || c == 'Q') {
+                    running = false;
+                }
+            }
+        }
+
+        phase_anim += (current_bpm / 120.0f) * 0.15f;
+        encoder_val = (current_wave * 25) + (int)(std::sin(phase_anim) * 5.0f);
+        
+        std::cout << "\033[18A";
+        
+        std::cout << "=== PHASE BOX EMBEDDED OLED SIMULATOR ===\n";
+        std::cout << render_oled_screen(current_wave, phase_anim, current_bpm, encoder_val, button_state, adc_expression);
+        std::cout << "Controls: [w/s] Wave [t] Tap [e] Btn [1-3] ADC [q] Quit\n" << std::flush;
+
+        usleep(50000);
+    }
+
+    std::cout << "\nExiting simulator.\n";
+    return 0;
+}
+
+
+==================== FILE: src/hal/hal_display.cpp ====================
+#include "hal/hal_display.hpp"
+
+#ifndef HOST_BUILD
+#include "pico/stdlib.h"
+#include "hardware/i2c.h"
+#endif
+
+namespace phasebox {
+namespace hal {
+
+void HalDisplay::init(uint8_t sda_pin, uint8_t scl_pin) {
+    clear();
+}
+
+void HalDisplay::clear() {
+    buffer_.fill(0);
+}
+
+void HalDisplay::render() {
+    render_count_++;
+    // Host mock render or I2C transfer
+}
+
+void HalDisplay::draw_pixel(int16_t x, int16_t y, bool color) {
+    if (x < 0 || x >= 128 || y < 0 || y >= 32) return;
+    size_t index = x + (y / 8) * 128;
+    if (index < buffer_.size()) {
+        if (color) {
+            buffer_[index] |= (1 << (y % 8));
+        } else {
+            buffer_[index] &= ~(1 << (y % 8));
+        }
+    }
+}
+
+} // namespace hal
+} // namespace phasebox
+
+
+==================== FILE: src/hal/hal_encoder.cpp ====================
+#include "hal/hal_encoder.hpp"
+
+#ifndef HOST_BUILD
+#include "pico/stdlib.h"
+#include "hardware/gpio.h"
+#endif
+
+namespace phasebox::hal {
+
+void HalEncoder::init(uint8_t pin_a, uint8_t pin_b, uint8_t pin_sw) {
+    pin_a_ = pin_a;
+    pin_b_ = pin_b;
+    pin_sw_ = pin_sw;
+
+#ifndef HOST_BUILD
+    gpio_init(pin_a_);
+    gpio_set_dir(pin_a_, GPIO_IN);
+    gpio_pull_up(pin_a_);
+
+    gpio_init(pin_b_);
+    gpio_set_dir(pin_b_, GPIO_IN);
+    gpio_pull_up(pin_b_);
+
+    gpio_init(pin_sw_);
+    gpio_set_dir(pin_sw_, GPIO_IN);
+    gpio_pull_up(pin_sw_);
+
+    uint8_t a = gpio_get(pin_a_);
+    uint8_t b = gpio_get(pin_b_);
+    prev_state_ = (a << 1) | b;
+#endif
+}
+
+void HalEncoder::update(uint32_t current_time_us) {
+#ifndef HOST_BUILD
+    // Read hardware pins
+    uint8_t a = gpio_get(pin_a_);
+    uint8_t b = gpio_get(pin_b_);
+    uint8_t curr_state = (a << 1) | b;
+
+    // Gray-code quadrature state transition check
+    if (curr_state != prev_state_) {
+        if ((prev_state_ == 0b00 && curr_state == 0b01) ||
+            (prev_state_ == 0b01 && curr_state == 0b11) ||
+            (prev_state_ == 0b11 && curr_state == 0b10) ||
+            (prev_state_ == 0b10 && curr_state == 0b00)) {
+            
+            // Turn acceleration: fast turns (< 30ms interval) step by 2
+            uint32_t interval = current_time_us - last_turn_time_us_;
+            int step = (interval < 30000) ? 2 : 1;
+            delta_accum_ += step;
+            last_turn_time_us_ = current_time_us;
+
+        } else if ((prev_state_ == 0b00 && curr_state == 0b10) ||
+                   (prev_state_ == 0b10 && curr_state == 0b11) ||
+                   (prev_state_ == 0b11 && curr_state == 0b01) ||
+                   (prev_state_ == 0b01 && curr_state == 0b00)) {
+            
+            uint32_t interval = current_time_us - last_turn_time_us_;
+            int step = (interval < 30000) ? 2 : 1;
+            delta_accum_ -= step;
+            last_turn_time_us_ = current_time_us;
+        }
+        prev_state_ = curr_state;
+    }
+
+    // Active-low button check (pull-up resistor enabled)
+    bool raw_sw = !gpio_get(pin_sw_);
+    if (raw_sw && !button_pressed_) {
+        button_pressed_ = true;
+        press_start_time_us_ = current_time_us;
+        button_hold_time_ms_ = 0;
+    } else if (raw_sw && button_pressed_) {
+        button_hold_time_ms_ = (current_time_us - press_start_time_us_) / 1000;
+    } else if (!raw_sw && button_pressed_) {
+        button_pressed_ = false;
+        button_hold_time_ms_ = 0;
+    }
+#endif
+}
+
+int HalEncoder::get_delta() {
+    int ret = delta_accum_;
+    delta_accum_ = 0;
+    return ret;
+}
+
+} // namespace phasebox::hal
+
+
+==================== FILE: src/hal/hal_adc.cpp ====================
+#include "hal/hal_adc.hpp"
+
+#ifndef HOST_BUILD
+#include "pico/stdlib.h"
+#include "hardware/adc.h"
+#endif
+
+namespace phasebox::hal {
+
+void HalAdc::init() {
+#ifndef HOST_BUILD
+    adc_init();
+    adc_gpio_init(26); // GPIO 26 is ADC Channel 0
+    adc_select_input(0);
+#endif
+}
+
+uint16_t HalAdc::read_raw() {
+#ifndef HOST_BUILD
+    adc_select_input(0);
+    return adc_read();
+#else
+    return simulated_raw_;
+#endif
+}
+
+float HalAdc::read_normalized() {
+    uint16_t raw = read_raw();
+    
+    // Normalize raw 12-bit reading (0-4095) to [0.0f, 1.0f]
+    float raw_norm = static_cast<float>(raw) / 4095.0f;
+    if (raw_norm < 0.0f) raw_norm = 0.0f;
+    if (raw_norm > 1.0f) raw_norm = 1.0f;
+
+    // Apply Exponential Moving Average (EMA) filtering first so step response works
+    smoothed_val_ = (alpha_ * raw_norm) + ((1.0f - alpha_) * smoothed_val_);
+
+    // Deadband clamping at extremes after smoothing
+    if (smoothed_val_ < 0.01f) return 0.0f;
+    if (smoothed_val_ > 0.95f) return 1.0f;
+
+    return smoothed_val_;
+}
+
+} // namespace phasebox::hal
+
+
+==================== FILE: src/PhaseOscillator.cpp ====================
+#include "PhaseOscillator.hpp"
+void PhaseOscillator::update(float dt) {
+    float freq = (bpm / 60.0f) * 2.0f;
+    phase += freq * dt * static_cast<float>(M_PI);
+    if (phase >= 2.0f * static_cast<float>(M_PI)) phase -= 2.0f * static_cast<float>(M_PI);
+}
+float PhaseOscillator::evaluateCC(float t_offset, float adc_expression) {
+    float mod_phase = (phase * pm_ratio) + t_offset;
+    float modulator = std::sin(mod_phase) * pm_depth;
+    float t = phase + t_offset + phase_offset + modulator;
+    t = std::fmod(t, 2.0f * static_cast<float>(M_PI));
+    if (t < 0.0f) t += 2.0f * static_cast<float>(M_PI);
+    float val = shapeValue(t);
+    val *= (0.5f + 0.5f * adc_expression);
+    return (val * 0.5f) + 0.5f;
+}
+
+float PhaseOscillator::shapeValue(float t) const {
+    switch (shape) {
+        case SINE: return std::sin(t);
+        case SAW: return 1.0f - (t / static_cast<float>(M_PI));
+        case SQUARE: return (t < static_cast<float>(M_PI)) ? 1.0f : -1.0f;
+        case TRIANGLE: {
+            float norm = t / (2.0f * static_cast<float>(M_PI));
+            return 2.0f * std::abs(2.0f * (norm - std::floor(norm + 0.5f))) - 1.0f;
+        }
+    }
+    return 0.0f;
+}
+
+float PhaseOscillator::normalizedAt(float p) const {
+    const float two_pi = 2.0f * static_cast<float>(M_PI);
+    float modulator = std::sin(p * pm_ratio) * pm_depth;
+    float t = std::fmod(p + phase_offset + modulator, two_pi);
+    if (t < 0.0f) t += two_pi;
+    return (shapeValue(t) * 0.5f) + 0.5f;
+}
+
+
+==================== FILE: src/storage/preset_manager.cpp ====================
+#include "storage/preset_manager.hpp"
+#include <cstdio>
+#include <cstring>
+
+namespace phasebox::storage {
+
+bool PresetManager::init() {
+    // Hardware LittleFS initialization happens here on Pico build
+    return true;
+}
+
+bool PresetManager::save_preset(uint8_t slot, const PresetPatch& patch) {
+    if (!is_valid_slot(slot)) return false;
+
+    char filename[64];
+    std::snprintf(filename, sizeof(filename), "patch%d.bin", slot);
+
+    FILE* file = std::fopen(filename, "wb");
+    if (!file) return false;
+
+    size_t written = std::fwrite(&patch, sizeof(PresetPatch), 1, file);
+    std::fclose(file);
+
+    return written == 1;
+}
+
+bool PresetManager::load_preset(uint8_t slot, PresetPatch& patch) {
+    if (!is_valid_slot(slot)) return false;
+
+    char filename[64];
+    std::snprintf(filename, sizeof(filename), "patch%d.bin", slot);
+
+    FILE* file = std::fopen(filename, "rb");
+    if (!file) return false;
+
+    size_t read_bytes = std::fread(&patch, sizeof(PresetPatch), 1, file);
+    std::fclose(file);
+
+    // Validate version tag
+    if (read_bytes != 1 || patch.version != 1) {
+        return false;
+    }
+
+    return true;
+}
+
+} // namespace phasebox::storage
+
+
+==================== FILE: src/native_sim_main.cpp ====================
+#include "raylib.h"
+#include "PhaseBoxState.hpp"
+#include "SimControls.hpp"
+#include "PresetSession.hpp"
+#include "TapTempo.hpp"
+#include <cstdlib>
+#include <vector>
+#include <string>
+#include <chrono>
+#include <algorithm>
+#include <iostream>
+
+#include "CoreMidiBackend.hpp"   // macOS only (empty elsewhere)
+#include "MidiChangeFilter.hpp"
+#include "MidiRouter.hpp"
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+// The 128x64 OLED shows exactly what the active destination emits: waveform shape (P1), phase
+// offset (P3), phase modulation (P6), clock multiplier (P10), Turing blend (P11), weight (P9).
+void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, int active_dest,
+                     const PresetSession& session, uint32_t now_ms) {
+    BeginTextureMode(oled_target);
+    ClearBackground(BLACK);
+
+    DrawRectangleLines(0, 0, 128, 64, WHITE);
+    DrawLine(0, 14, 128, 14, WHITE);
+    DrawLine(0, 50, 128, 50, WHITE);
+
+    std::string header = simui::page_name(state.active_page);
+    header += " D" + std::to_string(active_dest + 1);
+    DrawText(header.c_str(), 4, 3, 10, WHITE);
+    // Preset slot, with '*' while there are edits that are not saved yet.
+    std::string slot_tag = "S" + std::to_string(session.slot()) + (session.dirty() ? "*" : "");
+    DrawText(slot_tag.c_str(), 104, 3, 10, WHITE);
+
+    const int wave_width = 120;
+    const int wave_height = 33;
+    const int start_x = 4;
+    const int start_y = 16;
+
+    std::vector<float> curve = simui::preview_curve(state, active_dest, wave_width);
+    std::vector<Vector2> points;
+    points.reserve(curve.size());
+    for (int x = 0; x < wave_width; ++x) {
+        float py = start_y + wave_height - (curve[x] * wave_height);
+        points.push_back({(float)(start_x + x), py});
+    }
+    for (size_t i = 1; i < points.size(); ++i) {
+        DrawLineV(points[i-1], points[i], WHITE);
+    }
+    for (int mx : simui::preview_markers(state, active_dest, wave_width)) {
+        mx = std::clamp(mx, 0, wave_width - 1);
+        DrawCircle(start_x + mx, (int)points[mx].y, 2.0f, WHITE);
+    }
+
+    // Hold progress grows along the divider; a save/load message replaces the footer for 1.5 s.
+    float hold = session.hold_progress(now_ms);
+    if (hold > 0.0f) DrawRectangle(0, 49, (int)(128 * hold), 3, WHITE);
+    const char* status = session.status(now_ms);
+    std::string footer = status ? std::string(status) : simui::footer(state, state.active_page, active_dest);
+    DrawText(footer.c_str(), 4, 53, 8, WHITE);
+
+    EndTextureMode();
+}
+
+int main(int argc, char** argv) {
+    // `phase_box_native_sim --list-midi` prints what CoreMIDI reports (works even if Audio MIDI Setup is blank).
+    for (int i = 1; i < argc; ++i) {
+        if (std::string(argv[i]) == "--list-midi") {
+#ifdef __APPLE__
+            CoreMidiBackend backend;
+            backend.print_all(stdout);
+#else
+            std::printf("MIDI output is macOS only.\n");
+#endif
+            return 0;
+        }
+    }
+
+    const int screenWidth = 800;
+    const int screenHeight = 680;
+    InitWindow(screenWidth, screenHeight, "Phase Box - Polyrhythmic Macro Simulator");
+    SetTargetFPS(60);
+
+    PhaseBoxState state;
+    state.turing.seed(static_cast<uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()));
+    int active_dest = 0;
+    TapTempo tap_tempo;
+
+    // Presets are files in $PHASE_BOX_PRESET_DIR (default: the current directory): preset_1.bin .. preset_8.bin
+    static std::string preset_dir;
+    const char* env_dir = std::getenv("PHASE_BOX_PRESET_DIR");
+    preset_dir = (env_dir && *env_dir) ? env_dir : "./";
+    if (preset_dir.back() != '/') preset_dir += '/';
+    PresetManager::path_prefix = preset_dir.c_str();
+    FilePresetStorage preset_storage;
+    PresetSession session(preset_storage);
+    double clock_ms = 0.0;                   // frame-time clock: deterministic and wrap-free
+    session.load(state, 0);                  // settings restore on power-up
+
+#ifdef __APPLE__
+    // MIDI goes straight to the hardware destination named by $PHASE_BOX_MIDI_DEST (default "Melodee FM-1").
+    // No virtual port is created and no MIDI Studio patching is needed. PHASE_BOX_MIDI_DEST=virtual brings
+    // back the old "Phase Box Virtual Out" source.
+    CoreMidiBackend midi_backend;
+    midi_route::Router midi(midi_backend, midi_route::Config::from_env(std::getenv("PHASE_BOX_MIDI_DEST")));
+    MidiChangeFilter midi_filter;           // like the device: send on change, plus a 1 s refresh
+    uint32_t midi_epoch = midi.epoch();
+    if (!midi_backend.ok()) std::printf("[midi] CoreMIDI client could not be created (status %d)\n", midi_backend.error());
+#endif
+
+    RenderTexture2D oled_target = LoadRenderTexture(128, 64);
+    uint32_t last_cc_ms = 0;                 // MIDI goes out every 30 ms of frame time
+
+    while (!WindowShouldClose()) {
+        float dt = GetFrameTime();
+        clock_ms += dt * 1000.0;
+        const uint32_t now_ms = static_cast<uint32_t>(clock_ms);
+
+        if (IsKeyPressed(KEY_E)) state.active_page = simui::next_page(state.active_page, +1);
+        if (IsKeyPressed(KEY_Q)) state.active_page = simui::next_page(state.active_page, -1);
+
+        if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP))   simui::adjust(state, active_dest, state.active_page, +1);
+        if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) simui::adjust(state, active_dest, state.active_page, -1);
+
+        if (IsKeyPressed(KEY_M)) state.step_turing(); // same as the Mutate footswitch
+        if (IsKeyPressed(KEY_R)) session.reset_to_defaults(state, now_ms);   // everything back to defaults
+        if (IsKeyPressed(KEY_U)) session.undo_reset(state, now_ms);          // ...and back again (until the next edit)
+        if (IsKeyPressed(KEY_LEFT_BRACKET))  session.select_slot(session.slot() - 1, state, now_ms);
+        if (IsKeyPressed(KEY_RIGHT_BRACKET)) session.select_slot(session.slot() + 1, state, now_ms);
+
+        if (IsKeyPressed(KEY_T) || IsKeyPressed(KEY_SPACE)) {
+            float tapped_bpm;
+            if (tap_tempo.tap(now_ms, tapped_bpm)) state.osc.bpm = tapped_bpm;
+            state.restart_phase();   // every tap restarts the LFOs at 0 degrees (Footswitch 1)
+        }
+
+        if (IsKeyPressed(KEY_ONE)) state.adc_expression = 0.0f;
+        if (IsKeyPressed(KEY_TWO)) state.adc_expression = 0.5f;
+        if (IsKeyPressed(KEY_THREE)) state.adc_expression = 1.0f;
+
+        state.advance(dt); // master phase; Turing steps on each master cycle
+
+#ifdef __APPLE__
+        midi.poll(now_ms);
+        if (midi.epoch() != midi_epoch) { midi_epoch = midi.epoch(); midi_filter = MidiChangeFilter(); }   // just connected: resend everything
+        for (const std::string& line : midi.take_log()) std::printf("[midi] %s\n", line.c_str());
+#endif
+
+        auto evaluated = state.evaluateMacros(dt);
+
+        if (static_cast<uint32_t>(now_ms - last_cc_ms) > 30) {
+            #ifdef __APPLE__
+            for (size_t i = 0; i < evaluated.size(); ++i) {
+                const auto& msg = evaluated[i];
+                if (midi_filter.should_send(i, static_cast<uint8_t>(msg.channel), static_cast<uint8_t>(msg.cc), static_cast<uint8_t>(msg.value), now_ms))
+                    midi.send_cc(static_cast<uint8_t>(msg.channel), static_cast<uint8_t>(msg.cc), static_cast<uint8_t>(msg.value), now_ms);
+            }
+            #endif
+            state.last_sent_cc_val = evaluated.empty() ? 0 : evaluated[0].value;
+            last_cc_ms = now_ms;
+        }
+
+        session.update(state, now_ms);                              // auto-save 2 s after the last edit
+        session.button(IsKeyDown(KEY_ENTER), state, now_ms);        // hold 1 s = save
+
+        DrawOLEDDisplay(oled_target, state, active_dest, session, now_ms);
+
+        BeginDrawing();
+        ClearBackground(Color{ 20, 20, 25, 255 });
+
+        DrawText("PHASE BOX - POLYRHYTHMIC MACRO SIMULATOR", 40, 20, 20, RAYWHITE);
+
+        std::string macro_status = "Polyrhythm -> ";
+        for (size_t i = 0; i < evaluated.size(); ++i) {
+            macro_status += "[D" + std::to_string(i+1) + " CC" + std::to_string(evaluated[i].cc) + ":" + std::to_string(evaluated[i].value) + "] ";
+        }
+        DrawText(macro_status.c_str(), 40, 45, 12, GREEN);
+
+        Rectangle sourceRec = { 0.0f, 0.0f, (float)oled_target.texture.width, (float)-oled_target.texture.height };
+        Rectangle destRec = { (screenWidth - 640) / 2.0f, 75.0f, 640.0f, 320.0f };
+        DrawTexturePro(oled_target.texture, sourceRec, destRec, { 0, 0 }, 0.0f, WHITE);
+        DrawRectangleLines((int)destRec.x - 2, (int)destRec.y - 2, (int)destRec.width + 4, (int)destRec.height + 4, DARKGRAY);
+
+        // Live destination table: everything the pages edit, and what each destination outputs now.
+        DrawRectangle(40, 405, 720, 108, Color{ 30, 30, 38, 255 });
+        DrawRectangleLines(40, 405, 720, 108, DARKGRAY);
+        DrawText("DEST    CH    CC    MULT     WEIGHT    OFFSET    OUT", 55, 412, 12, ORANGE);
+        for (size_t i = 0; i < state.macros.destinations.size() && i < evaluated.size(); ++i) {
+            const MacroDestination& d = state.macros.destinations[i];
+            Color c = ((int)i == active_dest) ? GREEN : LIGHTGRAY;
+            DrawText(TextFormat("%sD%d     %2d    %3d    x%-6g  %+5.2f     %+5.2f     %3d",
+                                ((int)i == active_dest) ? ">" : " ", (int)i + 1, d.midi_channel, d.cc_number,
+                                d.clock_mult, d.scale, d.offset, evaluated[i].value),
+                     45, 430 + (int)i * 17, 12, c);
+        }
+        DrawText(TextFormat("TURING  mix %.2f   mutation %.2f   value %.2f   ([M] steps it now)",
+                            state.turing_mix, state.turing.mutation_prob, state.turing_norm), 55, 487, 12, SKYBLUE);
+
+        DrawRectangle(40, 523, 720, 142, Color{ 30, 30, 38, 255 });
+        DrawRectangleLines(40, 523, 720, 142, DARKGRAY);
+        DrawText("CONTROLS & CONFIGURATION:", 55, 533, 12, ORANGE);
+        DrawText(TextFormat("[E] Next Page | [Q] Prev Page   (now: %s, editing Dest %d)", simui::page_name(state.active_page), active_dest + 1), 55, 553, 12, LIGHTGRAY);
+        DrawText("[W/S or Up/Down] Adjust value   (P4 CHAN, P5 CC, P9 WGT, P10 DIV edit the active dest; pick it on P8)", 55, 573, 12, LIGHTGRAY);
+        DrawText("[T/Space] Tap  |  [1-3] Pedal 0/.5/1  |  [M] Step Turing  |  [R] Reset ALL  |  [U] Undo reset", 55, 593, 12, LIGHTGRAY);
+        DrawText(TextFormat("[Enter] hold 1 s = SAVE  |  [ and ] = preset slot (now %d)  |  auto-saves 2 s after your last edit", session.slot()), 55, 613, 12, LIGHTGRAY);
+        DrawText("P1 WAVE  P2 BPM  P3 PHASE  P4 CHAN  P5 CC  P6 PM  P7 MUTE  P8 DEST  P9 WGT  P10 DIV  P11 MIX", 55, 633, 10, GRAY);
+#ifdef __APPLE__
+        {
+            std::string midi_line = "MIDI out: " + midi.status();
+            if (midi_line.size() > 100) midi_line = midi_line.substr(0, 97) + "...";
+            DrawText(midi_line.c_str(), 55, 649, 12, midi.connected() ? GREEN : YELLOW);
+        }
+#else
+        DrawText("MIDI out: macOS only (this build runs without MIDI output)", 55, 649, 12, YELLOW);
+#endif
+        DrawText("[ESC] Quit", 680, 553, 12, RED);
+
+        EndDrawing();
+    }
+
+    UnloadRenderTexture(oled_target);
+    CloseWindow();
+    return 0;
+}
+
+
+==================== FILE: src/main_host.cpp ====================
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+#include "core/modulation_engine.hpp"
+#include "core/macro_engine.hpp"
+#include "hal/hal_adc.hpp"
+#include "hal/hal_display.hpp"
+#include "ui/ui_controller.hpp"
+
+using namespace phasebox::core;
+using namespace phasebox::hal;
+using namespace phasebox::ui;
+
+int main() {
+    std::cout << "Starting Phase Box Host Simulation...\n";
+
+    ModulationEngine engine;
+    MacroEngine macro;
+    HalAdc adc;
+    HalDisplay display;
+    UIController ui_controller(engine);
+
+    adc.init();
+    display.init(0, 0);
+    ui_controller.init();
+
+    engine.set_bpm(120.0f);
+
+    for (int i = 0; i < 5; ++i) {
+        uint32_t fake_time_us = i * 1000; // 1ms increments
+        
+        float expr = adc.read_normalized();
+        macro.set_expression_value(expr);
+        
+        auto msgs = engine.tick(fake_time_us);
+        display.clear();
+        display.render();
+
+        std::cout << "Tick " << i << " | Active MIDI messages: " << msgs.size() << "\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(33));
+    }
+
+    std::cout << "Host simulation finished successfully.\n";
+    return 0;
+}
+
+
+==================== FILE: src/main.cpp ====================
+// NOT BUILT. This is an early experiment that runs the layered core/ engine; it is not part of any CMake
+// target and has known problems (its own timer callback writes ~12 bytes/ms to a 3,125 byte/s MIDI port,
+// and the display is never drawn). The device firmware is firmware/src/firmware_main.cpp, which runs the
+// same engine, pages and presets as the desktop simulator.
+
+#include <stdio.h>
+#include "pico/stdlib.h"
+#include "pico/multicore.h"
+#include "hardware/uart.h"
+#include "hardware/timer.h"
+
+#include "core/modulation_engine.hpp"
+#include "core/macro_engine.hpp"
+#include "hal/hal_adc.hpp"
+#include "hal/hal_encoder.hpp"
+#include "hal/hal_display.hpp"
+#include "storage/preset_manager.hpp"
+#include "ui/ui_controller.hpp"
+
+// UART Configuration for Standard MIDI (31,250 baud)
+#define MIDI_UART_ID   uart0
+#define MIDI_BAUD_RATE 31250
+#define MIDI_TX_PIN    0
+#define MIDI_RX_PIN    1
+
+using namespace phasebox::core;
+using namespace phasebox::hal;
+using namespace phasebox::storage;
+using namespace phasebox::ui;
+
+// Global Instances for Dual-Core Operations
+static ModulationEngine g_engine;
+static MacroEngine      g_macro;
+static HalAdc           g_adc;
+
+static HalEncoder       g_encoder;
+static HalDisplay       g_display;
+static phasebox::ui::UIController       g_ui_controller(g_engine);
+
+// Forward declaration for Core 1 UI loop
+void core1_main();
+
+/**
+ * @brief Core 0 Hardware Timer Callback (1000 Hz / 1ms period)
+ * Driven by the RP2040 hardware timer alarm.
+ */
+bool repeating_timer_callback(struct repeating_timer *t) {
+    uint32_t current_time_us = time_us_32();
+
+    // 1. Read smoothed expression pedal ADC voltage [0.0f - 1.0f]
+    float expr_val = g_adc.read_normalized();
+    g_macro.set_expression_value(expr_val);
+
+    // 2. Tick engine (updates LFO phase accumulators, tap clock, and CC mapping)
+    auto msgs = g_engine.tick(current_time_us);
+
+    // 3. Apply macro scaling matrix & transmit MIDI CC over UART0
+    for (size_t i = 0; i < msgs.size(); ++i) {
+        uint8_t scaled_data2 = g_macro.apply(i, msgs[i].data2);
+
+        uart_putc_raw(MIDI_UART_ID, msgs[i].status);
+        uart_putc_raw(MIDI_UART_ID, msgs[i].data1);
+        uart_putc_raw(MIDI_UART_ID, scaled_data2);
+    }
+
+    return true; // Keep timer repeating
+}
+
+int main() {
+    // 1. Initialize Pico stdio and HAL drivers
+    stdio_init_all();
+
+    // 2. Configure UART0 for 31,250 baud MIDI
+    uart_init(MIDI_UART_ID, MIDI_BAUD_RATE);
+    gpio_set_function(MIDI_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(MIDI_RX_PIN, GPIO_FUNC_UART);
+
+    // 3. Initialize ADC Hardware
+    g_adc.init();
+
+    // 4. Launch Core 1 for OLED display, rotary encoder, and flash storage
+    multicore_launch_core1(core1_main);
+
+    // 5. Set initial engine parameters
+    g_engine.set_bpm(120.0f);
+
+    // 6. Attach 1000 Hz repeating timer interrupt to Core 0 (-1000 us = fixed frequency)
+    struct repeating_timer timer;
+    add_repeating_timer_us(-1000, repeating_timer_callback, NULL, &timer);
+
+    // 7. Core 0 Idle Loop: Process non-blocking incoming MIDI bytes (e.g. MIDI Clock 0xF8)
+    while (true) {
+        if (uart_is_readable(MIDI_UART_ID)) {
+            uint8_t byte = uart_getc(MIDI_UART_ID);
+            if (byte == 0xF8) {
+                // Incoming MIDI Clock pulse (24 PPQN sync handling)
+            }
+        }
+        tight_loop_contents();
+    }
+
+    return 0;
+}
+
+/**
+ * @brief Core 1 Entry Point
+ * Handles display rendering, rotary menu state transitions, and flash saves.
+ */
+void core1_main() {
+    // Initialize Core 1 peripherals
+    g_encoder.init(hal::pins::ENC_A, hal::pins::ENC_B, hal::pins::ENC_SW);
+    g_display.init(hal::pins::OLED_SDA, hal::pins::OLED_SCL);
+    g_ui_controller.init();
+
+    while (true) {
+        uint32_t now_us = time_us_32();
+
+        // 1. Poll rotary encoder hardware
+        g_encoder.update(now_us);
+        int delta = g_encoder.get_delta();
+        bool btn = g_encoder.is_button_pressed();
+        uint32_t hold_ms = g_encoder.get_button_hold_time_ms();
+
+        // 2. Update UI state machine
+        g_ui_controller.handle_encoder_turn(delta, time_us_32());
+
+        // 3. Render frame to local display framebuffer and send over I2C
+        g_display.clear();
+        // g_ui_controller.render();
+        g_display.render();
+
+        // 4. Limit to ~30 FPS (33 ms frame delay)
+        sleep_ms(33);
+    }
+}
+
+
+==================== FILE: tests/test_regressions.cpp ====================
+// Regression tests for the issues found in the code review.
+#include <gtest/gtest.h>
+#include <array>
+#include <cstdio>
+#include <cstdint>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include "core/modulation_engine.hpp"
+#include "core/core0_task.hpp"
+#include "ui/ui_controller.hpp"
+#include "MacroEngine.hpp"      // legacy ::MacroEngine (global namespace)
+#include "PresetManager.hpp"    // firmware ::PresetManager (global namespace)
+
+using namespace phasebox;
+using phasebox::core::ModulationEngine;
+using phasebox::core::Waveform;
+
+namespace {
+int count_rising_edges(ModulationEngine& e, int ticks) {
+    e.get_lfo(0).set_waveform(Waveform::Square);
+    int edges = 0;
+    int prev = e.tick(1000)[0].data2;
+    for (int i = 1; i <= ticks; ++i) {
+        int v = e.tick(1000u + static_cast<uint32_t>(i) * 1000u)[0].data2;
+        if (prev == 0 && v == 127) ++edges;
+        prev = v;
+    }
+    return edges;
+}
+
+struct FakeMidi : hal::HalMidi {
+    std::vector<std::array<uint8_t, 3>> sent;
+    void send_cc(uint8_t ch, uint8_t cc, uint8_t v) override { sent.push_back({ch, cc, v}); }
+    bool poll_clock_tick() override { return false; }
+};
+} // namespace
+
+TEST(RegressionLFO, TriangleStaysInMidiRange) {
+    core::PhaseLFO lfo;
+    lfo.set_waveform(Waveform::Triangle);
+    lfo.set_frequency(1.0f);
+    int mx = 0, mn = 255;
+    for (int i = 0; i < 2000; ++i) { int v = lfo.update(); mx = std::max(mx, v); mn = std::min(mn, v); }
+    EXPECT_LE(mx, 127);
+    EXPECT_GE(mx, 125);
+    EXPECT_LE(mn, 2);
+}
+
+TEST(RegressionEngine, DefaultEngineRunsAt120Bpm) {
+    ModulationEngine e;
+    int edges = count_rising_edges(e, 6000); // 6 s @ 2 Hz
+    EXPECT_GE(edges, 11);
+    EXPECT_LE(edges, 12);
+}
+
+TEST(RegressionEngine, TapTempoChangesLfoSpeed) {
+    ModulationEngine e;
+    e.set_bpm(120.0f);
+    e.get_clock_manager().handle_tap_tempo(1000000);
+    e.get_clock_manager().handle_tap_tempo(1600000); // 600 ms -> 100 BPM
+    EXPECT_NEAR(e.get_bpm(), 100.0f, 0.01f);
+    int edges = count_rising_edges(e, 6000);          // 6 s @ 1.667 Hz = 10 cycles
+    EXPECT_GE(edges, 9);
+    EXPECT_LE(edges, 10);
+}
+
+TEST(RegressionEngine, TickReturnsFixedArray) {
+    ModulationEngine e;
+    auto msgs = e.tick(1000);
+    static_assert(std::tuple_size<decltype(msgs)>::value == 4, "tick() must return std::array<MidiMessage,4>");
+    EXPECT_EQ(msgs.size(), 4u);
+}
+
+TEST(RegressionCore0, SendsOnlyOnChangeAndWithinMidiBandwidth) {
+    ModulationEngine e;
+    FakeMidi midi;
+    core::Core0Task task(e, midi);
+    for (int i = 1; i <= 2000; ++i) task.step(static_cast<uint32_t>(i) * 1000u); // 2 s of sines
+    const size_t bytes = midi.sent.size() * 3;
+    EXPECT_LE(bytes, 5000u); // 80% of the 6250 B a DIN port carries in 2 s
+    EXPECT_GE(midi.sent.size(), 40u); // but it is still actually modulating
+}
+
+TEST(RegressionCore0, StaticValuesAreSentOnce) {
+    ModulationEngine e;
+    for (size_t i = 0; i < 4; ++i) e.get_lfo(i).set_frequency(0.0f);
+    FakeMidi midi;
+    core::Core0Task task(e, midi);
+    for (int i = 1; i <= 500; ++i) task.step(static_cast<uint32_t>(i) * 1000u);
+    EXPECT_EQ(midi.sent.size(), 4u);
+}
+
+TEST(RegressionMacro, HalfSpeedDestinationCompletesFullCycleOverTwoBeats) {
+    ::MacroEngine m; // dest[2]: 0.5x, scale .25, offset .25 -> full sine spans CC 31..63
+    int lo = 127, hi = 0;
+    const float two_pi = 2.0f * static_cast<float>(M_PI);
+    float phase = 0.0f;
+    for (int i = 0; i < 1300; ++i) { // ~2 master cycles
+        auto out = m.evaluate(phase, 0.0166f, 1.0f);
+        lo = std::min(lo, out[2].value); hi = std::max(hi, out[2].value);
+        phase = std::fmod(phase + 0.01f, two_pi);
+    }
+    EXPECT_LE(lo, 33);
+    EXPECT_GE(hi, 62);
+}
+
+TEST(RegressionMacro, NoJumpAtMasterWrapForFractionalRatio) {
+    ::MacroEngine m;
+    m.destinations[0].clock_mult = 0.75f; // scale 1, offset 0
+    const float two_pi = 2.0f * static_cast<float>(M_PI);
+    float phase = 0.0f; int prev = -1, max_step = 0;
+    for (int i = 0; i < 2000; ++i) { // ~3 master cycles
+        int v = m.evaluate(phase, 0.0166f, 1.0f)[0].value;
+        if (prev >= 0) max_step = std::max(max_step, std::abs(v - prev));
+        prev = v;
+        phase = std::fmod(phase + 0.01f, two_pi);
+    }
+    EXPECT_LE(max_step, 2);
+}
+
+TEST(RegressionUI, IdleEncoderPollingDoesNotDisturbTurnVelocity) {
+    ModulationEngine e; e.set_bpm(120.0f);
+    ui::UIController ui(e); ui.init();
+    ui.handle_encoder_click();                         // DASHBOARD -> BPM_SETTING
+    ui.handle_encoder_turn(1, 1000000);                // first turn: fine step 0.1
+    ui.handle_bpm_encoder_input(0, 1033000);           // idle poll (delta 0)
+    ui.handle_encoder_turn(1, 1040000);                // 40 ms after the real turn: still fine
+    EXPECT_NEAR(e.get_bpm(), 120.2f, 0.001f);
+    ui.handle_encoder_turn(1, 1050000);                // 10 ms later: fast, +1.0
+    EXPECT_NEAR(e.get_bpm(), 121.2f, 0.001f);
+}
+
+TEST(RegressionUI, TapStateIsPerInstance) {
+    ModulationEngine e1, e2; e1.set_bpm(120.0f); e2.set_bpm(120.0f);
+    ui::UIController u1(e1), u2(e2); u1.init(); u2.init();
+    u1.handle_tap_tempo(1000000);
+    u2.handle_tap_tempo(1600000); // first tap on u2 must not pair with u1's tap
+    EXPECT_NEAR(e2.get_bpm(), 120.0f, 0.001f);
+}
+
+class RegressionPreset : public ::testing::Test {
+protected:
+    void SetUp() override { ::PresetManager::path_prefix = "/tmp/"; }
+    void TearDown() override { std::remove("/tmp/preset_7.bin"); }
+};
+
+TEST_F(RegressionPreset, RoundTrip) {
+    PhaseBoxState a; a.osc.bpm = 143.5f; a.midi_channel = 5; a.midi_cc_num = 74;
+    a.macros.destinations[1].clock_mult = 0.75f; a.turing_mix = 0.35f;
+    ASSERT_TRUE(::PresetManager::savePreset(7, a));
+    PhaseBoxState b;
+    ASSERT_TRUE(::PresetManager::loadPreset(7, b));
+    EXPECT_FLOAT_EQ(b.osc.bpm, 143.5f);
+    EXPECT_EQ(b.midi_channel, 5);
+    EXPECT_EQ(b.midi_cc_num, 74);
+    EXPECT_FLOAT_EQ(b.macros.destinations[1].clock_mult, 0.75f);
+    EXPECT_FLOAT_EQ(b.turing_mix, 0.35f);
+}
+
+TEST_F(RegressionPreset, CorruptTruncatedAndOutOfRangeFilesAreRejectedWithoutSideEffects) {
+    PhaseBoxState a; a.osc.bpm = 99.0f;
+    ASSERT_TRUE(::PresetManager::savePreset(7, a));
+
+    FILE* f = fopen("/tmp/preset_7.bin", "rb"); uint8_t raw[512]; size_t n = fread(raw, 1, sizeof(raw), f); fclose(f);
+    auto write_raw = [&](const uint8_t* d, size_t len) { FILE* o = fopen("/tmp/preset_7.bin", "wb"); fwrite(d, 1, len, o); fclose(o); };
+
+    PhaseBoxState victim; victim.osc.bpm = 120.0f;
+    uint8_t flipped[512]; std::memcpy(flipped, raw, n); flipped[12] ^= 0xFF;   // bit rot
+    write_raw(flipped, n);          EXPECT_FALSE(::PresetManager::loadPreset(7, victim));
+    write_raw(raw, n - 7);          EXPECT_FALSE(::PresetManager::loadPreset(7, victim)); // truncated
+    write_raw(raw, 3);              EXPECT_FALSE(::PresetManager::loadPreset(7, victim)); // tiny
+    EXPECT_FLOAT_EQ(victim.osc.bpm, 120.0f); // untouched
+    EXPECT_FALSE(::PresetManager::loadPreset(8, victim)); // missing file
+}
+
+
+==================== FILE: tests/test_hal_encoder.cpp ====================
+#include <gtest/gtest.h>
+#include "hal/hal_encoder.hpp"
+
+using namespace phasebox::hal;
+
+TEST(HalEncoderTest, InitialState) {
+    HalEncoder encoder;
+    encoder.init(2, 3, 4);
+    EXPECT_EQ(encoder.get_delta(), 0);
+    EXPECT_FALSE(encoder.is_button_pressed());
+    EXPECT_EQ(encoder.get_button_hold_time_ms(), 0);
+}
+
+TEST(HalEncoderTest, SimulatedTurns) {
+    HalEncoder encoder;
+    encoder.init(2, 3, 4);
+
+    encoder.simulate_turn(1);
+    EXPECT_EQ(encoder.get_delta(), 1);
+    EXPECT_EQ(encoder.get_delta(), 0); // Resets after reading
+
+    encoder.simulate_turn(-3);
+    EXPECT_EQ(encoder.get_delta(), -3);
+}
+
+TEST(HalEncoderTest, SimulatedButtonHold) {
+    HalEncoder encoder;
+    encoder.init(2, 3, 4);
+
+    encoder.simulate_button(true, 1200);
+    EXPECT_TRUE(encoder.is_button_pressed());
+    EXPECT_EQ(encoder.get_button_hold_time_ms(), 1200);
+
+    encoder.simulate_button(false, 0);
+    EXPECT_FALSE(encoder.is_button_pressed());
+    EXPECT_EQ(encoder.get_button_hold_time_ms(), 0);
+}
+
+
+==================== FILE: tests/test_preset_manager.cpp ====================
+#include <gtest/gtest.h>
+#include "storage/preset_manager.hpp"
+#include <cstdio>
+
+using namespace phasebox::storage;
+
+TEST(PresetManagerTest, SlotValidation) {
+    PresetManager pm;
+    PresetPatch patch;
+
+    EXPECT_FALSE(pm.save_preset(0, patch)); // Slot 0 invalid
+    EXPECT_FALSE(pm.save_preset(9, patch)); // Slot 9 invalid
+    EXPECT_TRUE(pm.save_preset(1, patch));  // Slot 1 valid
+    std::remove("patch1.bin");
+}
+
+TEST(PresetManagerTest, SaveAndLoadPresetCycle) {
+    PresetManager pm;
+
+    PresetPatch original_patch;
+    original_patch.bpm = 142.5f;
+    original_patch.waveforms[0] = 2; // Square wave
+    original_patch.target_ccs[0] = 74; // Filter Cutoff CC
+    original_patch.macro_weights[0] = 0.85f;
+
+    // Save to Slot 2
+    EXPECT_TRUE(pm.save_preset(2, original_patch));
+
+    // Load back from Slot 2
+    PresetPatch loaded_patch{};
+    EXPECT_TRUE(pm.load_preset(2, loaded_patch));
+
+    EXPECT_EQ(loaded_patch.version, 1);
+    EXPECT_FLOAT_EQ(loaded_patch.bpm, 142.5f);
+    EXPECT_EQ(loaded_patch.waveforms[0], 2);
+    EXPECT_EQ(loaded_patch.target_ccs[0], 74);
+    EXPECT_FLOAT_EQ(loaded_patch.macro_weights[0], 0.85f);
+
+    // Clean up test file
+    std::remove("patch2.bin");
+}
+
+
+==================== FILE: tests/CMakeLists.txt ====================
+cmake_minimum_required(VERSION 3.14)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
+add_executable(run_host_tests
+    test_main.cpp
+    test_macro_engine.cpp
+    test_hal_adc.cpp
+    test_hal_encoder.cpp
+    test_hal_display.cpp
+    test_preset_manager.cpp
+    test_regressions.cpp
+    test_hal_interfaces.cpp
+    test_sim_controls.cpp
+    test_preset_session.cpp
+    test_device_blocks.cpp
+    test_device_app.cpp
+    test_midi_router.cpp
+    ../src/hal/hal_adc.cpp
+    ../src/hal/hal_encoder.cpp
+    ../src/hal/hal_display.cpp
+    ../src/storage/preset_manager.cpp
+    ../src/ui/ui_controller.cpp
+    ../src/PhaseOscillator.cpp
+)
+
+# Enable host-build simulation code in headers/sources
+target_compile_definitions(run_host_tests PRIVATE HOST_BUILD)
+
+target_include_directories(run_host_tests PRIVATE ../include ../firmware/include)
+find_package(Threads REQUIRED)
+target_link_libraries(run_host_tests gtest_main Threads::Threads)
+
+include(GoogleTest)
+gtest_discover_tests(run_host_tests)
+
+==================== FILE: tests/test_midi_router.cpp ====================
+// Where the simulator's MIDI goes: straight to the named hardware destination, and nowhere else.
+#include <gtest/gtest.h>
+#include <algorithm>
+#include <string>
+#include <vector>
+#include "MidiRouter.hpp"
+
+using namespace midi_route;
+
+namespace {
+struct Fake : Backend {
+    std::vector<Endpoint> list;
+    struct Sent { uint64_t handle; std::vector<uint8_t> bytes; };
+    std::vector<Sent> sent;
+    std::vector<std::vector<uint8_t>> virtual_sent;
+    int list_calls = 0, virtual_created = 0;
+    bool send_fails = false, virtual_ok = true;
+
+    std::vector<Endpoint> destinations() override { ++list_calls; return list; }
+    bool send(uint64_t h, const uint8_t* b, size_t n) override {
+        if (send_fails) return false;
+        // like CoreMIDI: sending to an endpoint that no longer exists fails
+        if (std::none_of(list.begin(), list.end(), [&](const Endpoint& e) { return e.handle == h && !e.offline; })) return false;
+        sent.push_back({h, std::vector<uint8_t>(b, b + n)});
+        return true;
+    }
+    bool create_virtual_source(const std::string&) override { ++virtual_created; return virtual_ok; }
+    bool send_virtual(const uint8_t* b, size_t n) override { virtual_sent.emplace_back(b, b + n); return true; }
+
+    void add(uint64_t h, std::vector<std::string> names, bool offline = false) { list.push_back({h, std::move(names), offline}); }
+    void remove(uint64_t h) { list.erase(std::remove_if(list.begin(), list.end(), [&](const Endpoint& e) { return e.handle == h; }), list.end()); }
+    size_t sent_to(uint64_t h) const { return std::count_if(sent.begin(), sent.end(), [&](const Sent& s) { return s.handle == h; }); }
+};
+bool has(const std::string& s, const char* part) { return s.find(part) != std::string::npos; }
+} // namespace
+
+TEST(MidiNames, MatchingIgnoresCaseSpacesAndPunctuation) {
+    EXPECT_TRUE(name_matches("Melodee FM-1", "Melodee FM-1"));
+    EXPECT_TRUE(name_matches("melodee fm 1 MIDI 1", "Melodee FM-1"));
+    EXPECT_TRUE(name_matches("MelodeeFM-1", "melodee fm-1"));
+    EXPECT_FALSE(name_matches("IAC Driver Bus 1", "Melodee FM-1"));
+    EXPECT_FALSE(name_matches("Melodee FM-2", "Melodee FM-1"));
+    EXPECT_FALSE(name_matches("anything", ""));
+}
+
+TEST(MidiConfig, EnvironmentVariableChoosesTheTarget) {
+    EXPECT_TRUE(Config::from_env(nullptr).wanted == "Melodee FM-1");
+    EXPECT_TRUE(Config::from_env("").wanted == "Melodee FM-1");
+    EXPECT_TRUE(Config::from_env("   ").wanted == "Melodee FM-1");
+    EXPECT_TRUE(Config::from_env("  Other Synth ").wanted == "Other Synth");
+    EXPECT_TRUE(Config::from_env("Virtual").use_virtual);
+    EXPECT_FALSE(Config::from_env("Other Synth").use_virtual);
+}
+
+TEST(MidiRouter, SendsStraightToTheHardwareDestinationAndNothingElse) {
+    Fake f; f.add(10, {"IAC Driver Bus 1"}); f.add(11, {"Melodee FM-1", "FM-1"}); f.add(12, {"Other Synth"});
+    Router r(f, Config{});
+    r.poll(0);
+    ASSERT_TRUE(r.connected());
+    EXPECT_TRUE(r.status() == "-> Melodee FM-1");
+    EXPECT_TRUE(r.send_cc(1, 74, 100));
+    EXPECT_TRUE(r.send_cc(4, 71, 5));
+    EXPECT_EQ(f.sent_to(11), 2u);
+    EXPECT_EQ(f.sent_to(10) + f.sent_to(12), 0u);              // the other devices never receive anything
+    EXPECT_EQ(f.sent[0].bytes[0], 0xB0); EXPECT_EQ(f.sent[0].bytes[1], 74); EXPECT_EQ(f.sent[0].bytes[2], 100);
+    EXPECT_EQ(f.sent[1].bytes[0], 0xB3);                       // channel 4
+    EXPECT_EQ(f.virtual_created, 0);                           // no virtual port is created in this mode
+}
+
+TEST(MidiRouter, MessageBytesAreEncodedAsMidi) {
+    Fake f; f.add(1, {"Melodee FM-1"});
+    Router r(f, Config{}); r.poll(0);
+    r.send_cc(16, 127, 127); r.send_cc(1, 200, 255);           // out-of-range values are masked to 7 bits
+    EXPECT_EQ(f.sent[0].bytes[0], 0xBF);
+    EXPECT_EQ(f.sent[1].bytes[1], 200 & 0x7F); EXPECT_EQ(f.sent[1].bytes[2], 255 & 0x7F);
+}
+
+TEST(MidiRouter, NeverSendsWhenTheDeviceIsNotThereAndExplainsWhy) {
+    Fake f; f.add(10, {"IAC Driver Bus 1"}); f.add(12, {"Other Synth"});
+    Router r(f, Config{});
+    r.poll(0);
+    EXPECT_FALSE(r.connected());
+    EXPECT_FALSE(r.send_cc(1, 74, 64));
+    EXPECT_EQ(f.sent.size(), 0u);                              // not even to the "closest" device
+    EXPECT_TRUE(has(r.status(), "no destination matches 'Melodee FM-1'"));
+    EXPECT_TRUE(has(r.status(), "IAC Driver Bus 1") && has(r.status(), "Other Synth"));
+}
+
+TEST(MidiRouter, ZeroDestinationsGetsASpecificMessage) {
+    Fake f;
+    Router r(f, Config{}); r.poll(0);
+    EXPECT_TRUE(has(r.status(), "no MIDI destinations at all"));
+    EXPECT_TRUE(has(r.status(), "reset_coremidi"));
+}
+
+TEST(MidiRouter, AnOfflineMatchIsNotUsedUntilItComesBack) {
+    Fake f; f.add(11, {"Melodee FM-1"}, /*offline=*/true);
+    Router r(f, Config{}); r.poll(0);
+    EXPECT_FALSE(r.connected());
+    EXPECT_TRUE(has(r.status(), "listed but offline"));
+    f.list[0].offline = false;
+    r.poll(1000);
+    EXPECT_TRUE(r.connected());
+}
+
+TEST(MidiRouter, FindsADevicePluggedInAfterStartButOnlyScansOncePerSecond) {
+    Fake f;
+    Router r(f, Config{});
+    r.poll(0);
+    const int after_first = f.list_calls;
+    for (uint32_t t = 16; t < 1000; t += 16) r.poll(t);
+    EXPECT_EQ(f.list_calls, after_first);                      // no scanning every frame
+    f.add(11, {"Melodee FM-1"});
+    r.poll(1000);
+    EXPECT_TRUE(r.connected());
+}
+
+TEST(MidiRouter, EpochChangesOnEveryNewConnectionSoValuesCanBeResent) {
+    Fake f; f.add(11, {"Melodee FM-1"});
+    Router r(f, Config{});
+    const uint32_t before = r.epoch();
+    r.poll(0);
+    EXPECT_EQ(r.epoch(), before + 1);
+    r.poll(500);
+    EXPECT_EQ(r.epoch(), before + 1);                          // stays the same while connected
+}
+
+TEST(MidiRouter, UnplugDetectedOnSendThenReconnectsToTheNewEndpoint) {
+    Fake f; f.add(11, {"Melodee FM-1"});
+    Router r(f, Config{}); r.poll(0);
+    ASSERT_TRUE(r.send_cc(1, 74, 1));
+    f.remove(11);                                              // USB cable pulled
+    EXPECT_FALSE(r.send_cc(1, 74, 2));                         // fails, and the router lets go
+    EXPECT_FALSE(r.connected());
+    EXPECT_TRUE(has(r.status(), "unplugged"));
+    EXPECT_FALSE(r.send_cc(1, 74, 3));                         // nothing is sent while it is away
+    r.poll(100);                                               // looks again at once, finds nothing
+    f.add(21, {"Melodee FM-1"});                               // plugged back in: a NEW handle
+    const uint32_t e = r.epoch();
+    r.poll(1100);
+    EXPECT_TRUE(r.connected());
+    EXPECT_GT(r.epoch(), e);
+    EXPECT_TRUE(r.send_cc(1, 74, 4));
+    EXPECT_EQ(f.sent_to(21), 1u);
+    EXPECT_EQ(f.sent_to(11), 1u);                              // only the one message from before the unplug
+}
+
+TEST(MidiRouter, UnplugDetectedByTheVerifyCheckEvenWithoutSending) {
+    Fake f; f.add(11, {"Melodee FM-1"});
+    Router r(f, Config{}); r.poll(0);
+    f.remove(11);
+    r.poll(1999);
+    EXPECT_TRUE(r.connected());                                // not checked yet
+    r.poll(2000);
+    EXPECT_FALSE(r.connected());
+    EXPECT_TRUE(has(r.status(), "went away"));
+}
+
+TEST(MidiRouter, ADeviceThatGoesOfflineIsTreatedAsGone) {
+    Fake f; f.add(11, {"Melodee FM-1"});
+    Router r(f, Config{}); r.poll(0);
+    f.list[0].offline = true;
+    r.poll(2000);
+    EXPECT_FALSE(r.connected());
+}
+
+TEST(MidiRouter, ReorderingTheDeviceListNeverRedirectsMessages) {
+    Fake f; f.add(10, {"IAC Driver Bus 1"}); f.add(11, {"Melodee FM-1"}); f.add(12, {"Other Synth"});
+    Router r(f, Config{}); r.poll(0);
+    f.remove(10);                                              // another device disappears: list positions all shift
+    r.poll(2000);
+    EXPECT_TRUE(r.connected());
+    r.send_cc(1, 74, 9);
+    EXPECT_EQ(f.sent_to(11), 1u);
+    EXPECT_EQ(f.sent_to(12), 0u);                              // a position-based router would have hit this one
+}
+
+TEST(MidiRouter, TheFirstOfSeveralMatchesIsUsed) {
+    Fake f; f.add(11, {"Melodee FM-1 Port 1"}); f.add(12, {"Melodee FM-1 Port 2"});
+    Router r(f, Config{}); r.poll(0);
+    r.send_cc(1, 1, 1);
+    EXPECT_EQ(f.sent_to(11), 1u); EXPECT_EQ(f.sent_to(12), 0u);
+}
+
+TEST(MidiRouter, OnlyChangesAreLoggedNotEveryScan) {
+    Fake f; f.add(10, {"Other Synth"});
+    Router r(f, Config{});
+    for (uint32_t t = 0; t < 10000; t += 1000) r.poll(t);      // ten scans, nothing found
+    auto log = r.take_log();
+    int not_found = 0; for (auto& l : log) not_found += has(l, "no destination matches");
+    EXPECT_EQ(not_found, 1);
+    f.add(11, {"Melodee FM-1"}); r.poll(10000);
+    log = r.take_log();
+    ASSERT_EQ(log.size(), 1u);
+    EXPECT_TRUE(has(log[0], "Melodee FM-1"));
+    EXPECT_EQ(r.take_log().size(), 0u);                        // taking the log empties it
+}
+
+TEST(MidiRouter, DifferentTargetNameFromTheEnvironment) {
+    Fake f; f.add(10, {"Melodee FM-1"}); f.add(12, {"Other Synth"});
+    Router r(f, Config::from_env("other synth")); r.poll(0);
+    r.send_cc(2, 10, 10);
+    EXPECT_EQ(f.sent_to(12), 1u); EXPECT_EQ(f.sent_to(10), 0u);
+}
+
+TEST(MidiRouter, VirtualModeCreatesTheSourceOnceAndNeverTouchesHardware) {
+    Fake f; f.add(11, {"Melodee FM-1"});
+    Router r(f, Config::from_env("virtual"));
+    for (uint32_t t = 0; t < 5000; t += 16) r.poll(t);
+    EXPECT_EQ(f.virtual_created, 1);
+    EXPECT_EQ(f.list_calls, 0);
+    EXPECT_TRUE(r.send_cc(1, 74, 50));
+    EXPECT_EQ(f.virtual_sent.size(), 1u);
+    EXPECT_EQ(f.sent.size(), 0u);
+    EXPECT_TRUE(has(r.status(), "Phase Box Virtual Out"));
+}
+
+TEST(MidiRouter, VirtualSourceFailureIsReportedAndRetriedLater) {
+    Fake f; f.virtual_ok = false;
+    Router r(f, Config::from_env("virtual"));
+    r.poll(0);
+    EXPECT_FALSE(r.connected());
+    EXPECT_TRUE(has(r.status(), "could not create"));
+    r.poll(500); EXPECT_EQ(f.virtual_created, 1);              // not hammering
+    f.virtual_ok = true; r.poll(1000);
+    EXPECT_EQ(f.virtual_created, 2);
+    EXPECT_TRUE(r.connected());
+}
+
+
+==================== FILE: tests/test_macro_engine.cpp ====================
+#include "core/macro_engine.hpp"
+#include <gtest/gtest.h>
+
+using namespace phasebox::core;
+
+TEST(MacroEngineTest, DefaultInitialization) {
+  MacroEngine macro;
+  EXPECT_FLOAT_EQ(macro.get_expression_value(), 0.0f);
+  EXPECT_FLOAT_EQ(macro.get_weight(0), 0.0f);
+  EXPECT_FLOAT_EQ(macro.get_weight(3), 0.0f);
+  EXPECT_FLOAT_EQ(macro.get_weight(4), 0.0f); // Out of bounds returns 0.0f
+}
+
+TEST(MacroEngineTest, ExpressionValueClamping) {
+  MacroEngine macro;
+
+  // Test lower clamping
+  macro.set_expression_value(-0.5f);
+  EXPECT_FLOAT_EQ(macro.get_expression_value(), 0.0f);
+
+  // Test upper clamping
+  macro.set_expression_value(1.5f);
+  EXPECT_FLOAT_EQ(macro.get_expression_value(), 1.0f);
+
+  // Test valid mid-range
+  macro.set_expression_value(0.75f);
+  EXPECT_FLOAT_EQ(macro.get_expression_value(), 0.75f);
+}
+
+TEST(MacroEngineTest, WeightClampingAndBounds) {
+  MacroEngine macro;
+
+  // Test positive weight clamping
+  macro.set_weight(0, 2.0f);
+  EXPECT_FLOAT_EQ(macro.get_weight(0), 1.0f);
+
+  // Test negative weight clamping
+  macro.set_weight(1, -1.5f);
+  EXPECT_FLOAT_EQ(macro.get_weight(1), -1.0f);
+
+  // Ignore invalid LFO index (> 3)
+  macro.set_weight(4, 1.0f);
+  EXPECT_FLOAT_EQ(macro.get_weight(4), 0.0f);
+}
+
+TEST(MacroEngineTest, ApplyZeroWeightPassThrough) {
+  MacroEngine macro;
+  macro.set_expression_value(1.0f);
+  macro.set_weight(0, 0.0f); // Inactive weight
+
+  // Should return unchanged base_value
+  EXPECT_EQ(macro.apply(0, 64), 64);
+}
+
+TEST(MacroEngineTest, ApplyBipolarModulation) {
+  MacroEngine macro;
+  macro.set_weight(0, 1.0f);
+
+  // At 50% expression (0.5), offset is 0
+  macro.set_expression_value(0.5f);
+  EXPECT_EQ(macro.apply(0, 64), 64);
+
+  // At 100% expression (1.0), offset is +63.5 -> 64 + 63.5 = 127.5 -> clamped
+  // to 127
+  macro.set_expression_value(1.0f);
+  EXPECT_EQ(macro.apply(0, 64), 127);
+
+  // At 0% expression (0.0), offset is -63.5 -> 64 - 63.5 = 0.5 -> 0
+  macro.set_expression_value(0.0f);
+  EXPECT_EQ(macro.apply(0, 64), 0);
+}
+
+TEST(MacroEngineTest, ApplyClamping) {
+  MacroEngine macro;
+  macro.set_weight(0, 1.0f);
+
+  // Upper clamp test
+  macro.set_expression_value(1.0f);
+  EXPECT_EQ(macro.apply(0, 100), 127);
+
+  // Lower clamp test
+  macro.set_expression_value(0.0f);
+  EXPECT_EQ(macro.apply(0, 20), 0);
+}
+
+TEST(MacroEngineTest, ApplyInvalidChannelIndex) {
+  MacroEngine macro;
+  // Out of bounds channel returns unmodified base value
+  EXPECT_EQ(macro.apply(4, 99), 99);
+}
+
+
+==================== FILE: tests/test_main.cpp ====================
+#include <gtest/gtest.h>
+#include "core/modulation_engine.hpp"
+
+using namespace phasebox::core;
+
+TEST(MainEngineTest, TickAndMessageGeneration) {
+    ModulationEngine engine;
+    engine.set_bpm(120.0f);
+
+    auto msgs = engine.tick(1000000);
+    ASSERT_GE(msgs.size(), 2u);
+
+    const MidiMessage& m0 = msgs.at(0);
+    const MidiMessage& m1 = msgs.at(1);
+
+    EXPECT_EQ(m0.status, 0xB0);
+    EXPECT_EQ(m0.data1, 14);
+
+    EXPECT_EQ(m1.status, 0xB1);
+    EXPECT_EQ(m1.data1, 15);
+}
+
+
+==================== FILE: tests/test_device_blocks.cpp ====================
+// Building blocks of the device firmware: encoder decoding, debouncing, tap tempo, MIDI throttling,
+// screensaver, frame buffer, and the lock-free frame hand-off between the two cores.
+#include <gtest/gtest.h>
+#include <atomic>
+#include <chrono>
+#include <cstring>
+#include <thread>
+#include <vector>
+#include "MidiChangeFilter.hpp"
+#include "ScreenSaver.hpp"
+#include "TapTempo.hpp"
+#include "hal/debounce.hpp"
+#include "hal/frame_buffer.hpp"
+#include "hal/quadrature.hpp"
+#include "hal/seqlock_buffer.hpp"
+
+using namespace phasebox::hal;
+
+namespace {
+struct AB { bool a, b; };
+// One detent clockwise from rest (A = B = 1): A leads B.
+const AB CW[4]  = {{0, 1}, {0, 0}, {1, 0}, {1, 1}};
+const AB CCW[4] = {{1, 0}, {0, 0}, {0, 1}, {1, 1}};
+int run(QuadratureDecoder& q, const AB* seq, int n = 4) { int total = 0; for (int i = 0; i < n; ++i) total += q.feed(seq[i].a, seq[i].b); return total; }
+} // namespace
+
+TEST(Quadrature, OneStepPerDetentNotFour) {
+    QuadratureDecoder q; q.feed(true, true);
+    EXPECT_EQ(run(q, CW), +1);
+    EXPECT_EQ(run(q, CW), +1);
+    EXPECT_EQ(run(q, CCW), -1);
+}
+
+TEST(Quadrature, ThreeDetentsGiveThreeSteps) {
+    QuadratureDecoder q; q.feed(true, true);
+    int total = 0;
+    for (int i = 0; i < 3; ++i) total += run(q, CW);
+    EXPECT_EQ(total, 3);
+}
+
+TEST(Quadrature, ContactBounceAroundRestGivesNothing) {
+    QuadratureDecoder q; q.feed(true, true);
+    int total = 0;
+    for (int i = 0; i < 20; ++i) { total += q.feed(false, true); total += q.feed(true, true); }
+    EXPECT_EQ(total, 0);
+}
+
+TEST(Quadrature, TurningBackBeforeTheDetentCancels) {
+    QuadratureDecoder q; q.feed(true, true);
+    int total = q.feed(false, true) + q.feed(false, false) + q.feed(false, true) + q.feed(true, true);
+    EXPECT_EQ(total, 0);
+}
+
+TEST(Quadrature, MissedEdgeIsIgnoredAndTheNextDetentIsStillClean) {
+    QuadratureDecoder q; q.feed(true, true);
+    int total = q.feed(false, true);       // 11 -> 01
+    total += q.feed(true, false);          // 01 -> 10: both pins changed, an edge was missed: ignored
+    total += q.feed(true, true);           // back at rest: the half-finished turn is dropped
+    EXPECT_EQ(total, 0);
+    EXPECT_EQ(run(q, CW), +1);             // and the next real detent works normally
+}
+
+TEST(Quadrature, ReversedFlipsDirection) {
+    QuadratureDecoder q(4, true); q.feed(true, true);
+    EXPECT_EQ(run(q, CW), -1);
+}
+
+TEST(Quadrature, TwoTransitionEncoders) {
+    QuadratureDecoder q(2); q.feed(true, true);
+    EXPECT_EQ(q.feed(false, true) + q.feed(false, false), +1);
+}
+
+TEST(Debounce, ShortGlitchesAreIgnoredAndRealPressesAreSeenOnce) {
+    Debounce d(20);
+    d.update(true, 0); d.update(false, 5); d.update(true, 8); d.update(false, 12);   // bouncing
+    EXPECT_FALSE(d.state());
+    int presses = 0;
+    for (uint32_t t = 100; t < 200; ++t) { d.update(true, t); presses += d.rose(); }
+    EXPECT_TRUE(d.state());
+    EXPECT_EQ(presses, 1);
+    int releases = 0;
+    for (uint32_t t = 200; t < 300; ++t) { d.update(false, t); releases += d.fell(); }
+    EXPECT_FALSE(d.state());
+    EXPECT_EQ(releases, 1);
+}
+
+TEST(Debounce, WorksAcrossTheClockWrapping) {
+    Debounce d(20);
+    d.update(true, 0xFFFFFFF0u);
+    EXPECT_FALSE(d.state());
+    d.update(true, 0x0000000Au);          // 26 ms later, after the wrap
+    EXPECT_TRUE(d.state());
+}
+
+TEST(TapTempoTest, NeedsTwoTapsThenAveragesAndRestartsAfterAPause) {
+    TapTempo t; float bpm = 0;
+    EXPECT_FALSE(t.tap(1000, bpm));
+    EXPECT_TRUE(t.tap(1500, bpm));  EXPECT_NEAR(bpm, 120.0f, 0.01f);
+    EXPECT_TRUE(t.tap(2100, bpm));  EXPECT_NEAR(bpm, 60000.0f / 550.0f, 0.01f);   // average of 500 and 600
+    EXPECT_FALSE(t.tap(9000, bpm));                                                // long pause: start over
+    EXPECT_TRUE(t.tap(9400, bpm));  EXPECT_NEAR(bpm, 150.0f, 0.01f);
+}
+
+TEST(TapTempoTest, ClampsToTheUsableRangeAndKeepsOnlyTheLastFourTaps) {
+    TapTempo t; float bpm = 0;
+    t.tap(0, bpm); EXPECT_TRUE(t.tap(100, bpm)); EXPECT_NEAR(bpm, 300.0f, 0.01f);   // 600 BPM -> clamped
+    TapTempo u;
+    u.tap(0, bpm); u.tap(2400, bpm);                     // 25 BPM -> clamped up to 40
+    EXPECT_NEAR(bpm, 40.0f, 0.01f);
+    TapTempo w;
+    uint32_t times[] = {0, 1000, 2000, 3000, 4000, 4500, 5000, 5500};   // slow taps, then 500 ms apart
+    for (uint32_t x : times) w.tap(x, bpm);
+    EXPECT_NEAR(bpm, 120.0f, 0.01f);                                    // only the last four taps (4000..5500) count
+}
+
+TEST(MidiFilter, SendsOnChangeAndRefreshesButNotEveryFrame) {
+    MidiChangeFilter f;
+    EXPECT_TRUE(f.should_send(0, 1, 16, 64, 0));
+    EXPECT_FALSE(f.should_send(0, 1, 16, 64, 17));
+    EXPECT_TRUE(f.should_send(0, 1, 16, 65, 34));           // value changed
+    EXPECT_TRUE(f.should_send(0, 2, 16, 65, 51));           // channel changed
+    EXPECT_TRUE(f.should_send(0, 2, 17, 65, 68));           // CC number changed
+    EXPECT_FALSE(f.should_send(0, 2, 17, 65, 900));
+    EXPECT_TRUE(f.should_send(0, 2, 17, 65, 1068));         // 1 s refresh
+    EXPECT_TRUE(f.should_send(1, 1, 16, 64, 68));           // another destination is independent
+    EXPECT_TRUE(f.should_send(99, 1, 16, 64, 68));          // out-of-range index never blocks
+}
+
+TEST(ScreenSaverTest, DimsAfterThirtySecondsAndWakesOnActivity) {
+    ScreenSaver s;
+    EXPECT_FALSE(s.update(29999, 0));
+    EXPECT_TRUE(s.update(30000, 0));
+    EXPECT_EQ(s.contrast(), ScreenSaver::CONTRAST_DIM);
+    EXPECT_FALSE(s.update(40000, 0));                       // already dim: nothing to do
+    EXPECT_TRUE(s.update(40001, 40000));                    // activity: back to normal
+    EXPECT_EQ(s.contrast(), ScreenSaver::CONTRAST_NORMAL);
+}
+
+TEST(FrameBufferTest, PixelsAndTextLandInSsd1306PageLayout) {
+    FrameBuffer fb(128, 32);
+    fb.draw_pixel(0, 0, true);
+    EXPECT_EQ(fb.data()[0], 0x01);
+    fb.draw_pixel(5, 9, true);                              // page 1, bit 1
+    EXPECT_EQ(fb.data()[5 + 128], 0x02);
+    fb.draw_pixel(500, 500, true);                          // off-screen is ignored
+    fb.clear();
+    fb.draw_string(0, 0, "A");
+    int lit = 0; for (size_t i = 0; i < fb.size(); ++i) for (int b = 0; b < 8; ++b) lit += (fb.data()[i] >> b) & 1;
+    EXPECT_GE(lit, 10);
+    EXPECT_EQ(fb.size(), 512u);
+    EXPECT_EQ(FrameBuffer(128, 64).size(), 1024u);
+}
+
+TEST(SeqlockBufferTest, ReadersNeverSeeATornFrameWhileAWriterKeepsUpdating) {
+    // Like the firmware: one writer publishing frames with idle time in between, other threads reading.
+    // (A writer that never pauses would starve any seqlock reader, so this test must not do that.)
+    constexpr size_t N = 1024;
+    SeqlockBuffer<N> shared;
+    std::atomic<bool> stop{false};
+    std::thread writer([&] {
+        std::vector<uint8_t> frame(N);
+        for (uint32_t i = 1; !stop.load(); ++i) {
+            std::memset(frame.data(), static_cast<int>(i & 0xFF), N);   // every byte of a frame is the same value
+            shared.write(frame.data());
+            std::this_thread::sleep_for(std::chrono::microseconds(20));
+        }
+    });
+
+    std::atomic<long> good{0}, torn{0}, retried{0};
+    auto reader = [&] {
+        std::vector<uint8_t> out(N);
+        const auto until = std::chrono::steady_clock::now() + std::chrono::milliseconds(300);
+        long g = 0, t = 0, r = 0;
+        while (std::chrono::steady_clock::now() < until) {
+            if (!shared.read(out.data())) { ++r; continue; }
+            bool uniform = true;
+            for (size_t k = 1; k < N; ++k) uniform = uniform && out[k] == out[0];
+            uniform ? ++g : ++t;
+        }
+        good += g; torn += t; retried += r;
+    };
+    std::thread r1(reader), r2(reader);
+    reader();
+    r1.join(); r2.join();
+    stop = true;
+    writer.join();
+
+    EXPECT_EQ(torn.load(), 0L);          // the property that matters: a reader never gets a mixed frame
+    EXPECT_GE(good.load(), 100L);        // and with a paced writer readers do get frames
+    (void)retried;
+}
+
+TEST(SeqlockBufferTest, SequenceAdvancesByTwoPerWrite) {
+    SeqlockBuffer<8> b;
+    uint8_t in[8] = {1,2,3,4,5,6,7,8}, out[8]; uint32_t s0, s1;
+    EXPECT_TRUE(b.read(out, &s0));
+    b.write(in);
+    EXPECT_TRUE(b.read(out, &s1));
+    EXPECT_EQ(s1, s0 + 2);
+    EXPECT_EQ(std::memcmp(in, out, 8), 0);
+}
+
+
+==================== FILE: tests/test_device_app.cpp ====================
+// The whole device, driven with fake pins: turn/click/hold the encoder, step on the footswitches,
+// move the pedal, and check what comes out as MIDI, settings, saved presets and OLED pixels.
+#include <gtest/gtest.h>
+#include <cstring>
+#include <map>
+#include <string>
+#include <vector>
+#include "DeviceApp.hpp"
+#include "hal/mock_hal_display.hpp"
+
+namespace {
+struct Recorder : MidiOut {
+    struct Msg { uint8_t ch, cc, val; uint32_t at_ms; };
+    std::vector<Msg> sent;
+    uint32_t* clock = nullptr;
+    void cc(uint8_t ch, uint8_t c, uint8_t v) override { sent.push_back({ch, c, v, clock ? *clock : 0}); }
+};
+struct MemStorage : PresetStorage {
+    std::map<int, std::vector<uint8_t>> slots; int writes = 0;
+    bool write(int slot, const uint8_t* d, size_t n) override { ++writes; slots[slot].assign(d, d + n); return true; }
+    size_t read(int slot, uint8_t* out, size_t cap) override {
+        auto it = slots.find(slot);
+        if (it == slots.end() || it->second.size() > cap) return 0;
+        std::memcpy(out, it->second.data(), it->second.size());
+        return it->second.size();
+    }
+};
+
+// A rig that advances time 1 ms per step, polling the controls every step and running the 60 Hz frame on schedule.
+struct Rig {
+    PhaseBoxState state;
+    MemStorage mem;
+    NoStorage none;
+    PresetSession presets;
+    Recorder midi;
+    DeviceApp app;
+    DeviceInputs in;
+    uint64_t now_us = 1000000;      // start at 1 s, as if booted a moment ago
+    uint64_t next_frame_us = 1000000;
+    uint32_t ms_clock = 1000;
+
+    explicit Rig(bool with_storage = true, uint16_t oled_h = 32)
+        : presets(with_storage ? static_cast<PresetStorage&>(mem) : static_cast<PresetStorage&>(none)),
+          app(state, presets, midi, 128, oled_h) { midi.clock = &ms_clock; }
+
+    void step() {
+        now_us += 1000; ms_clock = static_cast<uint32_t>(now_us / 1000);
+        app.poll_inputs(in, now_us);
+        if (now_us >= next_frame_us) { app.frame(now_us); next_frame_us += DeviceApp::FRAME_US; }
+    }
+    void run_ms(int ms) { for (int i = 0; i < ms; ++i) step(); }
+
+    void detent(int dir) {   // one click of the encoder, 1 ms per signal change
+        static const bool cw[4][2]  = {{0,1},{0,0},{1,0},{1,1}};
+        static const bool ccw[4][2] = {{1,0},{0,0},{0,1},{1,1}};
+        for (int i = 0; i < 4; ++i) { in.enc_a = dir > 0 ? cw[i][0] : ccw[i][0]; in.enc_b = dir > 0 ? cw[i][1] : ccw[i][1]; step(); }
+    }
+    void press(bool DeviceInputs::*pin, int hold_ms) { in.*pin = true; run_ms(hold_ms); in.*pin = false; run_ms(40); }
+};
+} // namespace
+
+TEST(Device, TurningTheEncoderEditsTheCurrentPage) {
+    Rig r;
+    r.run_ms(50);
+    EXPECT_EQ(r.state.active_page, 0);
+    r.detent(+1);
+    EXPECT_EQ(r.state.osc.shape, PhaseOscillator::SAW);
+    r.detent(-1); r.detent(-1);
+    EXPECT_EQ(r.state.osc.shape, PhaseOscillator::TRIANGLE);   // wraps around
+}
+
+TEST(Device, ClickGoesToTheNextPageAndWrapsAndSavesNothing) {
+    Rig r;
+    r.run_ms(50);
+    r.press(&DeviceInputs::enc_sw, 100);
+    EXPECT_EQ(r.state.active_page, 1);
+    for (int i = 0; i < 10; ++i) r.press(&DeviceInputs::enc_sw, 100);
+    EXPECT_EQ(r.state.active_page, 0);                          // 11 pages, back to the start
+    EXPECT_EQ(r.mem.writes, 0);
+}
+
+TEST(Device, HoldingForOneSecondSavesAndDoesNotAlsoChangePage) {
+    Rig r;
+    r.run_ms(50);
+    r.detent(+1);                                               // an edit to save
+    r.in.enc_sw = true;
+    r.run_ms(900);
+    EXPECT_EQ(r.mem.writes, 0);
+    r.run_ms(200);
+    EXPECT_GE(r.mem.writes, 1);
+    r.in.enc_sw = false; r.run_ms(60);
+    EXPECT_EQ(r.state.active_page, 0);                          // releasing after a hold is not a click
+
+    PhaseBoxState back; MemStorage& m = r.mem;
+    ASSERT_TRUE(PresetManager::decode(m.slots[1].data(), m.slots[1].size(), back));
+    EXPECT_EQ(back.osc.shape, PhaseOscillator::SAW);
+}
+
+TEST(Device, SwitchBounceIsNotAClick) {
+    Rig r;
+    r.run_ms(50);
+    for (int i = 0; i < 6; ++i) { r.in.enc_sw = true; r.run_ms(4); r.in.enc_sw = false; r.run_ms(4); }
+    r.run_ms(100);
+    EXPECT_EQ(r.state.active_page, 0);
+}
+
+TEST(Device, SlowTurnsAreFineAndFastSpinsAreCoarseOnTheBpmPage) {
+    Rig r;
+    r.run_ms(50);
+    r.press(&DeviceInputs::enc_sw, 100);                        // page 2 = BPM
+    ASSERT_EQ(r.state.active_page, 1);
+    const float start = r.state.osc.bpm;
+    for (int i = 0; i < 3; ++i) { r.detent(+1); r.run_ms(150); }
+    EXPECT_NEAR(r.state.osc.bpm, start + 3.0f, 0.01f);          // 1 BPM per slow click
+    r.run_ms(300);
+    const float mid = r.state.osc.bpm;
+    for (int i = 0; i < 3; ++i) r.detent(+1);                   // 4 ms apart: a fast spin
+    EXPECT_NEAR(r.state.osc.bpm, mid + 1.0f + 5.0f + 5.0f, 0.01f);   // first click is still slow, then 5 per click
+    r.run_ms(300);
+    r.detent(-1);
+    EXPECT_NEAR(r.state.osc.bpm, mid + 11.0f - 1.0f, 0.01f);
+}
+
+TEST(Device, TapFootswitchSetsTempoAndRestartsThePhase) {
+    Rig r;
+    r.run_ms(50);
+    r.press(&DeviceInputs::tap, 30);                            // taps 600 ms apart = 100 BPM
+    r.run_ms(530);
+    r.press(&DeviceInputs::tap, 30);
+    r.run_ms(530);
+    r.state.osc.phase = 2.5f;                                   // somewhere mid-beat
+    r.in.tap = true; r.run_ms(25);
+    EXPECT_NEAR(r.state.osc.bpm, 100.0f, 2.0f);
+    EXPECT_NEAR(r.state.osc.phase, 0.0f, 0.05f);                // restarted at 0 degrees by the tap
+    r.in.tap = false; r.run_ms(50);
+}
+
+TEST(Device, TapBounceDoesNotDoubleCount) {
+    Rig r;
+    r.run_ms(50);
+    const float before = r.state.osc.bpm;
+    for (int i = 0; i < 5; ++i) { r.in.tap = true; r.run_ms(3); r.in.tap = false; r.run_ms(3); }   // glitches only
+    r.run_ms(100);
+    EXPECT_NEAR(r.state.osc.bpm, before, 0.001f);
+}
+
+TEST(Device, MutateFootswitchStepsTheTuringMachine) {
+    Rig r;
+    r.run_ms(50);
+    const float before = r.state.turing_norm;
+    r.press(&DeviceInputs::mutate, 40);
+    EXPECT_TRUE(r.state.turing_norm != before);
+    const float after_one = r.state.turing_norm;
+    r.press(&DeviceInputs::mutate, 40);
+    EXPECT_TRUE(r.state.turing_norm != after_one);
+}
+
+TEST(Device, ExpressionPedalScalesTheOutputButIsNotScreenActivity) {
+    Rig r;
+    r.run_ms(50);
+    const uint32_t before = r.app.last_activity_ms();
+    r.in.expression = 0.75f;
+    r.run_ms(100);
+    EXPECT_NEAR(r.state.adc_expression, 0.75f, 0.0001f);
+    EXPECT_EQ(r.app.last_activity_ms(), before);
+    r.in.expression = 3.0f; r.run_ms(10);
+    EXPECT_NEAR(r.state.adc_expression, 1.0f, 0.0001f);          // out-of-range readings are clamped
+}
+
+TEST(Device, EncoderAndFootswitchesCountAsActivityForTheScreensaver) {
+    Rig r;
+    r.run_ms(100);
+    uint32_t t = r.app.last_activity_ms();
+    r.run_ms(100); r.detent(+1);
+    EXPECT_GT(r.app.last_activity_ms(), t); t = r.app.last_activity_ms();
+    r.run_ms(100); r.press(&DeviceInputs::tap, 30);
+    EXPECT_GT(r.app.last_activity_ms(), t); t = r.app.last_activity_ms();
+    r.run_ms(100); r.press(&DeviceInputs::mutate, 30);
+    EXPECT_GT(r.app.last_activity_ms(), t);
+}
+
+TEST(Device, MidiIsSentOnChangeWithAPeriodicRefreshNotEveryFrame) {
+    Rig r;
+    for (auto& d : r.state.macros.destinations) d.scale = 0.0f;  // constant outputs
+    r.run_ms(50);
+    EXPECT_EQ(r.midi.sent.size(), 3u);                          // first frame announces all three destinations
+    r.run_ms(900);
+    EXPECT_EQ(r.midi.sent.size(), 3u);                          // 54 frames later: still nothing new
+    r.run_ms(250);
+    EXPECT_EQ(r.midi.sent.size(), 6u);                          // ~1 s refresh
+    r.state.macros.destinations[0].cc_number = 99;
+    r.run_ms(40);
+    ASSERT_EQ(r.midi.sent.size(), 7u);                          // a changed CC number goes out at once
+    EXPECT_EQ(r.midi.sent.back().cc, 99);
+}
+
+TEST(Device, ARunningLfoStaysWithinTheDinMidiByteBudget) {
+    Rig r;
+    r.state.adc_expression = 1.0f;
+    r.run_ms(4000);
+    const double bytes_per_sec = r.midi.sent.size() * 3.0 / 4.0;
+    EXPECT_LT(bytes_per_sec, 3125.0 * 0.5);                     // under half of what a DIN port can carry
+    EXPECT_GE(r.midi.sent.size(), 20u);                         // and it is clearly moving
+}
+
+TEST(Device, OledFramesRunAtAboutThirtyFps) {
+    Rig r;
+    int frames = 0;
+    uint64_t t = 2000000;
+    for (int i = 0; i < 120; ++i) { t += DeviceApp::FRAME_US; frames += r.app.frame(t) ? 1 : 0; }   // 2 s of 60 Hz frames
+    EXPECT_GE(frames, 55); EXPECT_LE(frames, 65);
+}
+
+TEST(Device, TheScreenShowsPageSlotUnsavedMarkAndMessages) {
+    Rig r;
+    r.run_ms(100);
+    phasebox::hal::MockHalDisplay text;
+    oled::draw(text, r.state, 0, r.presets, r.ms_clock);
+    EXPECT_TRUE(text.contains_text("P1: WAVE D1"));
+    EXPECT_TRUE(text.contains_text("S1"));
+    EXPECT_FALSE(text.contains_text("S1*"));
+    EXPECT_TRUE(text.contains_text("VAL: SINE"));
+
+    r.detent(+1);
+    r.run_ms(50);
+    oled::draw(text, r.state, 0, r.presets, r.ms_clock);
+    EXPECT_TRUE(text.contains_text("S1*"));                     // edited, not yet written
+    EXPECT_TRUE(text.contains_text("VAL: SAW"));
+
+    r.run_ms(2100);                                             // auto-save kicks in, silently
+    oled::draw(text, r.state, 0, r.presets, r.ms_clock);
+    EXPECT_FALSE(text.contains_text("S1*"));
+    EXPECT_FALSE(text.contains_text("SAVED"));
+
+    r.in.enc_sw = true; r.run_ms(1100);
+    oled::draw(text, r.state, 0, r.presets, r.ms_clock);
+    EXPECT_TRUE(text.contains_text("SAVED"));
+    r.in.enc_sw = false; r.run_ms(60);
+}
+
+TEST(Device, TheCurveAndHoldBarAreDrawnOnBothPanelSizes) {
+    for (uint16_t h : {uint16_t(32), uint16_t(64)}) {
+        Rig r(true, h);
+        r.run_ms(100);
+        phasebox::hal::FrameBuffer fb(128, h);
+        oled::draw(fb, r.state, 0, r.presets, r.ms_clock);
+        int lit = 0; for (size_t i = 0; i < fb.size(); ++i) for (int b = 0; b < 8; ++b) lit += (fb.data()[i] >> b) & 1;
+        EXPECT_GE(lit, 300);                                    // text, two divider lines and the waveform
+        EXPECT_LE(lit, static_cast<int>(fb.size()) * 8 / 2);    // but not a solid block
+
+        r.in.enc_sw = true; r.run_ms(600);                      // hold in progress: bar grows along the top divider
+        phasebox::hal::FrameBuffer held(128, h);
+        oled::draw(held, r.state, 0, r.presets, r.ms_clock);
+        int bar = 0; for (int x = 0; x < 128; ++x) bar += (held.data()[x] >> 2) & 1;   // y = 10 is bit 2 of page 1 -> row below
+        (void)bar;
+        int on_line = 0; for (int x = 0; x < 128; ++x) on_line += (held.data()[128 + x] >> 2) & 1;   // y=10: page 1, bit 2
+        EXPECT_GE(on_line, 60); EXPECT_LE(on_line, 80);          // about 60% of 128 px after 600 of 1000 ms
+        r.in.enc_sw = false; r.run_ms(60);
+    }
+}
+
+TEST(Device, SettingsComeBackAfterAPowerCycle) {
+    MemStorage shared;
+    {
+        PhaseBoxState s; PresetSession p(shared); Recorder m;
+        DeviceApp app(s, p, m);
+        p.load(s, 0);
+        DeviceInputs in; uint64_t t = 1000000;
+        auto step = [&](int n) { for (int i = 0; i < n; ++i) { t += 1000; app.poll_inputs(in, t); if (i % 17 == 0) app.frame(t); } };
+        step(50);
+        static const bool cw[4][2] = {{0,1},{0,0},{1,0},{1,1}};
+        for (int i = 0; i < 4; ++i) { in.enc_a = cw[i][0]; in.enc_b = cw[i][1]; step(1); }
+        EXPECT_EQ(s.osc.shape, PhaseOscillator::SAW);
+        step(2300);                                             // quiet for 2 s: auto-saved
+    }
+    PhaseBoxState s2; PresetSession p2(shared);
+    EXPECT_TRUE(p2.load(s2, 0));
+    EXPECT_EQ(s2.osc.shape, PhaseOscillator::SAW);
+}
+
+TEST(Device, WithoutStorageEditsStayUnsavedAndHoldSaysSo) {
+    Rig r(false);
+    r.run_ms(100);
+    r.detent(+1);
+    r.run_ms(5000);
+    EXPECT_TRUE(r.presets.dirty());                             // honest: nothing was kept
+    EXPECT_EQ(r.presets.write_attempts(), 0u);                  // and nothing was attempted
+    r.in.enc_sw = true; r.run_ms(1100);
+    phasebox::hal::MockHalDisplay text;
+    oled::draw(text, r.state, 0, r.presets, r.ms_clock);
+    EXPECT_TRUE(text.contains_text("NO STORAGE"));
+    EXPECT_FALSE(text.contains_text("SAVED"));
+    r.in.enc_sw = false; r.run_ms(60);
+}
+
+TEST(Device, FirstFrameAfterALongPauseDoesNotJumpTheLfo) {
+    Rig r;
+    r.run_ms(50);
+    const float before = r.state.osc.phase;
+    r.app.frame(r.now_us + 60ull * 1000000ull);                 // a minute passes without a frame
+    float step = r.state.osc.phase - before; if (step < 0) step += 6.2832f;
+    EXPECT_NEAR(step, 1.2566f, 0.05f);                          // dt is capped at 100 ms: at 120 BPM that is 0.2 of a cycle, not 120 cycles
+}
+
+
+==================== FILE: tests/test_hal_interfaces.cpp ====================
+// Guards the HAL interface migration (AdcInput / DisplayInterface), Core1Task wiring and TuringMachine.
+#include <gtest/gtest.h>
+#include <set>
+#include <vector>
+#include "core/core0_task.hpp"
+#include "core/core1_task.hpp"
+#include "hal/mock_hal_adc.hpp"
+#include "hal/mock_hal_display.hpp"
+#include "hal/hal_adc.hpp"
+#include "hal/pico_hal_adc.hpp"
+#include "hal/pico_hal_display.hpp"
+#include "hal/pinout.hpp"
+#include "TuringMachine.hpp"
+
+using namespace phasebox;
+
+namespace {
+struct NullMidi : hal::HalMidi {
+    void send_cc(uint8_t, uint8_t, uint8_t) override {}
+    bool poll_clock_tick() override { return false; }
+};
+struct ScriptedGpio : hal::HalGpio {
+    bool enc_sw = false;
+    int32_t delta = 0;
+    bool read_button(hal::ButtonId id) override { return id == hal::ButtonId::EncoderSwitch && enc_sw; }
+    int32_t read_encoder_delta() override { int32_t d = delta; delta = 0; return d; }
+};
+struct Counter { int calls = 0; };
+void count_render(void* ctx, uint32_t) { ++static_cast<Counter*>(ctx)->calls; }
+} // namespace
+
+TEST(HalInterfaces, MockAdcDrivesExpressionMacro) {
+    core::ModulationEngine engine;
+    NullMidi midi;
+    hal::MockHalAdc adc;
+    core::Core0Task task(engine, midi, nullptr, &adc);   // Core0Task accepts any AdcInput
+    adc.set_channel(0, 0.75f);
+    task.step(1000);
+    EXPECT_NEAR(adc.read_normalized(), 0.75f, 0.0001f);
+    EXPECT_NEAR(adc.read_channel(0), 0.75f, 0.0001f);
+}
+
+TEST(HalInterfaces, ConcreteAndPicoAdcAreAdcInputs) {
+    hal::HalAdc real;
+    hal::AdcInput* a = &real;
+    EXPECT_TRUE(a->read_normalized() >= 0.0f);
+    hal::PicoHalAdc pico;           // host stub
+    hal::AdcInput* b = &pico;
+    EXPECT_NEAR(b->read_normalized(), 0.0f, 0.0001f);
+}
+
+TEST(HalInterfaces, MockDisplayThroughInterface) {
+    hal::MockHalDisplay mock;
+    hal::DisplayInterface& d = mock;
+    d.clear();
+    d.draw_pixel(0, 0, true);
+    d.draw_string(0, 0, "BPM");
+    d.update();
+    EXPECT_EQ(d.get_width(), 128);
+    EXPECT_EQ(d.get_height(), 32);
+    EXPECT_EQ(mock.get_buffer()[0], 0x01);
+    EXPECT_TRUE(mock.contains_text("BPM"));
+    EXPECT_EQ(mock.get_update_count(), 1u);
+}
+
+TEST(HalInterfaces, PinoutMatchesDocumentedWiring) {
+    EXPECT_EQ(hal::pins::OLED_SDA, 4);
+    EXPECT_EQ(hal::pins::OLED_SCL, 5);
+    EXPECT_EQ(hal::pins::ENC_SW, 6);
+    EXPECT_EQ(hal::pins::EXPR_PEDAL, 26);
+}
+
+TEST(Core1, EncoderRoutesToUiAndRenderIsThrottled) {
+    core::ModulationEngine engine;
+    engine.set_bpm(120.0f);
+    ui::UIController ui(engine);
+    ScriptedGpio gpio;
+    core::Core1Task task(ui, gpio);
+    Counter counter;
+    task.set_render_callback(count_render, &counter);
+
+    gpio.enc_sw = true;                // rising edge -> click
+    task.step(1000);
+    gpio.enc_sw = false;
+    EXPECT_TRUE(ui.get_current_screen() != ui::Screen::DASHBOARD);   // click left the dashboard
+    EXPECT_EQ(counter.calls, 1);       // first frame renders immediately
+
+    gpio.delta = 1;
+    task.step(10000);                  // < 33 ms later: no render
+    EXPECT_EQ(counter.calls, 1);
+    task.step(1000 + core::Core1Task::RENDER_INTERVAL_US + 1);
+    EXPECT_EQ(counter.calls, 2);
+}
+
+TEST(Core1, TapIsNotDoubleHandled) {
+    core::ModulationEngine engine;
+    engine.set_bpm(120.0f);
+    ui::UIController ui(engine);
+    ScriptedGpio gpio;
+    core::Core1Task task(ui, gpio);
+    task.step(1000);
+    EXPECT_NEAR(engine.get_bpm(), 120.0f, 0.001f);
+}
+
+TEST(Turing, ZeroMutationLoopsEveryLoopLength) {
+    TuringMachine t;
+    t.mutation_prob = 0.0f;
+    for (int i = 0; i < 40; ++i) t.step();
+    std::vector<int> a, b;
+    for (int i = 0; i < 16; ++i) a.push_back(t.step());
+    for (int i = 0; i < 16; ++i) b.push_back(t.step());
+    EXPECT_TRUE(a == b);
+}
+
+TEST(Turing, FullMutationIsDeterministicNotNoise) {
+    // Always flipping the feedback bit gives a fixed pattern (period 2x loop length),
+    // so 100% is NOT the most random setting.
+    TuringMachine t;
+    t.mutation_prob = 1.0f;
+    for (int i = 0; i < 40; ++i) t.step();
+    std::vector<int> a, b;
+    for (int i = 0; i < 32; ++i) a.push_back(t.step());
+    for (int i = 0; i < 32; ++i) b.push_back(t.step());
+    EXPECT_TRUE(a == b);
+}
+
+TEST(Turing, HalfMutationVariesAndSeedIsReproducible) {
+    TuringMachine x, y;
+    x.mutation_prob = y.mutation_prob = 0.5f;
+    x.seed(42); y.seed(42);
+    std::set<int> seen;
+    bool same = true;
+    for (int i = 0; i < 256; ++i) { int a = x.step(); int b = y.step(); seen.insert(a); same = same && (a == b); }
+    EXPECT_TRUE(same);
+    EXPECT_GE(seen.size(), 40u);
+    TuringMachine z; z.mutation_prob = 0.5f; z.seed(0);   // seed(0) must not lock the RNG
+    std::set<int> seen0; for (int i = 0; i < 256; ++i) seen0.insert(z.step());
+    EXPECT_GE(seen0.size(), 40u);
+}
+
+
+==================== FILE: tests/test_hal_display.cpp ====================
+#include <gtest/gtest.h>
+#include "hal/hal_display.hpp"
+
+using namespace phasebox::hal;
+
+TEST(HalDisplayTest, InitialBufferClear) {
+    HalDisplay display;
+    display.init(6, 7);
+
+    const auto& buf = display.get_buffer();
+    for (uint8_t byte : buf) {
+        EXPECT_EQ(byte, 0x00);
+    }
+}
+
+TEST(HalDisplayTest, DrawPixelBounds) {
+    HalDisplay display;
+    display.init(6, 7);
+
+    // Set pixel (0, 0) -> sets bit 0 of byte 0 in framebuffer to 1 (0x01)
+    display.draw_pixel(0, 0, true);
+    EXPECT_EQ(display.get_buffer()[0], 0x01);
+
+    // Out-of-bounds draws should be safely ignored
+    display.draw_pixel(-1, 0, true);
+    display.draw_pixel(128, 0, true);
+    display.draw_pixel(0, 32, true);
+    EXPECT_EQ(display.get_buffer()[0], 0x01);
+}
+
+TEST(HalDisplayTest, RenderCountIncrement) {
+    HalDisplay display;
+    display.init(6, 7);
+
+    EXPECT_EQ(display.get_render_count(), 0u);
+    display.render();
+    EXPECT_EQ(display.get_render_count(), 1u);
+    display.render();
+    EXPECT_EQ(display.get_render_count(), 2u);
+}
+
+
+==================== FILE: tests/test_hal_adc.cpp ====================
+#include <gtest/gtest.h>
+#include "hal/hal_adc.hpp"
+
+using namespace phasebox::hal;
+
+TEST(HalAdcTest, SimulatedRawReadout) {
+    HalAdc adc;
+    adc.init();
+
+    adc.set_simulated_raw(2048);
+    EXPECT_EQ(adc.read_raw(), 2048);
+
+    adc.set_simulated_raw(4095);
+    EXPECT_EQ(adc.read_raw(), 4095);
+}
+
+TEST(HalAdcTest, EMASmoothingStepResponse) {
+    HalAdc adc;
+    adc.init();
+
+    // Inject maximum ADC value (4095 -> 1.0f)
+    adc.set_simulated_raw(4095);
+
+    // Call 1: alpha = 0.15 -> 0.15 * 1.0 = 0.15
+    float val1 = adc.read_normalized();
+    EXPECT_NEAR(val1, 0.15f, 0.01f);
+
+    // Call 2: 0.15 * 1.0 + 0.85 * 0.15 = 0.2775
+    float val2 = adc.read_normalized();
+    EXPECT_NEAR(val2, 0.2775f, 0.01f);
+
+    // Run 30 iterations: smoothed value should converge towards 1.0f
+    for (int i = 0; i < 30; ++i) {
+        adc.read_normalized();
+    }
+    EXPECT_FLOAT_EQ(adc.read_normalized(), 1.0f);
+}
+
+TEST(HalAdcTest, LowerDeadbandClamping) {
+    HalAdc adc;
+    adc.init();
+
+    // Raw value close to 0 (noise floor)
+    adc.set_simulated_raw(20);
+    
+    for (int i = 0; i < 20; ++i) {
+        adc.read_normalized();
+    }
+
+    EXPECT_FLOAT_EQ(adc.read_normalized(), 0.0f);
+}
+
+TEST(HalAdcTest, UpperDeadbandClamping) {
+    HalAdc adc;
+    adc.init();
+
+    adc.set_simulated_raw(4080);
+    
+    for (int i = 0; i < 20; ++i) {
+        adc.read_normalized();
+    }
+
+    EXPECT_FLOAT_EQ(adc.read_normalized(), 1.0f);
+}
+
+
+==================== FILE: tests/test_sim_controls.cpp ====================
+// The editable pages (P1..P11) must change what actually goes out as MIDI, not just the screen.
+#include <gtest/gtest.h>
+#include <cmath>
+#include <set>
+#include <string>
+#include <vector>
+#include "SimControls.hpp"
+#include "PresetManager.hpp"
+
+using namespace simui;
+
+namespace {
+// Run the shared tick for `steps` steps; return destination `dest`'s MIDI value each step.
+std::vector<int> run(PhaseBoxState& s, int dest, int steps, float dt = 0.001f) {
+    std::vector<int> v;
+    for (int i = 0; i < steps; ++i) {
+        s.advance(dt);
+        v.push_back(s.evaluateMacros(dt)[dest].value);
+    }
+    return v;
+}
+int rising_crossings(const std::vector<int>& v, int threshold) {
+    int n = 0;
+    for (size_t i = 1; i < v.size(); ++i) if (v[i - 1] <= threshold && v[i] > threshold) ++n;
+    return n;
+}
+PhaseBoxState fresh() { PhaseBoxState s; s.adc_expression = 1.0f; return s; } // 120 BPM: one master cycle = 0.5 s
+} // namespace
+
+TEST(SimPages, NavigationWrapsAcrossAllElevenPages) {
+    EXPECT_EQ(PAGE_COUNT, 11);
+    EXPECT_EQ(next_page(10, +1), 0);
+    EXPECT_EQ(next_page(0, -1), 10);
+    EXPECT_TRUE(std::string(page_name(9)) == "P10: MAC DIV");
+    EXPECT_TRUE(std::string(page_name(10)) == "P11: TUR MIX");
+}
+
+TEST(SimPages, FootersShowTheEditedValues) {
+    PhaseBoxState s; int d = 0;
+    EXPECT_TRUE(footer(s, P_WAVE, d) == "VAL: SINE");
+    EXPECT_TRUE(footer(s, P_BPM, d) == "VAL: 120 BPM");
+    EXPECT_TRUE(footer(s, P_CHAN, d) == "VAL: D1 CH 1");
+    EXPECT_TRUE(footer(s, P_CC, d) == "VAL: D1 CC 16");
+    EXPECT_TRUE(footer(s, P_MAC_SEL, d) == "VAL: DEST 1");
+    EXPECT_TRUE(footer(s, P_MAC_WGT, d) == "VAL: D1 WGT 1.00");
+    EXPECT_TRUE(footer(s, P_MAC_DIV, d) == "VAL: D1 x1");
+    EXPECT_TRUE(footer(s, P_TUR_MIX, d) == "VAL: MIX 0.00");
+    adjust(s, d, P_MAC_DIV, +1);
+    EXPECT_TRUE(footer(s, P_MAC_DIV, d) == "VAL: D1 x1.5");
+}
+
+TEST(SimPages, PhaseOffsetWrapsInsteadOfGrowingForever) {
+    PhaseBoxState s; int d = 0;
+    for (int i = 0; i < 40; ++i) adjust(s, d, P_PHASE, +1);
+    EXPECT_GE(s.osc.phase_offset, 0.0f);
+    EXPECT_LE(s.osc.phase_offset, 6.2832f);
+    adjust(s, d, P_PHASE, -1);
+    EXPECT_GE(s.osc.phase_offset, 0.0f);
+}
+
+// ---- P4 / P5: per-destination channel and CC ----
+TEST(SimPages, ChannelAndCcEditTheActiveDestinationAndReachMidi) {
+    PhaseBoxState s; int d = 0;
+    adjust(s, d, P_MAC_SEL, +1);                       // select Dest 2 (defaults: ch 1, CC 74)
+    EXPECT_EQ(d, 1);
+    adjust(s, d, P_CHAN, +1);
+    adjust(s, d, P_CC, -1);
+    EXPECT_EQ(s.macros.destinations[1].midi_channel, 2);
+    EXPECT_EQ(s.macros.destinations[1].cc_number, 73);
+    EXPECT_EQ(s.macros.destinations[0].midi_channel, 1);   // others untouched
+    EXPECT_EQ(s.macros.destinations[0].cc_number, 16);
+    auto out = s.evaluateMacros(0.01f);
+    EXPECT_EQ(out[1].channel, 2);                      // the MIDI message itself changed
+    EXPECT_EQ(out[1].cc, 73);
+}
+
+TEST(SimPages, ChannelAndCcClampToMidiRanges) {
+    PhaseBoxState s; int d = 0;
+    for (int i = 0; i < 30; ++i) adjust(s, d, P_CHAN, +1);
+    EXPECT_EQ(s.macros.destinations[0].midi_channel, 16);
+    for (int i = 0; i < 30; ++i) adjust(s, d, P_CHAN, -1);
+    EXPECT_EQ(s.macros.destinations[0].midi_channel, 1);
+    for (int i = 0; i < 200; ++i) adjust(s, d, P_CC, +1);
+    EXPECT_EQ(s.macros.destinations[0].cc_number, 127);
+    for (int i = 0; i < 200; ++i) adjust(s, d, P_CC, -1);
+    EXPECT_EQ(s.macros.destinations[0].cc_number, 0);
+}
+
+// ---- P10: clock multiplier ----
+TEST(SimPages, ClockLadderStepsMusicallyAndClamps) {
+    EXPECT_FLOAT_EQ(MacroEngine::step_clock_mult(1.0f, +1), 1.5f);
+    EXPECT_FLOAT_EQ(MacroEngine::step_clock_mult(1.0f, -1), 0.75f);
+    EXPECT_FLOAT_EQ(MacroEngine::step_clock_mult(8.0f, +1), 8.0f);
+    EXPECT_FLOAT_EQ(MacroEngine::step_clock_mult(0.125f, -1), 0.125f);
+    EXPECT_FLOAT_EQ(MacroEngine::step_clock_mult(1.3f, +1), 1.5f);   // off-ladder preset values still step sensibly
+    EXPECT_FLOAT_EQ(MacroEngine::step_clock_mult(1.3f, -1), 1.0f);
+}
+
+TEST(SimPages, ClockMultiplierChangesHowManyCyclesTheMidiMakes) {
+    auto cycles_over_four_beats = [](float mult) {
+        PhaseBoxState s = fresh(); int d = 0;
+        s.macros.destinations[0].clock_mult = 1.0f;
+        while (s.macros.destinations[0].clock_mult < mult - 1e-3f) adjust(s, d, P_MAC_DIV, +1);
+        while (s.macros.destinations[0].clock_mult > mult + 1e-3f) adjust(s, d, P_MAC_DIV, -1);
+        return rising_crossings(run(s, 0, 2000), 63);     // 2000 ms = 4 master cycles
+    };
+    int c1 = cycles_over_four_beats(1.0f), c2 = cycles_over_four_beats(2.0f), ch = cycles_over_four_beats(0.5f);
+    EXPECT_GE(c1, 3); EXPECT_LE(c1, 5);       // ~4
+    EXPECT_GE(c2, 7); EXPECT_LE(c2, 9);       // ~8
+    EXPECT_GE(ch, 1); EXPECT_LE(ch, 3);       // ~2
+}
+
+// ---- P1 / P3 / P6: waveform settings must reach MIDI too ----
+TEST(SimPages, WaveShapeReachesMidi) {
+    PhaseBoxState sine = fresh();
+    PhaseBoxState sq = fresh(); int d = 0;
+    adjust(sq, d, P_WAVE, +1); adjust(sq, d, P_WAVE, +1);          // SINE -> SAW -> SQUARE
+    EXPECT_EQ(sq.osc.shape, PhaseOscillator::SQUARE);
+    std::set<int> a, b;
+    for (int v : run(sine, 0, 600)) a.insert(v);
+    for (int v : run(sq, 0, 600)) b.insert(v);
+    EXPECT_GE(a.size(), 20u);   // smooth sine
+    EXPECT_LE(b.size(), 2u);    // square is just two levels
+}
+
+TEST(SimPages, PhaseOffsetReachesMidi) {
+    PhaseBoxState a = fresh(), b = fresh();
+    b.osc.phase_offset = 1.5707963f;                               // +90 degrees
+    int va = a.evaluateMacros(0.001f)[0].value;
+    int vb = b.evaluateMacros(0.001f)[0].value;
+    EXPECT_EQ(va, 63);
+    EXPECT_EQ(vb, 127);
+}
+
+TEST(SimPages, PhaseModulationReachesMidi) {
+    PhaseBoxState a = fresh(), b = fresh(); int d = 0;
+    for (int i = 0; i < 20; ++i) adjust(b, d, P_PM, +1);           // PM depth 2.0
+    auto va = run(a, 0, 500), vb = run(b, 0, 500);
+    long diff = 0;
+    for (size_t i = 0; i < va.size(); ++i) diff += std::abs(va[i] - vb[i]);
+    EXPECT_GE(diff, 500L);
+}
+
+// ---- P7 / P11: Turing output reaches MIDI ----
+TEST(SimPages, TuringMixBlendsTheSequenceIntoMidi) {
+    PhaseBoxState s = fresh();
+    s.turing_norm = 0.8f;
+    s.turing_mix = 1.0f;
+    for (int dest = 0; dest < 1; ++dest) {                          // dest 0: weight 1, offset 0
+        EXPECT_EQ(s.evaluateMacros(0.001f)[dest].value, static_cast<int>(0.8f * 127.0f));
+    }
+    s.turing_mix = 0.0f;                                            // mix 0 = untouched LFO
+    EXPECT_EQ(s.evaluateMacros(0.001f)[0].value, 63);
+}
+
+TEST(SimPages, TuringStepsOncePerMasterCycleAndMixIsEditable) {
+    PhaseBoxState s = fresh(); int d = 0;
+    EXPECT_NEAR(s.turing_norm, 0.5f, 0.0001f);
+    run(s, 0, 600);                                                 // > one 500 ms master cycle
+    EXPECT_TRUE(std::fabs(s.turing_norm - 0.5f) > 0.001f);          // stepped at the wrap
+    for (int i = 0; i < 40; ++i) adjust(s, d, P_TUR_MIX, +1);
+    EXPECT_NEAR(s.turing_mix, 1.0f, 0.0001f);                       // clamps at 100%
+    for (int i = 0; i < 40; ++i) adjust(s, d, P_TUR_MIX, -1);
+    EXPECT_NEAR(s.turing_mix, 0.0f, 0.0001f);
+}
+
+TEST(SimPages, ManualMutateStepsTheTuringMachine) {
+    PhaseBoxState s;
+    float before = s.turing_norm;
+    s.step_turing();
+    EXPECT_TRUE(s.turing_norm != before);
+}
+
+// ---- what the OLED draws is what the destination emits ----
+TEST(SimPreview, CurveShowsTheRightNumberOfHumps) {
+    auto humps = [](float mult) {
+        PhaseBoxState s = fresh();
+        s.macros.destinations[0].clock_mult = mult;
+        auto c = preview_curve(s, 0, 240);
+        int n = 0;
+        for (size_t i = 1; i + 1 < c.size(); ++i) if (c[i] > c[i-1] && c[i] >= c[i+1] && c[i] > 0.9f) ++n;
+        return n;
+    };
+    EXPECT_EQ(humps(1.0f), 1);
+    EXPECT_EQ(humps(4.0f), 4);
+    EXPECT_EQ(humps(0.5f), 1);    // 0.5x: window widens to show its one full (two-beat) cycle
+    EXPECT_EQ(preview_cycles(8.0f), 8);
+    EXPECT_EQ(preview_cycles(0.125f), 1);
+}
+
+TEST(SimPreview, CurveFollowsTuringMixAndPlayheadMatchesCycles) {
+    PhaseBoxState s = fresh();
+    s.turing_norm = 0.3f; s.turing_mix = 1.0f;
+    auto c = preview_curve(s, 0, 120);
+    bool flat = true;
+    for (float v : c) flat = flat && std::fabs(v - 0.3f) < 1e-4f;
+    EXPECT_TRUE(flat);
+    s.macros.destinations[0].clock_mult = 3.0f;
+    EXPECT_EQ(preview_markers(s, 0, 120).size(), 3u);
+}
+
+TEST(SimPages, BpmStepsByOneWhenTurnedSlowlyAndByFiveWhenSpun) {
+    PhaseBoxState s; int d = 0;
+    adjust(s, d, P_BPM, +1, /*fast=*/false);
+    EXPECT_NEAR(s.osc.bpm, 121.0f, 0.001f);
+    adjust(s, d, P_BPM, +1, /*fast=*/true);
+    EXPECT_NEAR(s.osc.bpm, 126.0f, 0.001f);
+    adjust(s, d, P_BPM, -1);                            // default stays 5 so the simulator keys are unchanged
+    EXPECT_NEAR(s.osc.bpm, 121.0f, 0.001f);
+    for (int i = 0; i < 400; ++i) adjust(s, d, P_BPM, +1, false);
+    EXPECT_NEAR(s.osc.bpm, 300.0f, 0.001f);             // clamps at 300
+}
+
+TEST(SimPages, RestartPhasePutsEveryLfoBackAtZero) {
+    PhaseBoxState s; s.adc_expression = 1.0f;
+    for (int i = 0; i < 80; ++i) { s.advance(0.01f); s.evaluateMacros(0.01f); }   // 0.8 s = 1.6 cycles at 120 BPM
+    EXPECT_TRUE(s.osc.phase > 1.0f);
+    s.restart_phase();
+    EXPECT_NEAR(s.osc.phase, 0.0f, 0.0001f);
+    EXPECT_NEAR(s.macros.dest_phase(1), 0.0f, 0.0001f);
+    int before = s.turing.step(); (void)before;
+    s.advance(0.001f);                                  // restarting must not look like a cycle wrap
+    EXPECT_TRUE(s.osc.phase > 0.0f);
+}
+
+// ---- reset everything to defaults ----
+namespace {
+std::vector<uint8_t> saved_bytes(const PhaseBoxState& s) {
+    uint8_t buf[PresetManager::MAX_BYTES];
+    size_t n = PresetManager::encode(s, buf, sizeof(buf));
+    return std::vector<uint8_t>(buf, buf + n);
+}
+void scramble(PhaseBoxState& s) {
+    s.osc.shape = PhaseOscillator::SQUARE; s.osc.bpm = 77.0f; s.osc.phase_offset = 2.0f; s.osc.pm_depth = 3.0f;
+    s.osc.pm_ratio = 5.0f; s.osc.phase = 4.0f;
+    s.turing.mutation_prob = 0.7f; s.turing_mix = 0.6f; s.turing_norm = 0.9f;
+    s.midi_channel = 9; s.midi_cc_num = 99;
+    s.macros.destinations[0] = {99, 9, -2.0f, 0.9f, 8.0f};
+    s.macros.destinations[1].clock_mult = 0.125f; s.macros.destinations[2].midi_channel = 16;
+    for (int i = 0; i < 5; ++i) s.step_turing();
+    s.advance(0.1f); s.evaluateMacros(0.1f);
+}
+}
+
+TEST(SimReset, EveryParameterGoesBackToItsDefault) {
+    PhaseBoxState s, fresh;
+    scramble(s);
+    ASSERT_TRUE(saved_bytes(s) != saved_bytes(fresh));       // the scramble really changed things
+    s.reset_parameters();
+    EXPECT_TRUE(saved_bytes(s) == saved_bytes(fresh));       // identical to a freshly started unit, byte for byte
+    EXPECT_NEAR(s.osc.phase, 0.0f, 0.0001f);
+    EXPECT_NEAR(s.osc.pm_ratio, 2.0f, 0.0001f);              // the unsaved oscillator settings too
+    EXPECT_NEAR(s.turing_norm, 0.5f, 0.0001f);
+    EXPECT_NEAR(s.macros.dest_phase(0), 0.0f, 0.0001f);
+    EXPECT_EQ(s.macros.destinations.size(), 3u);
+    for (int i = 0; i < 8; ++i) EXPECT_EQ(s.turing.step(), fresh.turing.step());   // same Turing pattern as a new unit
+}
+
+TEST(SimReset, LeavesInputsAndTheUiPositionAlone) {
+    PhaseBoxState s;
+    s.adc_expression = 0.7f; s.active_page = 5; s.button_state = true;
+    s.osc.bpm = 99.0f;
+    s.reset_parameters();
+    EXPECT_NEAR(s.adc_expression, 0.7f, 0.0001f);           // the pedal is an input, not a setting
+    EXPECT_EQ(s.active_page, 5);
+    EXPECT_TRUE(s.button_state);
+}
+
+TEST(SimReset, KeepsTheTuringRandomSeedChosenAtStartup) {
+    PhaseBoxState a, b;
+    a.turing.seed(42); b.turing.seed(42);
+    a.turing.mutation_prob = 0.9f;
+    a.reset_parameters();                                    // must not re-seed the generator
+    a.turing.mutation_prob = 0.5f; b.turing.mutation_prob = 0.5f;
+    for (int i = 0; i < 200; ++i) EXPECT_EQ(a.turing.step(), b.turing.step());
+}
+
+TEST(SimReset, TheMidiOutputIsTheDefaultOneAfterwards) {
+    PhaseBoxState s, fresh;
+    scramble(s);
+    s.reset_parameters(); fresh.reset_parameters();
+    auto a = s.evaluateMacros(0.001f), b = fresh.evaluateMacros(0.001f);
+    ASSERT_EQ(a.size(), b.size());
+    for (size_t i = 0; i < a.size(); ++i) { EXPECT_EQ(a[i].channel, b[i].channel); EXPECT_EQ(a[i].cc, b[i].cc); EXPECT_EQ(a[i].value, b[i].value); }
+    EXPECT_EQ(a[1].cc, 74);                                  // Destination 2 is back on CC 74
+}
+
+
+==================== FILE: tests/test_preset_session.cpp ====================
+// Auto-save (2 s after the last edit), hold-to-save (1 s) and slots, with a fake clock and in-memory storage.
+#include <gtest/gtest.h>
+#include <cstring>
+#include <map>
+#include <string>
+#include <vector>
+#include "PresetSession.hpp"
+
+namespace {
+struct MemStorage : PresetStorage {
+    std::map<int, std::vector<uint8_t>> slots;
+    bool fail = false;
+    int writes = 0;
+    bool write(int slot, const uint8_t* d, size_t n) override {
+        ++writes;
+        if (fail) return false;
+        slots[slot].assign(d, d + n);
+        return true;
+    }
+    size_t read(int slot, uint8_t* out, size_t cap) override {
+        auto it = slots.find(slot);
+        if (it == slots.end() || it->second.size() > cap) return 0;
+        std::memcpy(out, it->second.data(), it->second.size());
+        return it->second.size();
+    }
+};
+bool same(const char* a, const char* b) { return a && b && std::strcmp(a, b) == 0; }
+float stored_bpm(MemStorage& m, int slot) {
+    PhaseBoxState tmp;
+    return PresetManager::decode(m.slots[slot].data(), m.slots[slot].size(), tmp) ? tmp.osc.bpm : -1.0f;
+}
+} // namespace
+
+TEST(AutoSave, NothingIsWrittenWithoutAnEdit) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    for (uint32_t t = 0; t < 30000; t += 16) ps.update(s, t);
+    EXPECT_EQ(m.writes, 0);
+    EXPECT_FALSE(ps.dirty());
+}
+
+TEST(AutoSave, IgnoresStateThatIsNotPartOfAPreset) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    ps.update(s, 0);
+    s.active_page = 7; s.adc_expression = 1.0f; s.osc.phase = 3.0f; s.button_state = true; s.turing_norm = 0.9f;
+    for (uint32_t t = 16; t < 10000; t += 16) ps.update(s, t);
+    EXPECT_EQ(m.writes, 0);
+}
+
+TEST(AutoSave, WritesSilentlyAfterTwoQuietSeconds) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    ps.update(s, 1000);
+    s.osc.bpm = 140.0f;
+    ps.update(s, 1000);
+    EXPECT_TRUE(ps.dirty());
+    ps.update(s, 2999);
+    EXPECT_EQ(m.writes, 0);                    // 1999 ms quiet: not yet
+    ps.update(s, 3000);
+    EXPECT_EQ(m.writes, 1);                    // 2000 ms quiet: saved
+    EXPECT_NEAR(stored_bpm(m, 1), 140.0f, 0.001f);
+    EXPECT_FALSE(ps.dirty());
+    EXPECT_TRUE(ps.status(3000) == nullptr);   // the guide says auto-save is silent
+    ps.update(s, 9000);
+    EXPECT_EQ(m.writes, 1);                    // and it does not repeat
+}
+
+TEST(AutoSave, EveryEditRestartsTheTimer) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    ps.update(s, 0);
+    s.osc.bpm = 130.0f; ps.update(s, 0);
+    s.osc.bpm = 135.0f; ps.update(s, 1500);
+    ps.update(s, 2500);                        // only 1000 ms since the last edit
+    EXPECT_EQ(m.writes, 0);
+    ps.update(s, 3500);
+    EXPECT_EQ(m.writes, 1);
+    EXPECT_NEAR(stored_bpm(m, 1), 135.0f, 0.001f);
+}
+
+TEST(AutoSave, SurvivesTheMillisecondCounterWrapping) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    const uint32_t t0 = 0xFFFFFC00u;           // 1024 ms before the 32-bit counter wraps
+    ps.update(s, t0);
+    s.osc.bpm = 150.0f; ps.update(s, t0);
+    ps.update(s, t0 + 1999);
+    EXPECT_EQ(m.writes, 0);
+    ps.update(s, t0 + 2000);                   // crosses the wrap
+    EXPECT_EQ(m.writes, 1);
+}
+
+TEST(AutoSave, FailedWriteIsReportedAndRetriedOnlyLater) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    ps.update(s, 0);
+    s.osc.bpm = 111.0f; ps.update(s, 0);
+    m.fail = true;
+    ps.update(s, 2000);
+    EXPECT_EQ(m.writes, 1);
+    EXPECT_TRUE(same(ps.status(2000), "SAVE FAILED"));
+    EXPECT_TRUE(ps.dirty());
+    for (uint32_t t = 2016; t < 11000; t += 16) ps.update(s, t);
+    EXPECT_EQ(m.writes, 1);                    // no hammering during the 10 s back-off
+    ps.update(s, 12000);
+    EXPECT_EQ(m.writes, 2);                    // retried, failed again
+    m.fail = false;
+    ps.update(s, 22000);
+    EXPECT_EQ(m.writes, 3);
+    EXPECT_FALSE(ps.dirty());
+    EXPECT_NEAR(stored_bpm(m, 1), 111.0f, 0.001f);
+}
+
+TEST(HoldToSave, SavesAtOneSecondAndShowsSaved) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    ps.update(s, 0);
+    s.osc.bpm = 99.0f;
+    EXPECT_TRUE(ps.button(true, s, 0) == PresetSession::Event::None);
+    EXPECT_TRUE(ps.button(true, s, 999) == PresetSession::Event::None);
+    EXPECT_EQ(m.writes, 0);
+    EXPECT_TRUE(ps.button(true, s, 1000) == PresetSession::Event::LongPress);
+    EXPECT_EQ(m.writes, 1);
+    EXPECT_NEAR(stored_bpm(m, 1), 99.0f, 0.001f);
+    EXPECT_TRUE(same(ps.status(1000), "SAVED"));
+    EXPECT_TRUE(same(ps.status(2499), "SAVED"));
+    EXPECT_TRUE(ps.status(2500) == nullptr);   // message clears after 1.5 s
+    EXPECT_TRUE(ps.button(true, s, 1500) == PresetSession::Event::None);   // still held: fires once
+    EXPECT_EQ(m.writes, 1);
+    EXPECT_TRUE(ps.button(false, s, 1600) == PresetSession::Event::None);  // releasing after a long press is not a short press
+}
+
+TEST(HoldToSave, ShortPressIsReportedAndDoesNotSave) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    ps.button(true, s, 0);
+    EXPECT_TRUE(ps.button(false, s, 300) == PresetSession::Event::ShortPress);
+    EXPECT_EQ(m.writes, 0);
+    EXPECT_TRUE(ps.status(300) == nullptr);
+}
+
+TEST(HoldToSave, ProgressBarAndRearming) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    EXPECT_NEAR(ps.hold_progress(0), 0.0f, 0.0001f);
+    ps.button(true, s, 0);
+    EXPECT_NEAR(ps.hold_progress(500), 0.5f, 0.001f);
+    ps.button(true, s, 1000);
+    EXPECT_NEAR(ps.hold_progress(1200), 0.0f, 0.0001f);   // done
+    ps.button(false, s, 1300);
+    ps.button(true, s, 2000);
+    ps.button(true, s, 3000);                              // a second, separate hold saves again
+    EXPECT_EQ(m.writes, 2);
+}
+
+TEST(HoldToSave, ManualSaveWorksEvenWhileAutoSaveIsBackingOff) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    ps.update(s, 0);
+    s.osc.bpm = 77.0f; ps.update(s, 0);
+    m.fail = true; ps.update(s, 2000);
+    m.fail = false;
+    ps.button(true, s, 3000);
+    ps.button(true, s, 4000);
+    EXPECT_NEAR(stored_bpm(m, 1), 77.0f, 0.001f);
+    EXPECT_TRUE(same(ps.status(4000), "SAVED"));
+}
+
+TEST(PowerUp, LoadRestoresWhatWasSaved) {
+    MemStorage m;
+    {
+        PresetSession ps(m); PhaseBoxState s;
+        ps.update(s, 0);
+        s.osc.bpm = 133.0f; s.turing_mix = 0.4f; s.macros.destinations[1].clock_mult = 3.0f;
+        ps.update(s, 0); ps.update(s, 2000);
+    }
+    PresetSession ps(m); PhaseBoxState s2;
+    EXPECT_TRUE(ps.load(s2, 0));
+    EXPECT_NEAR(s2.osc.bpm, 133.0f, 0.001f);
+    EXPECT_NEAR(s2.turing_mix, 0.4f, 0.001f);
+    EXPECT_NEAR(s2.macros.destinations[1].clock_mult, 3.0f, 0.001f);
+    EXPECT_TRUE(ps.status(0) == nullptr);       // power-up restore is silent
+    ps.update(s2, 100);
+    EXPECT_FALSE(ps.dirty());
+    EXPECT_EQ(m.writes, 1);                     // loading does not trigger a write
+}
+
+TEST(PowerUp, CorruptPresetIsReportedAndLeavesSettingsAlone) {
+    MemStorage m; PhaseBoxState s;
+    {   PresetSession ps(m); ps.update(s, 0); s.osc.bpm = 133.0f; ps.update(s, 0); ps.update(s, 2000); }
+    m.slots[1][10] ^= 0xFF;                     // flip a byte: CRC no longer matches
+    PhaseBoxState fresh; fresh.osc.bpm = 120.0f;
+    PresetSession ps(m);
+    EXPECT_FALSE(ps.load(fresh, 5000));
+    EXPECT_TRUE(same(ps.status(5000), "BAD PRESET"));
+    EXPECT_NEAR(fresh.osc.bpm, 120.0f, 0.001f);
+}
+
+TEST(Slots, SwitchingFlushesPendingEditsLoadsTargetAndKeepsEmptySlotsClean) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    ps.update(s, 0);
+    s.osc.bpm = 100.0f; ps.update(s, 0);
+    EXPECT_TRUE(ps.select_slot(2, s, 500));      // only 500 ms after the edit
+    EXPECT_NEAR(stored_bpm(m, 1), 100.0f, 0.001f);       // edit was not lost: flushed to slot 1
+    EXPECT_EQ(ps.slot(), 2);
+    EXPECT_TRUE(same(ps.status(500), "EMPTY"));
+    EXPECT_NEAR(s.osc.bpm, 100.0f, 0.001f);              // settings carried over into the empty slot
+    for (uint32_t t = 516; t < 8000; t += 16) ps.update(s, t);
+    EXPECT_EQ(m.slots.count(2), 0u);                     // nothing is written until you edit or hold-save
+
+    s.osc.bpm = 90.0f; ps.update(s, 8000); ps.update(s, 10000);
+    EXPECT_NEAR(stored_bpm(m, 2), 90.0f, 0.001f);        // an edit auto-saves into slot 2
+
+    EXPECT_TRUE(ps.select_slot(1, s, 11000));
+    EXPECT_NEAR(s.osc.bpm, 100.0f, 0.001f);              // slot 1 comes back as saved
+    EXPECT_TRUE(same(ps.status(11000), "LOADED"));
+    EXPECT_FALSE(ps.select_slot(0, s, 11000));
+    EXPECT_FALSE(ps.select_slot(9, s, 11000));
+}
+
+TEST(Slots, WorksWithRealFilesToo) {
+    PresetManager::path_prefix = "./";
+    FilePresetStorage files;
+    PresetSession ps(files, 3);
+    PhaseBoxState s;
+    ps.update(s, 0);
+    s.osc.bpm = 144.0f; ps.update(s, 0); ps.update(s, 2000);
+    PhaseBoxState back;
+    EXPECT_TRUE(PresetManager::loadPreset(3, back));     // the older whole-file API reads the same file
+    EXPECT_NEAR(back.osc.bpm, 144.0f, 0.001f);
+    std::remove("./preset_3.bin");
+}
+
+TEST(NoStorageTest, EditsStayUnsavedQuietlyAndHoldSaysNoStorage) {
+    NoStorage none; PresetSession ps(none); PhaseBoxState s;
+    ps.update(s, 0);
+    s.osc.bpm = 140.0f; ps.update(s, 0);
+    for (uint32_t t = 16; t < 20000; t += 16) ps.update(s, t);
+    EXPECT_EQ(ps.write_attempts(), 0u);                  // never tries, never shows SAVE FAILED
+    EXPECT_TRUE(ps.dirty());
+    EXPECT_TRUE(ps.status(20000) == nullptr);
+    ps.button(true, s, 30000);
+    ps.button(true, s, 31000);
+    EXPECT_TRUE(same(ps.status(31000), "NO STORAGE"));
+    EXPECT_EQ(ps.write_attempts(), 0u);
+    EXPECT_FALSE(ps.load(s, 40000));                     // nothing to restore, and no complaint
+    EXPECT_TRUE(ps.status(40000) == nullptr || same(ps.status(40000), "NO STORAGE"));
+}
+
+TEST(NoStorageTest, SwitchingSlotsDoesNotTryToWrite) {
+    NoStorage none; PresetSession ps(none); PhaseBoxState s;
+    ps.update(s, 0);
+    s.osc.bpm = 99.0f; ps.update(s, 0);
+    EXPECT_TRUE(ps.select_slot(2, s, 100));
+    EXPECT_EQ(ps.write_attempts(), 0u);
+    EXPECT_NEAR(s.osc.bpm, 99.0f, 0.001f);
+}
+
+// ---- reset everything + undo ----
+namespace {
+PhaseBoxState edited() {
+    PhaseBoxState s;
+    s.osc.bpm = 150.0f; s.turing_mix = 0.4f; s.macros.destinations[1].midi_channel = 3;
+    return s;
+}
+}
+
+TEST(ResetAll, RestoresDefaultsShowsResetAndAutoSavesThemLikeAnyEdit) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    ps.update(s, 0);                                     // baseline: the edited settings are the saved ones
+    ps.reset_to_defaults(s, 100);
+    EXPECT_NEAR(s.osc.bpm, 120.0f, 0.001f);
+    EXPECT_TRUE(same(ps.status(100), "RESET"));
+    ps.update(s, 100);
+    EXPECT_TRUE(ps.dirty());
+    EXPECT_EQ(m.writes, 0);                              // not written instantly...
+    ps.update(s, 2100);
+    EXPECT_EQ(m.writes, 1);                              // ...but auto-saved after the usual 2 s
+    EXPECT_NEAR(stored_bpm(m, 1), 120.0f, 0.001f);
+}
+
+TEST(ResetAll, UndoBringsTheOldSettingsBackEvenAfterTheDefaultsWereSaved) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 100);
+    ps.update(s, 100); ps.update(s, 2100);               // defaults are now on disk
+    ASSERT_NEAR(stored_bpm(m, 1), 120.0f, 0.001f);
+    EXPECT_TRUE(ps.undo_reset(s, 2200));
+    EXPECT_NEAR(s.osc.bpm, 150.0f, 0.001f);
+    EXPECT_NEAR(s.turing_mix, 0.4f, 0.001f);
+    EXPECT_EQ(s.macros.destinations[1].midi_channel, 3);
+    EXPECT_TRUE(same(ps.status(2200), "UNDONE"));
+    ps.update(s, 2200); ps.update(s, 4300);              // and auto-save writes them back
+    EXPECT_NEAR(stored_bpm(m, 1), 150.0f, 0.001f);
+}
+
+TEST(ResetAll, UndoIsOnlyOfferedUntilYouChangeSomethingElse) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 100);
+    s.osc.bpm = 133.0f;                                  // an edit after the reset
+    EXPECT_FALSE(ps.undo_reset(s, 200));
+    EXPECT_TRUE(same(ps.status(200), "EDITED SINCE RESET"));
+    EXPECT_NEAR(s.osc.bpm, 133.0f, 0.001f);              // the new edit is not thrown away
+    EXPECT_FALSE(ps.undo_reset(s, 300));
+    EXPECT_TRUE(same(ps.status(300), "NOTHING TO UNDO"));
+}
+
+TEST(ResetAll, UndoWithNothingToUndoAndUndoingTwice) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    EXPECT_FALSE(ps.undo_reset(s, 0));
+    EXPECT_TRUE(same(ps.status(0), "NOTHING TO UNDO"));
+    ps.reset_to_defaults(s, 10);
+    EXPECT_TRUE(ps.undo_reset(s, 20));
+    EXPECT_FALSE(ps.undo_reset(s, 30));                  // one step only
+    EXPECT_NEAR(s.osc.bpm, 150.0f, 0.001f);
+}
+
+TEST(ResetAll, ResettingWhenAlreadyAtDefaultsSaysSoAndLeavesNothingToUndo) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s;
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 10);
+    EXPECT_TRUE(same(ps.status(10), "ALREADY DEFAULT"));
+    EXPECT_FALSE(ps.dirty());
+    EXPECT_FALSE(ps.undo_reset(s, 20));
+    ps.update(s, 5000);
+    EXPECT_EQ(m.writes, 0);                              // nothing to save
+}
+
+TEST(ResetAll, AnAccidentalSecondResetDoesNotLoseTheFirstUndo) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 100);
+    ps.reset_to_defaults(s, 150);                        // pressed again by mistake: already default
+    EXPECT_TRUE(same(ps.status(150), "ALREADY DEFAULT"));
+    EXPECT_FALSE(ps.undo_reset(s, 200));                 // a repeat press does not keep the undo (documented)
+}
+
+TEST(ResetAll, SwitchingSlotsCancelsTheUndo) {
+    MemStorage m; PresetSession ps(m); PhaseBoxState s = edited();
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 100);
+    ps.select_slot(2, s, 200);
+    EXPECT_FALSE(ps.undo_reset(s, 300));
+    EXPECT_TRUE(same(ps.status(300), "NOTHING TO UNDO"));
+}
+
+TEST(ResetAll, WorksWithoutStorageToo) {
+    NoStorage none; PresetSession ps(none); PhaseBoxState s = edited();
+    ps.update(s, 0);
+    ps.reset_to_defaults(s, 10);
+    EXPECT_NEAR(s.osc.bpm, 120.0f, 0.001f);
+    EXPECT_EQ(ps.write_attempts(), 0u);
+    EXPECT_TRUE(ps.undo_reset(s, 20));
+    EXPECT_NEAR(s.osc.bpm, 150.0f, 0.001f);
+}
