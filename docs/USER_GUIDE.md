@@ -141,10 +141,18 @@ If you do not have physical hardware in front of you, Phase Box includes a real-
 | **`[`** / **`]`** | Previous / next preset slot (1–8) |
 | **`[R]`** | **Reset everything to defaults** (one keypress; shows `RESET`) |
 | **`[U]`** | Undo the last reset (shows `UNDONE`) |
+| **`[F]`** | **Freeze** / resume: hold every output where it is (shows `FROZEN`) |
+| **`[B]`** | **Bypass** on/off: every destination sends 0 (shows `BYPASS`) |
 | **`[1]`** | Simulate Expression Pedal at 0% (Heel down) |
 | **`[2]`** | Simulate Expression Pedal at 50% (Midway) |
 | **`[3]`** | Simulate Expression Pedal at 100% (Toe down) |
 | **`[ESC]`** | Exit Simulator |
+
+### Freeze and bypass
+- **`[F]` Freeze:** stops the LFOs and holds every destination at the value it has right now, even if you move the pedal or edit settings. Press `[F]` again and it carries on from the same point (no jump). The Turing machine pauses too. The screen shows `FROZEN`.
+- **`[B]` Bypass:** every destination sends **0** and the display shows a flat line (`BYPASS`). The LFOs keep running silently, so when you switch back they are still in time. Bypass wins over freeze; if you were frozen, letting go of bypass returns to the held values.
+- Bypass sends exactly 0 on each destination's CC, which is not always a "neutral" value for the synth parameter (for example, 0 on a filter cutoff is fully closed).
+- Neither is saved in presets, and `[R]` reset does not change them. The device has no spare control for them yet, so they are simulator-only for now.
 
 ### Resetting everything to defaults
 Press **`[R]`** in the simulator to put every setting back to how the unit starts up:

@@ -64,6 +64,16 @@ inline void draw(phasebox::hal::DisplayInterface& d, const PhaseBoxState& s, int
                 d.draw_pixel(static_cast<int16_t>(2 + mx + dx), static_cast<int16_t>(cy + dy), true);
     }
 
+    if (const char* tag = simui::mode_tag(s)) {   // FROZEN / BYPASS in a box over the middle of the curve
+        const int bw = static_cast<int>(std::strlen(tag)) * 6 + 6;
+        const int bh = std::min(10, y_bottom - y_top + 1);
+        const int bx = (W - bw) / 2, by = y_top + (y_bottom - y_top + 1 - bh) / 2;
+        for (int y = by; y < by + bh; ++y)
+            for (int x = bx; x < bx + bw; ++x)
+                d.draw_pixel(static_cast<int16_t>(x), static_cast<int16_t>(y), x == bx || x == bx + bw - 1 || y == by || y == by + bh - 1);
+        d.draw_string(static_cast<int16_t>(bx + 3), static_cast<int16_t>(by + (bh - 8) / 2), tag);
+    }
+
     const char* status = session.status(now_ms);
     const std::string footer = status ? std::string(status) : simui::footer(s, s.active_page, active_dest);
     d.draw_string(0, static_cast<int16_t>(H - 8), footer.c_str());
