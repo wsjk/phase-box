@@ -301,3 +301,25 @@ TEST(Device, FirstFrameAfterALongPauseDoesNotJumpTheLfo) {
     float step = r.state.osc.phase - before; if (step < 0) step += 6.2832f;
     EXPECT_NEAR(step, 1.2566f, 0.05f);                          // dt is capped at 100 ms: at 120 BPM that is 0.2 of a cycle, not 120 cycles
 }
+
+TEST(Device, TheScreenSaysFrozenOrBypassAndShowsAFlatLineInBypass) {
+    for (uint16_t h : {uint16_t(32), uint16_t(64)}) {
+        Rig r(true, h);
+        r.run_ms(100);
+        phasebox::hal::MockHalDisplay text;
+        oled::draw(text, r.state, 0, r.presets, r.ms_clock);
+        EXPECT_FALSE(text.contains_text("FROZEN"));
+        r.state.frozen = true;
+        oled::draw(text, r.state, 0, r.presets, r.ms_clock);
+        EXPECT_TRUE(text.contains_text("FROZEN"));
+        r.state.bypassed = true;
+        oled::draw(text, r.state, 0, r.presets, r.ms_clock);
+        EXPECT_TRUE(text.contains_text("BYPASS"));
+        EXPECT_FALSE(text.contains_text("FROZEN"));
+        phasebox::hal::FrameBuffer fb(128, h);
+        oled::draw(fb, r.state, 0, r.presets, r.ms_clock);
+        const int y = h - 12;                                    // the bottom row of the curve area: the flat zero line
+        int lit = 0; for (int x = 0; x < 128; ++x) lit += (fb.data()[x + (y / 8) * 128] >> (y % 8)) & 1;
+        EXPECT_GE(lit, 60);
+    }
+}

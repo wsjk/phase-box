@@ -284,3 +284,105 @@ TEST(SimReset, TheMidiOutputIsTheDefaultOneAfterwards) {
     for (size_t i = 0; i < a.size(); ++i) { EXPECT_EQ(a[i].channel, b[i].channel); EXPECT_EQ(a[i].cc, b[i].cc); EXPECT_EQ(a[i].value, b[i].value); }
     EXPECT_EQ(a[1].cc, 74);                                  // Destination 2 is back on CC 74
 }
+
+// ---- freeze and bypass ----
+TEST(SimFreeze, HoldsEveryOutputWhateverHappensAndResumesFromThere) {
+    PhaseBoxState s = fresh();
+    run(s, 0, 130);                                           // somewhere mid-cycle
+    s.toggle_freeze();
+    const auto at_freeze = s.evaluateMacros(0.001f);
+    const float phase = s.osc.phase;
+    bool still = true;
+    for (int i = 0; i < 500; ++i) {                           // time passes, and the pedal and settings change
+        s.adc_expression = (i % 2) ? 0.0f : 1.0f;
+        if (i == 100) s.osc.shape = PhaseOscillator::SQUARE;
+        if (i == 200) s.macros.destinations[0].scale = 0.3f;
+        s.advance(0.001f);
+        const auto out = s.evaluateMacros(0.001f);
+        for (size_t d = 0; d < out.size(); ++d) still = still && out[d].value == at_freeze[d].value;
+    }
+    EXPECT_TRUE(still);
+    EXPECT_NEAR(s.osc.phase, phase, 1e-6f);                   // the clock stood still
+
+    s.osc.shape = PhaseOscillator::SINE; s.macros.destinations[0].scale = 1.0f; s.adc_expression = 1.0f;
+    s.toggle_freeze();                                        // let go: continues from where it stopped
+    s.advance(0.001f);
+    const int first = s.evaluateMacros(0.001f)[0].value;
+    EXPECT_LE(std::abs(first - at_freeze[0].value), 2);       // no jump
+    bool moved = false;
+    for (int v : run(s, 0, 150)) moved = moved || std::abs(v - first) > 10;
+    EXPECT_TRUE(moved);                                       // and it is moving again
+}
+
+TEST(SimFreeze, StopsTheTuringStepsToo) {
+    PhaseBoxState s = fresh();
+    s.set_frozen(true);
+    const float norm = s.turing_norm;
+    for (int i = 0; i < 2000; ++i) s.advance(0.001f);         // would be 4 master cycles
+    EXPECT_NEAR(s.turing_norm, norm, 1e-6f);
+    s.set_frozen(false);
+    for (int i = 0; i < 600; ++i) s.advance(0.001f);
+    EXPECT_TRUE(std::fabs(s.turing_norm - norm) > 0.001f);    // steps again after the master cycle completes
+}
+
+TEST(SimFreeze, FreezingBeforeAnythingWasEvaluatedHoldsTheFirstValues) {
+    PhaseBoxState s = fresh();
+    s.set_frozen(true);
+    const auto a = s.evaluateMacros(0.001f);
+    s.macros.destinations[1].scale = 0.1f; s.adc_expression = 0.0f;
+    const auto b = s.evaluateMacros(0.001f);
+    for (size_t d = 0; d < a.size(); ++d) EXPECT_EQ(a[d].value, b[d].value);
+}
+
+TEST(SimBypass, EverythingGoesToZeroWhileTheLfosKeepRunning) {
+    PhaseBoxState s = fresh();
+    run(s, 0, 100);
+    s.bypassed = true;
+    const float p0 = s.osc.phase;
+    bool all_zero = true;
+    for (int i = 0; i < 400; ++i) {
+        s.advance(0.001f);
+        for (const auto& m : s.evaluateMacros(0.001f)) all_zero = all_zero && m.value == 0;
+        if (i == 150) s.adc_expression = 0.3f;                // the pedal makes no difference either
+    }
+    EXPECT_TRUE(all_zero);
+    EXPECT_TRUE(std::fabs(s.osc.phase - p0) > 0.01f);         // the clock was running underneath
+    s.adc_expression = 1.0f;
+    s.bypassed = false;
+    int sum = 0;
+    for (int i = 0; i < 40; ++i) { s.advance(0.001f); for (const auto& m : s.evaluateMacros(0.001f)) sum += m.value; }
+    EXPECT_GT(sum, 100);                                      // back to normal output
+}
+
+TEST(SimBypass, OverridesFreezeAndLettingGoOfBypassReturnsToTheHeldValues) {
+    PhaseBoxState s = fresh();
+    run(s, 0, 130);
+    s.toggle_freeze();
+    const auto held = s.evaluateMacros(0.001f);
+    s.bypassed = true;
+    for (const auto& m : s.evaluateMacros(0.001f)) EXPECT_EQ(m.value, 0);
+    s.bypassed = false;
+    const auto back = s.evaluateMacros(0.001f);
+    for (size_t d = 0; d < held.size(); ++d) EXPECT_EQ(back[d].value, held[d].value);
+}
+
+TEST(SimBypass, PreviewShowsAFlatLineAndTheTagsAreRight) {
+    PhaseBoxState s = fresh();
+    EXPECT_TRUE(mode_tag(s) == nullptr);
+    s.frozen = true;
+    EXPECT_TRUE(std::string(mode_tag(s)) == "FROZEN");
+    s.bypassed = true;
+    EXPECT_TRUE(std::string(mode_tag(s)) == "BYPASS");        // bypass wins when both are on
+    const auto curve = preview_curve(s, 0, 100);
+    bool flat = true; for (float v : curve) flat = flat && v == 0.0f;
+    EXPECT_TRUE(flat);
+    EXPECT_EQ(preview_markers(s, 0, 100).size(), 0u);
+}
+
+TEST(SimFreeze, ResetDoesNotTouchFreezeOrBypass) {
+    PhaseBoxState s;
+    s.frozen = true; s.bypassed = true;
+    s.reset_parameters();
+    EXPECT_TRUE(s.frozen);
+    EXPECT_TRUE(s.bypassed);
+}

@@ -18,6 +18,18 @@ struct PhaseBoxState {
     int last_sent_cc_val = -1;
     float last_phase = 0.0f;
 
+    // Performance states (not saved in presets, not touched by reset):
+    bool frozen = false;     // hold every output where it is and stop the LFOs; unfreezing continues from there
+    bool bypassed = false;   // send 0 on every destination; the LFOs keep running silently so you rejoin in time
+    std::vector<int> live_values;   // what the destinations would send right now
+    std::vector<int> held_values;   // what they sent when freeze was switched on
+
+    void set_frozen(bool on) {
+        if (on && !frozen) held_values = live_values;
+        frozen = on;
+    }
+    void toggle_freeze() { set_frozen(!frozen); }
+
     float turing_norm = 0.5f;   // latest Turing output (0..1), updated once per master cycle
     float turing_mix = 0.0f;    // P11: 0 = LFO only, 1 = Turing sequence only
 
@@ -48,6 +60,7 @@ struct PhaseBoxState {
 
     /// Advance the master oscillator; the Turing machine steps on every master cycle.
     void advance(float dt) {
+        if (frozen) return;   // time stands still
         osc.update(dt);
         if (osc.phase < last_phase) step_turing();
         last_phase = osc.phase;
@@ -59,6 +72,14 @@ struct PhaseBoxState {
         src.osc = &osc;
         src.turing_norm = turing_norm;
         src.turing_mix = turing_mix;
-        return macros.evaluate(osc.phase, dt, adc_expression, src);
+        auto out = macros.evaluate(osc.phase, dt, adc_expression, src);
+        live_values.resize(out.size());
+        for (size_t i = 0; i < out.size(); ++i) live_values[i] = out[i].value;
+        if (frozen && held_values.size() != out.size()) held_values = live_values;   // frozen before anything was evaluated
+        for (size_t i = 0; i < out.size(); ++i) {
+            if (bypassed) out[i].value = 0;
+            else if (frozen) out[i].value = held_values[i];
+        }
+        return out;
     }
 };

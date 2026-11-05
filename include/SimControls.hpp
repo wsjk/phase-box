@@ -87,7 +87,11 @@ inline int preview_cycles(float clock_mult) {
 
 /// The exact curve the active destination emits (shape, phase, PM, Turing mix, weight, offset,
 /// expression all included), as values in [0, 1].
+/// "BYPASS" or "FROZEN" while one of those is on (bypass wins), otherwise nullptr.
+inline const char* mode_tag(const PhaseBoxState& s) { return s.bypassed ? "BYPASS" : (s.frozen ? "FROZEN" : nullptr); }
+
 inline std::vector<float> preview_curve(const PhaseBoxState& s, int dest_index, int width) {
+    if (s.bypassed) return std::vector<float>(width > 0 ? width : 0, 0.0f);   // outputs are all 0: a flat line
     const int idx = std::clamp(dest_index, 0, (int)s.macros.destinations.size() - 1);
     const MacroDestination& dest = s.macros.destinations[idx];
     MacroEngine::Source src;
@@ -103,6 +107,7 @@ inline std::vector<float> preview_curve(const PhaseBoxState& s, int dest_index, 
 
 /// X positions (pixels) of the live playhead(s) along the preview curve.
 inline std::vector<int> preview_markers(const PhaseBoxState& s, int dest_index, int width) {
+    if (s.bypassed) return {};
     const int idx = std::clamp(dest_index, 0, (int)s.macros.destinations.size() - 1);
     const int n = preview_cycles(s.macros.destinations[idx].clock_mult);
     const float frac = s.macros.dest_phase(idx) / (2.0f * static_cast<float>(M_PI));

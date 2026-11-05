@@ -4,6 +4,7 @@
 #include "PresetSession.hpp"
 #include "TapTempo.hpp"
 #include <cstdlib>
+#include <cstring>
 #include <vector>
 #include <string>
 #include <chrono>
@@ -60,6 +61,12 @@ void DrawOLEDDisplay(RenderTexture2D& oled_target, const PhaseBoxState& state, i
     float hold = session.hold_progress(now_ms);
     if (hold > 0.0f) DrawRectangle(0, 49, (int)(128 * hold), 3, WHITE);
     const char* status = session.status(now_ms);
+    if (const char* tag = simui::mode_tag(state)) {   // FROZEN / BYPASS box over the middle of the curve
+        const int bw = static_cast<int>(std::strlen(tag)) * 6 + 6;
+        DrawRectangle(64 - bw / 2, 27, bw, 11, BLACK);
+        DrawRectangleLines(64 - bw / 2, 27, bw, 11, WHITE);
+        DrawText(tag, 64 - bw / 2 + 3, 29, 8, WHITE);
+    }
     std::string footer = status ? std::string(status) : simui::footer(state, state.active_page, active_dest);
     DrawText(footer.c_str(), 4, 53, 8, WHITE);
 
@@ -102,7 +109,7 @@ int main(int argc, char** argv) {
     session.load(state, 0);                  // settings restore on power-up
 
 #ifdef __APPLE__
-    // MIDI goes straight to the hardware destination named by $PHASE_BOX_MIDI_DEST (default "Melodee FM-1").
+    // MIDI goes straight to the hardware destination named by $PHASE_BOX_MIDI_DEST (default "FRASIL FM-1").
     // No virtual port is created and no MIDI Studio patching is needed. PHASE_BOX_MIDI_DEST=virtual brings
     // back the old "Phase Box Virtual Out" source.
     CoreMidiBackend midi_backend;
@@ -128,6 +135,8 @@ int main(int argc, char** argv) {
 
         if (IsKeyPressed(KEY_M)) state.step_turing(); // same as the Mutate footswitch
         if (IsKeyPressed(KEY_R)) session.reset_to_defaults(state, now_ms);   // everything back to defaults
+        if (IsKeyPressed(KEY_F)) state.toggle_freeze();               // hold every output / let go again
+        if (IsKeyPressed(KEY_B)) state.bypassed = !state.bypassed;    // every destination sends 0 / back to normal
         if (IsKeyPressed(KEY_U)) session.undo_reset(state, now_ms);          // ...and back again (until the next edit)
         if (IsKeyPressed(KEY_LEFT_BRACKET))  session.select_slot(session.slot() - 1, state, now_ms);
         if (IsKeyPressed(KEY_RIGHT_BRACKET)) session.select_slot(session.slot() + 1, state, now_ms);
@@ -206,7 +215,7 @@ int main(int argc, char** argv) {
         DrawText(TextFormat("[E] Next Page | [Q] Prev Page   (now: %s, editing Dest %d)", simui::page_name(state.active_page), active_dest + 1), 55, 553, 12, LIGHTGRAY);
         DrawText("[W/S or Up/Down] Adjust value   (P4 CHAN, P5 CC, P9 WGT, P10 DIV edit the active dest; pick it on P8)", 55, 573, 12, LIGHTGRAY);
         DrawText("[T/Space] Tap  |  [1-3] Pedal 0/.5/1  |  [M] Step Turing  |  [R] Reset ALL  |  [U] Undo reset", 55, 593, 12, LIGHTGRAY);
-        DrawText(TextFormat("[Enter] hold 1 s = SAVE  |  [ and ] = preset slot (now %d)  |  auto-saves 2 s after your last edit", session.slot()), 55, 613, 12, LIGHTGRAY);
+        DrawText(TextFormat("[Enter] hold = SAVE  |  [ ] = slot %d (auto-saves 2 s after an edit)  |  [F] FREEZE  |  [B] BYPASS (all 0)", session.slot()), 55, 613, 12, LIGHTGRAY);
         DrawText("P1 WAVE  P2 BPM  P3 PHASE  P4 CHAN  P5 CC  P6 PM  P7 MUTE  P8 DEST  P9 WGT  P10 DIV  P11 MIX", 55, 633, 10, GRAY);
 #ifdef __APPLE__
         {
