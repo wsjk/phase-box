@@ -36,7 +36,7 @@ bool has(const std::string& s, const char* part) { return s.find(part) != std::s
 
 TEST(MidiNames, MatchingIgnoresCaseSpacesAndPunctuation) {
     EXPECT_TRUE(name_matches("FRASIL FM-1", "FRASIL FM-1"));
-    EXPECT_TRUE(name_matches("melodee fm 1 MIDI 1", "FRASIL FM-1"));
+    EXPECT_TRUE(name_matches("frasil fm 1 MIDI 1", "FRASIL FM-1"));
     EXPECT_TRUE(name_matches("MelodeeFM-1", "melodee fm-1"));
     EXPECT_FALSE(name_matches("IAC Driver Bus 1", "FRASIL FM-1"));
     EXPECT_FALSE(name_matches("Melodee FM-2", "FRASIL FM-1"));
