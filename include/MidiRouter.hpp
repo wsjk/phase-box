@@ -16,7 +16,7 @@ constexpr const char* VIRTUAL_SOURCE_NAME = "Phase Box Virtual Out";
 constexpr uint32_t SCAN_INTERVAL_MS = 1000;    // how often to look for the device while it is missing
 constexpr uint32_t VERIFY_INTERVAL_MS = 2000;  // how often to confirm a connected device is still there
 
-/// "FRASIL FM-1", "melodee fm 1" and "MelodeeFM-1" all compare equal: only letters and digits count.
+/// "FRASIL FM-1", "frasil fm 1" and "FrasilFM-1" all compare equal: only letters and digits count.
 inline std::string loose(const std::string& s) {
     std::string out;
     for (unsigned char c : s) if (std::isalnum(c)) out += static_cast<char>(std::tolower(c));

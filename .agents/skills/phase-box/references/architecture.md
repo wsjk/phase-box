@@ -1,44 +1,49 @@
 # Phase Box Architecture Reference
 
 ## Overview
-Phase Box is an RP2040-powered algorithmic modulation engine generating MIDI CC streams for video synthesizers (LZX, Auto Waaaves, r_e_c_u_r).
+Phase Box is an RP2040-powered polyrhythmic modulation engine and MIDI synthesizer generating Control Change (CC) streams for video synthesizers (LZX Industries, Auto Waaaves, r_e_c_u_r), audio synths, and DAWs over both 31,250 baud serial MIDI and USB-MIDI.
+
+## Production Stack vs. Legacy Experiments
+* **Production Stack (Active):** `include/DeviceApp.hpp`, `include/PhaseBoxState.hpp`, `include/MacroEngine.hpp`, `include/SimControls.hpp`, `include/PresetSession.hpp`, `include/OledRenderer.hpp`, `include/ScreenSaver.hpp`, `include/hal/pinout.hpp`.
+* **Legacy Prototype (Unbuilt):** `include/core/` and `src/main.cpp`. Do not edit or import these.
 
 ## Dual-Core Workload Split
-- **Core 0 (Real-Time 1000 Hz Interrupt)**:
-  - Phase accumulators & waveform generation (`PhaseLFO`)
-  - Nested cross-modulation between LFO pairs (`set_cross_modulation`)
-  - Multi-destination macro scaling from expression pedal (`MacroEngine`)
-  - Footswitch tap tempo & 24 PPQN MIDI clock tracking (`ClockManager`)
-  - MIDI CC message generation (`MidiRouter`)
-  - Non-blocking UART output at 31250 baud (`PicoHalMidi`)
-  - ADC0 sampling on GP26 (`PicoHalAdc`)
-- **Core 1 (UI & Storage)**:
-  - SSD1306 128x32/128x64 OLED display rendering (throttled to 30 FPS)
-  - Rotary encoder menu navigation & state machine
-  - Flash preset storage via LittleFS / raw flash sector erase (`PicoHalFlash`)
+- **Core 0 (Real-Time Control & MIDI Engine)**:
+  - Input polling: Quadrature encoder (GP2/GP3), debounced switches (GP6 encoder push, GP10 tap tempo, GP11 mutate), smoothed ADC0 expression pedal (GP26).
+  - TinyUSB device servicing (`tud_task()`).
+  - 60 Hz modulation frame step (`PhaseBoxState::advance()` & `evaluateMacros()`).
+  - Polyrhythmic macro clock multipliers (0.125x to 8x across 3 destinations).
+  - 16-bit Turing LFSR mutation on master cycle wrap or footswitch tap.
+  - Bandwidth limiter (`MidiChangeFilter`): sends only on CC change + 1s periodic refresh.
+  - Dual MIDI output: UART0 TX at 31,250 baud (GP0) and TinyUSB USB-MIDI.
+  - OLED rasterization at ~30 FPS into `SeqlockBuffer`.
+- **Core 1 (Async Display & Screensaver)**:
+  - SSD1306 128x32/128x64 OLED display controller on `i2c0` (GP4 SDA, GP5 SCL) at 400 kHz / 1 MHz.
+  - Reads finished frames from `SeqlockBuffer` without stalling Core 0.
+  - `ScreenSaver` contrast dimming (dims to 0x01 after 30s of inactivity, restores to 0xCF on activity).
 
 ## Hardware Interface
-- **MIDI UART**: `uart0`, TX on GP0, RX on GP1, 31250 baud (8N1).
-- **Expression Pedal (ADC)**: GP26 (ADC0), normalized 0.0f - 1.0f.
+- **MIDI UART**: `uart0`, TX on GP0, RX on GP1, 31,250 baud (8N1).
+- **Expression Pedal (ADC)**: GP26 (ADC0), normalized 0.0f - 1.0f with EMA filter.
 - **Footswitches**:
-  - `FootswitchTapMode` (GP10): Tap tempo delta tracking & instant LFO phase reset.
-  - `FootswitchMutation` (GP11): Turing shift register mutation trigger / cycle.
-- **Rotary Encoder**: Incremental encoder on GP2/GP3 with integrated push button on GP6 (`EncoderSwitch` / 1s hold-to-save preset).
-- **OLED Display**: SSD1306 over I2C0 (GP4 SDA, GP5 SCL) at 1 MHz (Fast-Mode Plus).
+  - `FS_TAP` (GP10): Tap tempo (40–300 BPM) & instant LFO phase reset.
+  - `FS_MUTATE` (GP11): Turing shift register mutation trigger / cycle.
+- **Rotary Encoder**: Incremental encoder on GP2/GP3 with integrated push button on GP6 (`ENC_SW`).
+  - Turn: parameter adjust (velocity-accelerated: 1 BPM normal, 5 BPM fast spin).
+  - Click: advance page P1..P11.
+  - Hold 1s: manual preset save (`SAVED`).
+- **OLED Display**: SSD1306 over I2C0 (GP4 SDA, GP5 SCL) at 400 kHz / 1 MHz.
 
-## Core Modules
-- `include/core/phase_lfo.hpp`: 32-bit phase accumulator, 256-entry Sine LUT, Triangle, Square, S&H, Turing Mutation.
-- `include/core/clock_manager.hpp`: Tap tempo (20–300 BPM), MIDI 24 PPQN parser, 1s internal fallback timeout.
-- `include/core/midi_router.hpp`: 4-channel CC routing (channels 1–16, CC 0–127).
-- `include/core/macro_engine.hpp`: Multi-destination weighted expression pedal scaling matrix.
-- `include/core/modulation_engine.hpp`: Top-level aggregation of 4 LFOs, nested cross-modulation, macro scaling, clock, and router.
-- `include/core/core0_task.hpp`: 1000 Hz real-time interrupt loop, ADC sampling, and MIDI dispatcher.
-- `include/core/core1_task.hpp`: Asynchronous UI task with 30 FPS render throttle.
-- `include/ui/ui_controller.hpp`: 4-state visual UI menu machine and preset serialization.
-
-## HAL Layer
-- `include/hal/hal_midi.hpp`, `pico_hal_midi.hpp`, `mock_hal_midi.hpp`: Hardware UART & simulation mock.
-- `include/hal/hal_gpio.hpp`, `pico_hal_gpio.hpp`, `mock_hal_gpio.hpp`: Tactile button & encoder abstraction.
-- `include/hal/hal_adc.hpp`, `pico_hal_adc.hpp`, `mock_hal_adc.hpp`: Analog expression pedal ADC abstraction.
-- `include/hal/hal_display.hpp`, `pico_hal_display.hpp`, `mock_hal_display.hpp`: 1 MHz I2C OLED display abstraction.
-- `include/hal/hal_flash.hpp`, `pico_hal_flash.hpp`, `mock_hal_flash.hpp`: Preset serialization & SPI NOR flash abstraction.
+## Core Modules & Organization
+- `include/DeviceApp.hpp`: Main hardware-injected coordinator (encoder, switches, pedal, MIDI, OLED buffer).
+- `include/PhaseBoxState.hpp`: Top-level state bundle, freeze/bypass modes, oscillator, Turing, macros.
+- `include/SimControls.hpp`: Menu pages P1–P11 adjust logic, footers, live curve generation.
+- `include/MacroEngine.hpp`: Polyrhythmic clock division (0.125x to 8x) and bipolar scaling.
+- `include/PhaseOscillator.hpp`: Sine LUT, Saw, Square, Triangle, and phase modulation.
+- `include/TuringMachine.hpp`: 16-bit shift register with probabilistic mutation.
+- `include/PresetSession.hpp`: Auto-save dirty state timer (2s idle), hold-to-save (1s), slots 1–8.
+- `include/OledRenderer.hpp`: Dual-panel (128x32 and 128x64) graphical display layout.
+- `include/ScreenSaver.hpp`: Contrast register dimming for burn-in protection.
+- `include/MidiChangeFilter.hpp`: Bandwidth-compliant CC transmission filter.
+- `include/hal/pinout.hpp`: Single source of truth for board wiring and encoder transitions.
+- `include/hal/seqlock_buffer.hpp`: Lock-free inter-core frame transfer.

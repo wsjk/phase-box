@@ -1,11 +1,10 @@
 # Phase Box: Developer Architecture & C++ Engineering Guide
 
-> **Implementation status (read first).** The repository currently contains two parallel code stacks:
-> the *legacy flat stack* (`PhaseOscillator`, `PhaseBoxState`, `MacroEngine.hpp`, `firmware/`, the native simulator), which is what the firmware and simulator actually build, and
-> the *layered stack* (`core/`, `hal/`, `ui/`, `storage/`, `src/main.cpp`), which is covered by the host tests but is not built into the firmware (`src/main.cpp` is in no CMake target).
-> The pipeline diagram below mixes both. `Core0Task`, `Core1Task` and the `Mock*` / `Pico*` ADC and display headers now compile on the host (they use the small `AdcInput` / `DisplayInterface` interfaces; `HalAdc` and `HalDisplay` stay concrete for the unit tests), but the layered stack is still not wired into the firmware build.
-> The legacy stack's `PhaseBoxState::advance()` / `evaluateMacros()` are shared by the simulator and the firmware loop: waveform shape, phase offset, PM depth, per-destination clock multiplier, and the Turing blend (`turing_mix`) all reach the MIDI output there. The layered stack (`core/`) has not been given these yet.
-> Saving: `PresetSession` (`include/PresetSession.hpp`) owns auto-save (2 s of quiet), hold-to-save (1 s), slots 1–8 and the on-screen status, and takes an explicit millisecond clock so it is unit-tested with a fake clock. It talks to a `PresetStorage` (`FilePresetStorage` for the simulator and tests). The device has no flash-backed `PresetStorage` yet (no LittleFS is linked), and `PicoHalFlash` writes need multicore lockout before they are safe alongside Core 0.
+> **Implementation status (read first).** The primary production architecture is unified around **`DeviceApp`** (`include/DeviceApp.hpp`), which encapsulates all hardware controls, parameter editing, modulation math, preset sessions, and rendering:
+> - **Shared Engine:** The RP2040 firmware target (`firmware/src/firmware_main.cpp`), the native desktop simulator (`src/native_sim_main.cpp`), and the GoogleTest host suite (`tests/test_device_app.cpp` driving the full device against mock inputs) all execute this identical engine and menu logic (pages P1–P11).
+> - **Dual-Core Workload:** In the RP2040 firmware, Core 0 handles real-time input polling, 60 Hz modulation engine stepping, MIDI change filtering and dispatch over both UART (GP0 at 31,250 baud) and USB (TinyUSB), and 30 FPS OLED frame rendering. Core 1 strictly owns the `i2c0` bus to copy rendered frames to the SSD1306 panel via a lock-free `SeqlockBuffer` and manage `ScreenSaver` contrast dimming, preventing slow I2C transfers from ever stalling real-time MIDI generation.
+> - **Preset Sessions:** `PresetSession` (`include/PresetSession.hpp`) manages auto-save (2 s of idle), hold-to-save (1 s encoder hold), slots 1–8, and OLED status messaging. On macOS/Linux/Windows, the simulator and tests use `FilePresetStorage` (`preset_*.bin`). On RP2040, `NoStorage` is currently linked until LittleFS flash storage with multicore lockout is added (`NO STORAGE` message on hold-to-save).
+> - **Early Layered Prototype:** `src/main.cpp` and `include/core/` are earlier experimental prototypes that are not part of any CMake build target. All active development, firmware flashing, desktop simulation, and tests build from `include/`, `src/`, `firmware/`, and `tests/`.
 
 
 This document is the comprehensive architectural specification and developer guide for the **Phase Box** firmware. It details the internal signal flow, dual-core operational model, and code layout.
@@ -17,7 +16,7 @@ This document is the comprehensive architectural specification and developer gui
 
 ## 1. System Architecture & Dual-Core Division
 
-The Raspberry Pi RP2040 contains two 32-bit ARM Cortex-M0+ processor cores operating at 125 MHz. Phase Box uses an **Asymmetric Multiprocessing (AMP)** model to guarantee hard real-time timing for MIDI clock generation without visual or storage stutter.
+The Raspberry Pi RP2040 contains two 32-bit ARM Cortex-M0+ processor cores operating at 125 MHz. Phase Box uses an **Asymmetric Multiprocessing (AMP)** model to guarantee hard real-time timing for MIDI generation without visual or I/O stutter.
 
 ```
 +========================================================================+
@@ -25,69 +24,88 @@ The Raspberry Pi RP2040 contains two 32-bit ARM Cortex-M0+ processor cores opera
 |                                                                        |
 |  +--------------------------------+  +-------------------------------+ |
 |  |             CORE 0             |  |            CORE 1             | |
-|  |     (Hard Real-Time 1000 Hz)   |  |   (Asynchronous UI & Storage) | |
+|  |  (Real-Time Engine & MIDI Out) |  |   (Async Display & Screen)    | |
 |  |                                |  |                               | |
-|  |  [Repeating Timer Alarm 1 kHz] |  |  [Polling Loop ~30-60 FPS]    | |
-|  |   - Sample ADC0 (Exp. Pedal)   |  |   - Rotary Encoder Polling    | |
-|  |   - Phase Accumulator Step     |  |   - Menu Navigation State     | |
-|  |   - Turing LFSR Mutation       |  |   - OLED SSD1306 I2C Driver   | |
-|  |   - Nested Cross-Modulation    |  |   - Screensaver Inactivity    | |
-|  |   - Macro Destination Matrix   |  |   - LittleFS Flash Auto-Save  | |
-|  |   - UART0 MIDI Out (31.25k Bd) |  |                               | |
-|  |   - TinyUSB MIDI Packet Write  |  +-------------------------------+ |
-|  +--------------------------------+                  ^                 |
+|  |  [High-Frequency Polling Loop] |  |  [Async Display Service Loop] | |
+|  |   - Quadrature Decoder (GP2,3) |  |   - SSD1306 OLED via I2C0     | |
+|  |   - Debounced Switches (GP6,10,|  |     (GP4 SDA, GP5 SCL)        | |
+|  |     GP11: Enc, Tap, Mutate)    |  |   - Reads Seqlock Frame Buffer| |
+|  |   - ADC0 Expr. Pedal (GP26)    |  |   - ScreenSaver Dimming       | |
+|  |   - TinyUSB Service (tud_task) |  |     (30 s Idle -> 0x01 min)   | |
+|  |  [60 Hz Frame Execution]       |  |   - Zero Real-Time Blocking   | |
+|  |   - Master Phase & Turing LFSR |  +-------------------------------+ |
+|  |   - Polyrhythmic Macro Scaling |                  ^                 |
+|  |   - MidiChangeFilter (DIN Rate)|                  |                 |
+|  |   - UART0 MIDI (GP0 31.25k Bd) |     [SeqlockBuffer<FRAME_BYTES>]   |
+|  |   - TinyUSB MIDI Packet Stream |     [std::atomic g_last_activity]  |
+|  |   - OLED Render -> Seqlock     |                  |                 |
+|  +--------------------------------+                  |                 |
 |                   |                                  |                 |
-|                   +-----> [Shared Memory State] <----+                 |
+|                   +----------------------------------+                 |
 +========================================================================+
 ```
 
 ### Why Core Separation Matters
-1. **Interrupt Protection:** Core 0 runs inside a hardware repeating timer interrupt (`add_repeating_timer_us(-1000, ...)`). It executes in under **$45\ \mu\text{s}$**, leaving plenty of headroom.
-2. **Eliminating I/O Jitter:** Writing a 512-byte display buffer over I2C or erasing a 4KB sector of SPI NOR flash takes multiple milliseconds. If run on the same core, it would cause audible or visual MIDI clock dropouts. By dedicating Core 1 to display and flash operations, Core 0 never stalls.
+1. **Eliminating I/O Jitter:** Writing a 512-byte display buffer over I2C at 400 kHz takes ~12 ms. If executed on the same core as MIDI generation, it would cause severe timing jitter and dropped MIDI packets. By dedicating Core 1 to the display bus, Core 0's loop runs completely unimpeded.
+2. **Lock-Free Inter-Core Transfer:** Display frames are passed from Core 0 to Core 1 using a lock-free single-producer single-consumer sequence lock buffer (`SeqlockBuffer`). Core 0 never waits on Core 1 or acquires blocking mutexes.
+3. **Bandwidth Management:** Standard DIN MIDI runs at 31,250 baud (~3,125 bytes/second). Sending multiple raw 3-byte CC messages every millisecond would quickly saturate the serial line. `MidiChangeFilter` ensures CC messages are only transmitted when values change (plus a periodic 1-second refresh), keeping bandwidth usage well within hardware limits.
 
 ---
 
 ## 2. Complete Signal Flow Pipeline
 
-Every millisecond (at 1000 Hz), the modulation pipeline computes new MIDI CC values following this deterministic pipeline:
+At 60 Hz (`FRAME_US` = 16,667 µs), the modulation pipeline computes new MIDI CC values following this deterministic pipeline:
 
 ```mermaid
 flowchart TD
-    Clock["1. ClockManager<br/>(BPM / Tap Tempo / 24 PPQN Sync)"] --> Phase["2. Phase Accumulator<br/>(32-bit phase += increment)"]
-    Phase --> Wave["3. Waveform Generator<br/>(Sine LUT / Saw / Square / Triangle)"]
-    Phase -- Cycle Wrap --> Turing["4. Turing Machine<br/>(16-bit LFSR Mutation)"]
-    Wave --> Nested["5. Nested Cross-Modulation<br/>(LFO[i] mod LFO[j])"]
-    Turing -. Bit Blend .-> Nested
+    Clock["1. Tempo & Phase<br/>(BPM 40-300 / Tap Tempo / Phase Reset)"] --> Master["2. Master Phase Accumulator<br/>(32-bit phase += increment)"]
+    Master -- Master Cycle Wrap --> Turing["3. Turing Machine<br/>(16-bit LFSR Probabilistic Mutation)"]
+    FS2["Footswitch 2<br/>(Manual Mutate Step)"] --> Turing
     
-    ADC["Analog ADC0<br/>(Expression Pedal)"] --> Smoothing["EMA Filter & Deadband Clamping"]
+    Master --> Macro["4. Polyrhythmic Macro Engine<br/>(Per-Dest Clock Multipliers 0.125x-8x)"]
+    Turing -. Blended via TUR MIX .-> Macro
+    Wave["Waveform Generator<br/>(Sine LUT / Saw / Square / Triangle)"] --> Macro
+    PM["Phase Modulation<br/>(PM Depth 0.0-5.0)"] --> Macro
     
-    Nested --> Macro["6. Polyrhythmic Macro Engine<br/>(Clock Multipliers & Destination Scaling)"]
+    ADC["Analog ADC0 (GP26)<br/>(Expression Pedal)"] --> Smoothing["EMA Filter & Clamping [0.0-1.0]"]
     Smoothing --> Macro
     
-    Macro --> Clamp["7. Clamping & Formatting<br/>(0 to 127 7-bit MIDI Data)"]
-    Clamp --> UART["8a. UART0 TX (GP0)<br/>31,250 Baud Serial"]
-    Clamp --> USB["8b. TinyUSB Device<br/>tud_midi_stream_write"]
+    Macro --> Weight["5. Bipolar Scaling & Offset<br/>(Weight -2.0 to +2.0, Baseline Offset)"]
+    Weight --> Perf["6. Performance Modes<br/>(Freeze Held Values / Bypass 0s)"]
+    Perf --> Clamp["7. Clamping & Formatting<br/>(0 to 127 7-bit MIDI Data)"]
+    
+    Clamp --> Filter["8. MidiChangeFilter<br/>(Send on Change + 1s Periodic Refresh)"]
+    Filter --> UART["9a. UART0 TX (GP0)<br/>31,250 Baud Serial DIN/TRS"]
+    Filter --> USB["9b. TinyUSB Device<br/>tud_midi_stream_write"]
 ```
 
 ### Signal Stages in Detail
 
-1. **Phase Accumulation:** 
-   $$\Delta \text{phase} = \left(\frac{\text{BPM}}{60} \cdot \frac{1}{1000}\right) \cdot 2^{32}$$
-   Phase is tracked in a 32-bit unsigned integer (`uint32_t phase_`). Overflows automatically wrap around $2\pi$ seamlessly without expensive modulo math.
+1. **Master Phase Accumulation & Tap Tempo:**
+   Phase accumulates based on master BPM ($40.0 - 300.0$ BPM):
+   $$\Delta \theta = \frac{\text{BPM}}{60} \cdot \Delta t$$
+   Tapping Footswitch 1 (GP10) calculates the interval between taps (rolling average up to 4 taps) and instantly resets all phase accumulators to $0^\circ$ for lock-step synchronization.
 
-2. **Waveform Synthesis:**
-   - **Sine:** Evaluated using a 256-entry precomputed lookup table ([LUT](../include/core/phase_lfo.hpp#L90-L96)) with fixed 8-bit quantization.
-   - **Sawtooth / Triangle / Square:** Evaluated directly via bit shifts and linear normalization.
-   - **Phase Modulation (PM):** Modulates the lookup index by an offset: $\theta_{effective} = \theta + \text{depth} \cdot \sin(2\theta)$.
+2. **Turing Mutation Shift Register:**
+   A 16-bit recirculating shift register (`TuringMachine`). On each complete wrap of the master oscillator, the high bit is recirculated to bit 0 with probabilistic mutation set by `P7: MUT` ($0.0 - 1.0$). Footswitch 2 (GP11) or the simulator `[M]` key immediately steps and seeds the register. The 8-bit normalized output is blended into destinations according to `P11: TUR MIX`.
 
-3. **Turing Mutation Shift Register:**
-   A 16-bit recirculating shift register ([Turing machine](../include/TuringMachine.hpp#L20-L30)). On every complete cycle of the master phase accumulator, the top bit is fed back into bit 0. With probability $P_{\text{mutation}}$, the bit is inverted.
-
-4. **Polyrhythmic Macro Destination Evaluation:**
-   Each destination tracks an effective phase:
+3. **Polyrhythmic Macro Destination Evaluation:**
+   Each of the 3 macro destinations tracks its own effective phase scaled by its clock multiplier:
    $$\theta_{\text{dest}} = (\theta_{\text{master}} \cdot \text{clock\_mult}) \pmod{2\pi}$$
-   Output scaling is computed as:
-   $$\text{value} = \text{clamp}\left(\Big((\text{LFO} \cdot \text{scale} \cdot \text{expression}) + \text{offset}\Big) \cdot 127,\ 0,\ 127\right)$$
+   Available multipliers: $0.125\times$, $0.25\times$, $0.5\times$, $0.75\times$, $1\times$, $1.5\times$, $2\times$, $3\times$, $4\times$, $8\times$.
+   The synthesis waveform (Sine LUT, Sawtooth, Square, or Triangle with optional Phase Modulation) is evaluated at $\theta_{\text{dest}}$ and blended with the Turing register:
+   $$\text{raw} = (1 - \text{tur\_mix}) \cdot \text{wave}(\theta_{\text{dest}}) + \text{tur\_mix} \cdot \text{turing\_norm}$$
+   The resulting value is scaled by the destination's bipolar weight, offset, and expression pedal attenuation:
+   $$\text{value} = \text{clamp}\left(\Big((\text{raw} \cdot \text{scale} \cdot \text{expression}) + \text{offset}\Big) \cdot 127,\ 0,\ 127\right)$$
+
+4. **Performance Modes (Freeze & Bypass):**
+   - **Freeze (`[F]`):** Halts oscillator advancement and latches every destination at its current live value. Releasing freeze resumes modulation from the exact latched phase without jumps.
+   - **Bypass (`[B]`):** Forces all destination outputs to send 0 while internal LFOs continue advancing silently in time. Bypass takes priority over Freeze.
+
+5. **Bandwidth Filtering & Dual MIDI Dispatch:**
+   `MidiChangeFilter` tracks the last sent value per destination and transmits only when values change or every 1,000 ms as a keep-alive refresh. Messages are fanned out concurrently to:
+   - Hardware UART0 TX (GP0) at 31,250 baud (DIN/TRS).
+   - Class-compliant USB-MIDI via TinyUSB (`tud_midi_stream_write`).
 
 ---
 
@@ -95,51 +113,65 @@ flowchart TD
 
 ```
 phase-box/
-├── include/                     # Public C++ Header Files
-│   ├── core/                    # Core Real-Time Audio/DSP Math
-│   │   ├── phase_lfo.hpp        # 32-bit phase accumulator & LUT synthesis
-│   │   ├── clock_manager.hpp    # Tap tempo & MIDI clock tracking
-│   │   ├── midi_router.hpp      # Channel and CC routing abstractions
-│   │   ├── macro_engine.hpp     # Multi-channel expression scaling matrix
-│   │   ├── modulation_engine.hpp# Aggregates 4x LFOs, cross-mod, and macros
-│   │   ├── core0_task.hpp       # Core 0 1000 Hz repeating interrupt runner
-│   │   └── core1_task.hpp       # Core 1 UI and event runner
+├── include/                     # Public C++ Header Files (Unified Engine & Drivers)
+│   ├── DeviceApp.hpp            # Main hardware-injected application runner (tested on host)
+│   ├── PhaseBoxState.hpp        # Core synthesizer state (oscillator, Turing, macros, freeze, bypass)
+│   ├── PhaseOscillator.hpp      # Poly-shape phase oscillator (Sine, Saw, Square, Tri) with PM
+│   ├── MacroEngine.hpp          # Polyrhythmic macro matrix & per-destination clock multipliers
+│   ├── TuringMachine.hpp        # 16-bit generative LFSR shift register with mutation
+│   ├── SimControls.hpp          # Pages P1-P11: edit rules, footers, waveform curve generation
+│   ├── OledRenderer.hpp         # SSD1306 screen layout for 128x32 and 128x64 OLED panels
+│   ├── PresetSession.hpp        # Auto-save (2s idle), hold-to-save (1s), slots 1-8, status strings
+│   ├── ScreenSaver.hpp          # OLED burn-in protection: 30s timeout contrast dimming
+│   ├── TapTempo.hpp             # 4-tap rolling average tap tempo (40-300 BPM)
+│   ├── MidiChangeFilter.hpp     # DIN MIDI bandwidth limiter (send on change + periodic refresh)
+│   ├── MidiRouter.hpp           # CoreMIDI endpoint discovery, auto-reconnect, and routing
+│   ├── CoreMidiBackend.hpp      # macOS CoreMIDI system wrapper
 │   ├── hal/                     # Hardware Abstraction Layer (HAL)
-│   │   ├── hal_adc.hpp          # ADC driver interface
-│   │   ├── hal_encoder.hpp      # Rotary encoder debouncing interface
-│   │   ├── hal_display.hpp      # SSD1306 framebuffer and drawing interface
-│   │   ├── hal_flash.hpp        # LittleFS / flash sector interface
-│   │   ├── hal_midi.hpp         # UART MIDI transmit/receive interface
-│   │   └── mock_*.hpp           # GoogleTest mock implementations for host testing
-│   ├── storage/                 # State persistence & LittleFS serializers
-│   ├── ui/                      # Layered-stack menu state machine (not used by the device)
-│   ├── DeviceApp.hpp            # The whole device behaviour, hardware injected (host-tested)
-│   ├── MidiRouter.hpp           # Simulator MIDI target selection/reconnect logic (OS-independent, host-tested)
-│   ├── CoreMidiBackend.hpp      # macOS CoreMIDI adapter for MidiRouter (Apple only)
-│   ├── OledRenderer.hpp         # Screen layout for 128x32 and 128x64 panels
-│   ├── SimControls.hpp          # Pages P1-P11: edit rules, footers, waveform preview
-│   ├── PresetSession.hpp        # Auto-save, hold-to-save, slots, status messages
-│   ├── TapTempo.hpp  MidiChangeFilter.hpp  ScreenSaver.hpp
-│   ├── PhaseOscillator.hpp      # High-level oscillator model (used by simulator)
-│   ├── MacroEngine.hpp          # Polyrhythmic macro destinations class
-│   └── TuringMachine.hpp        # Generative LFSR shift register
+│   │   ├── pinout.hpp           # Hardware pin assignments (single source of truth)
+│   │   ├── quadrature.hpp       # Quadrature rotary encoder decoder
+│   │   ├── debounce.hpp         # Software debounce filter for buttons & footswitches
+│   │   ├── frame_buffer.hpp     # Monochrome 128x32/64 OLED frame buffer
+│   │   ├── seqlock_buffer.hpp   # Lock-free single-writer single-reader inter-core frame buffer
+│   │   ├── hal_adc.hpp          # ADC input interface & EMA smoothing
+│   │   ├── hal_display.hpp      # Display interface definitions
+│   │   ├── pico_hal_display.hpp # RP2040 hardware I2C SSD1306 driver
+│   │   ├── pico_hal_midi.hpp    # RP2040 hardware UART0 MIDI driver
+│   │   ├── pico_hal_adc.hpp     # RP2040 hardware ADC driver
+│   │   └── mock_*.hpp           # GoogleTest mocks for zero-hardware testing
+│   └── core/                    # Early layered prototypes (see Implementation Status)
 ├── src/                         # C++ Implementations
-│   ├── hal/                     # Concrete HAL implementations
-│   ├── ui/ui_controller.cpp    # Menu navigation & velocity acceleration
-│   ├── storage/preset_manager.cpp # Flash sector read/write implementation
 │   ├── native_sim_main.cpp      # Standalone Raylib desktop simulator (macOS CoreMIDI, direct destination)
-│   └── main.cpp                 # NOT BUILT: early layered-engine experiment (see the note at its top)
-├── firmware/                    # Standalone RP2040 Pico SDK Target (TinyUSB + LittleFS)
+│   ├── PhaseOscillator.cpp      # Phase accumulator & math implementation
+│   ├── hal/                     # Concrete HAL driver implementations (hal_adc.cpp, etc.)
+│   └── main.cpp                 # UNBUILT: early layered-engine experiment
+├── firmware/                    # Standalone RP2040 Pico SDK Target (TinyUSB)
 │   ├── CMakeLists.txt           # Cross-compilation CMake configuration
-│   ├── src/firmware_main.cpp    # Pins + USB + two cores; all behaviour is in DeviceApp
-│   ├── src/usb_descriptors.c    # USB MIDI class-compliant endpoints
-│   └── include/PresetManager.hpp# Preset encode/decode (validated, CRC) + PresetStorage interface
-├── tests/                       # GoogleTest Host Unit Tests
+│   ├── pico_sdk_import.cmake    # Raspberry Pi Pico SDK CMake import script
+│   ├── src/firmware_main.cpp    # Hardware setup, TinyUSB, Core 0 / Core 1 task loops
+│   ├── src/usb_descriptors.c    # USB MIDI class-compliant descriptors
+│   ├── include/PresetManager.hpp# Preset serialization, binary CRC validation, and storage interface
+│   ├── include/tusb_config.h    # TinyUSB stack configuration
+│   └── include/usb_descriptors.h# USB descriptor headers
+├── tests/                       # GoogleTest Host Unit Tests (146 tests across 37 suites)
 │   ├── CMakeLists.txt           # Standalone test runner build
-│   ├── test_macro_engine.cpp    # Verifies macro scaling & bounding
-│   ├── test_hal_adc.cpp         # Verifies EMA filter & ADC deadbands
-│   └── test_hal_display.cpp     # Verifies SSD1306 framebuffer boundaries
-└── docs/                        # Architecture & User Documentation
+│   ├── test_device_app.cpp      # Full DeviceApp test driven by mock pins & inputs
+│   ├── test_device_blocks.cpp   # Isolated tests for Quadrature, Debounce, TapTempo, ScreenSaver
+│   ├── test_sim_controls.cpp    # Parameter adjust rules, footers, waveform curves for P1-P11
+│   ├── test_preset_session.cpp  # Auto-save, hold-to-save, dirty marks, slots 1-8
+│   ├── test_midi_router.cpp     # Destination matching, auto-reconnect, CoreMIDI routing
+│   ├── test_macro_engine.cpp    # Polyrhythmic multipliers & bipolar destination scaling
+│   ├── test_hal_adc.cpp         # EMA filtering & ADC deadband clamping
+│   ├── test_hal_display.cpp     # OLED framebuffer bounds & raster operations
+│   ├── test_hal_encoder.cpp     # Encoder turn & hold mechanics
+│   ├── test_hal_interfaces.cpp  # Mock HAL contract verification
+│   ├── test_preset_manager.cpp  # Binary preset encoding & CRC integrity
+│   └── test_regressions.cpp     # System regression tests
+├── scripts/                     # Utility scripts
+│   └── reset_coremidi.sh        # macOS CoreMIDI preference and state recovery tool
+└── docs/                        # Project Documentation
+    ├── USER_GUIDE.md            # Hardware & simulator user manual
+    └── DEVELOPER_GUIDE.md       # Architecture & engineering reference
 ```
 
 ---
@@ -255,67 +287,72 @@ register_bits = (register_bits << 1) | feedback_bit;
 
 ### Recipe 1: Adding a New Waveform Shape
 
-1. **Add Enum Value:** In [include/core/phase_lfo.hpp](../include/core/phase_lfo.hpp#L8-L14), add your new waveform to the `Waveform` enum:
+1. **Add Enum Value:** In [include/PhaseOscillator.hpp](../include/PhaseOscillator.hpp), add your new waveform to the `WaveShape` enum:
    ```cpp
-   enum class Waveform {
-       Sine,
-       Triangle,
-       Square,
-       SampleAndHold,
-       TuringMutation,
-       ExponentialRamp // <-- Your new waveform
+   enum WaveShape {
+       SINE = 0,
+       SAW,
+       SQUARE,
+       TRIANGLE,
+       EXPONENTIAL // <-- Your new waveform
    };
    ```
 
-2. **Implement Waveform Math:** In `PhaseLFO::update()`:
+2. **Implement Waveform Math:** In [src/PhaseOscillator.cpp](../src/PhaseOscillator.cpp), implement the normalized math in `PhaseOscillator::update()`:
    ```cpp
-   case Waveform::ExponentialRamp: {
-       float norm = static_cast<float>(phase_) / 4294967296.0f;
-       return static_cast<uint8_t>(norm * norm * 127.0f);
+   case EXPONENTIAL: {
+       float norm = phase / (2.0f * static_cast<float>(M_PI));
+       value = norm * norm; // Exponential curve [0.0, 1.0]
+       break;
    }
    ```
 
-3. **Expose in UI:** In [include/PhaseOscillator.hpp](../include/PhaseOscillator.hpp) and the OLED display strings in [native_sim_main.cpp](../src/native_sim_main.cpp#L71), add the name label `"EXP"` to the waveform list.
+3. **Expose in UI Labels:** In [include/SimControls.hpp](../include/SimControls.hpp), update the `wave_names` table and cycle modulo:
+   ```cpp
+   static const char* wave_names[] = {"SINE", "SAW", "SQR", "TRI", "EXP"};
+   ```
 
 ---
 
 ### Recipe 2: Adjusting Hardware Pinout
 
 Hardware pin mappings are defined in the HAL headers and drivers. To change a pin, update the corresponding default argument or constant:
+* **Hardware Pinout (Single Source of Truth):** [include/hal/pinout.hpp](../include/hal/pinout.hpp)
+  - `ENC_A` = GP2, `ENC_B` = GP3, `ENC_SW` = GP6
+  - `FS_TAP` = GP10, `FS_MUTATE` = GP11
+  - `OLED_SDA` = GP4, `OLED_SCL` = GP5 (`i2c0`)
+  - `EXPR_PEDAL` = GP26 (ADC0)
 * **MIDI TX/RX:** [include/hal/pico_hal_midi.hpp](../include/hal/pico_hal_midi.hpp) (Default: GP0 TX, GP1 RX).
-* **Rotary Encoder:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP2 A, GP3 B, GP6 Pushbutton).
-* **OLED I2C:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP4 SDA, GP5 SCL on `i2c0`; 32 rows by default, `cmake -DPHASEBOX_OLED_HEIGHT=64` for a 64-row panel; bus speed 400 kHz, override with `-DPHASEBOX_OLED_I2C_HZ=...`).
-* **Expression ADC:** [include/hal/pinout.hpp](../include/hal/pinout.hpp) (Default: GP26 / ADC0).
+* **OLED Configuration:** Set height with `cmake -DPHASEBOX_OLED_HEIGHT=64 ..` (32 rows by default; 64 rows supported). Default bus speed is 400 kHz (`-DPHASEBOX_OLED_I2C_HZ=1000000` for 1 MHz).
+* **Encoder Reversal / Detents:** Change `ENC_REVERSED` or `ENC_TRANSITIONS_PER_DETENT` in [include/hal/pinout.hpp](../include/hal/pinout.hpp).
 
 ---
 
 ### Recipe 3: Writing a Unit Test (GoogleTest)
 
-All algorithmic DSP math can be tested on your Mac/Linux host without hardware.
+All algorithmic DSP math, macro scaling, device state machines, and MIDI routing can be tested on your Mac/Linux host without hardware.
 1. Open or create a test file in `tests/` (e.g. `tests/test_my_feature.cpp`).
 2. Write a test case:
    ```cpp
    #include <gtest/gtest.h>
-   #include "core/phase_lfo.hpp"
+   #include "PhaseOscillator.hpp"
 
-   TEST(PhaseLFOTest, FrequencyIncrementMatchesExpectation) {
-       phasebox::core::PhaseLFO lfo;
-       lfo.set_frequency(1.0f, 1000); // 1 Hz at 1000 Hz sample rate
-       
-       // In 250 ticks (1/4 second), Sine LUT should reach its peak value (~127)
-       uint8_t val = 0;
-       for (int i = 0; i < 250; ++i) {
-           val = lfo.update();
-       }
-       EXPECT_NEAR(val, 127, 4);
+   TEST(OscillatorTest, TriangleStartsAtZeroAndRamps) {
+       PhaseOscillator osc;
+       osc.shape = PhaseOscillator::TRIANGLE;
+       osc.bpm = 120.0f;
+       osc.update(0.125f); // 1/8th second
+       EXPECT_GT(osc.value, 0.0f);
+       EXPECT_LE(osc.value, 1.0f);
    }
    ```
 3. Add the test file to `tests/CMakeLists.txt` and run the suite:
    ```bash
-   /Applications/CMake.app/Contents/bin/cmake -S tests -B build-test -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-   /Applications/CMake.app/Contents/bin/cmake --build build-test -j4
+   cmake -S tests -B build-test -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+   cmake --build build-test -j4
    ./build-test/run_host_tests
    ```
+   *(All 146 unit tests across 37 suites will run and report status).*
 
 ---
 
@@ -328,8 +365,12 @@ When you are ready to flash your code onto physical hardware:
 export PATH="/Applications/CMake.app/Contents/bin:/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin:$PATH"
 export PICO_SDK_PATH="/Users/ww/tools/pico-sdk"
 
-# 2. Build target firmware:
+# 2. Configure and build target firmware:
+cmake -S firmware -B firmware/build -DPICO_SDK_PATH="$PICO_SDK_PATH"
 cmake --build firmware/build -j4
+
+# Helper build script:
+# ./.agents/skills/phase-box/scripts/build_pico.sh
 
 # 3. Output files:
 #    - firmware/build/phase_box_firmware.uf2 (Drag-and-drop to Pico in BOOTSEL mode)

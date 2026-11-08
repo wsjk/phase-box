@@ -19,13 +19,14 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 ## ⚡ Key Features
 
 - **Asymmetric Dual-Core Architecture:**
-  - **Core 0 (1000 Hz Hard Real-Time):** Phase accumulators, 4-channel LFO calculation, nested cross-modulation, Turing LFSR mutation, ADC expression sampling, and MIDI packet streaming.
-  - **Core 1 (Async UI & Storage):** SSD1306 128×32/64 OLED display at 30–60 FPS, rotary encoder debouncing, OLED screen burn-in protection, and non-volatile flash auto-save.
-- **Polyrhythmic Macro Engine:** Independent clock multipliers/subdivisions per CC destination ($1/4\times$, $1/2\times$, $1\times$, $1.5\times$, $2\times$, etc.) for generative, non-repeating modulation patterns.
+  - **Core 0 (Real-Time Control & MIDI Engine):** Quadrature rotary encoder decoding, switch debouncing, ADC0 expression sampling, 60 Hz modulation engine step, Turing LFSR mutation, bandwidth-managed MIDI CC dispatch over UART (31,250 baud on GP0) and TinyUSB USB-MIDI, and 30 FPS OLED frame rendering into lock-free shared buffers.
+  - **Core 1 (Async Display & Screen Saver):** Dedicated SSD1306 128×32/64 OLED driver on `i2c0` offloading all display traffic from Core 0 via lock-free seqlock framebuffers, plus automatic screen burn-in contrast dimming.
+- **Polyrhythmic Macro Engine:** Independent clock multipliers/subdivisions per CC destination (0.125× to 8×: 1/8×, 1/4×, 1/2×, 3/4×, 1×, 1.5×, 2×, 3×, 4×, 8×) for generative, non-repeating modulation patterns.
 - **Bipolar Expression Scaling:** Full expression pedal integration with EMA smoothing and deadband clamping.
+- **Generative Turing LFSR:** 16-bit shift register with probabilistic mutation stepped per master cycle or manual footswitch tap.
 - **Dual MIDI Output:** Hardware serial MIDI (31,250 baud on GP0) and plug-and-play USB-MIDI class compliance (TinyUSB).
-- **Desktop Simulator:** Native Raylib desktop visualizer connecting directly to macOS `CoreMIDI`.
-- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 146 tests).
+- **Desktop Simulator:** Native Raylib desktop visualizer connecting directly to macOS `CoreMIDI` (defaulting to `FRASIL FM-1` or virtual DAW port) with live waveform visualization, preset management, freeze, and bypass modes.
+- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 146 unit tests across 37 test suites).
 
 ---
 
@@ -35,8 +36,8 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 | :--- | :--- | :--- |
 | **MIDI Serial** | **GP0** (TX), **GP1** (RX) | `uart0` running at 31,250 baud (8N1). |
 | **Rotary Encoder** | **GP2** (A), **GP3** (B), **GP6** (Switch) | Navigation, velocity-accelerated tuning, hold-to-save. |
-| **OLED Display** | **GP4** (SDA), **GP5** (SCL) | `i2c0` at 400 kHz / 1 MHz (Address: `0x3C`). |
-| **Footswitch 1** | **GP10** | Tap tempo (20–300 BPM) & instant phase reset. |
+| **OLED Display** | **GP4** (SDA), **GP5** (SCL) | `i2c0` at 400 kHz / 1 MHz (Address: `0x3C`, 128×32 or 128×64). |
+| **Footswitch 1** | **GP10** | Tap tempo (40–300 BPM) & instant phase reset. |
 | **Footswitch 2** | **GP11** | Turing shift register mutation trigger / cycle. |
 | **Expression Pedal**| **GP26** (ADC0) | Analog 0.0V–3.3V input with software EMA filtering. |
 | **USB** | **USB D+ / D-** | Class-compliant TinyUSB MIDI device streaming. |
@@ -45,23 +46,27 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 
 ## 🚀 Quick Start Workflows
 
-### 1. Run the Desktop Simulator (macOS)
+### 1. Build and Run the Desktop Simulator (macOS)
 ```bash
+cmake -B build-native -S .
+cmake --build build-native -j4
 ./build-native/phase_box_native_sim
 ```
-*Sends MIDI straight to the hardware destination named **`Melodee FM-1`** (change it with `PHASE_BOX_MIDI_DEST="Some Synth"`; `PHASE_BOX_MIDI_DEST=virtual` gives a virtual port for a DAW). `--list-midi` shows what CoreMIDI sees. If macOS MIDI is stuck, see `bash scripts/reset_coremidi.sh`.*
+*Sends MIDI straight to the hardware destination named **`FRASIL FM-1`** (change it with `PHASE_BOX_MIDI_DEST="Some Synth"`; `PHASE_BOX_MIDI_DEST=virtual` gives a virtual port for a DAW). `--list-midi` shows what CoreMIDI sees. If macOS MIDI is stuck, see `bash scripts/reset_coremidi.sh`.*
 
 ### 2. Run Host Unit Tests (GoogleTest)
 ```bash
-/Applications/CMake.app/Contents/bin/cmake -S tests -B build-test -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-/Applications/CMake.app/Contents/bin/cmake --build build-test -j4
+cmake -S tests -B build-test -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+cmake --build build-test -j4
 ./build-test/run_host_tests
 ```
+*(Runs all 146 tests covering DSP math, hardware abstraction layers, DeviceApp simulation, preset session persistence, and CoreMIDI routing).*
 
 ### 3. Compile RP2040 Target Firmware (`.uf2`)
 ```bash
 export PATH="/Applications/CMake.app/Contents/bin:/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin:$PATH"
 export PICO_SDK_PATH="/Users/ww/tools/pico-sdk"
+cmake -S firmware -B firmware/build -DPICO_SDK_PATH="$PICO_SDK_PATH"
 cmake --build firmware/build -j4
 ```
 *Drag-and-drop `firmware/build/phase_box_firmware.uf2` to your Raspberry Pi Pico in BOOTSEL mode.*

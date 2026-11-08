@@ -4,7 +4,7 @@
 > the firmware has been written and unit-tested on a computer but has **not yet been built or run on a real board** (first build: `firmware/` with the Pico SDK; check the OLED height and encoder direction, see the Developer Guide);
 > the firmware has no flash-backed preset storage yet, so on the device the screen shows `NO STORAGE` when you hold to save and nothing survives power-off (the simulator saves real files);
 > the firmware does not follow external MIDI clock, and preset slots 2–8 are simulator-only for now (`[` / `]`);
-> the simulator sends MIDI only on macOS (CoreMIDI), straight to the destination named by `PHASE_BOX_MIDI_DEST` (default `Melodee FM-1`); on Linux/Windows it runs without MIDI output.
+> the simulator sends MIDI only on macOS (CoreMIDI), straight to the destination named by `PHASE_BOX_MIDI_DEST` (default `FRASIL FM-1`); on Linux/Windows it runs without MIDI output.
 
 
 Welcome to the **Phase Box** operating manual. Phase Box is a dedicated hardware modulation synthesizer powered by the Raspberry Pi RP2040 microcontroller. It translates complex algorithmic waveforms, generative shift registers, and polyrhythmic macro scaling into real-time MIDI Control Change (CC) data streams for video synthesizers (such as LZX Industries, Auto Waaaves, and r_e_c_u_r), audio synthesizers, and Digital Audio Workstations (DAWs).
@@ -40,7 +40,7 @@ Phase Box features an intuitive physical control surface designed for live audio
 | **OLED Display** | GP4 (SDA), GP5 (SCL) | 128×32 / 128×64 graphical display showing active page, live waveform visualizer, and parameter values. |
 | **Rotary Encoder** | GP2 (A), GP3 (B) | Turn to change the value on the current page (clockwise = up). On the BPM page one click is 1 BPM, and spinning the knob quickly steps 5 BPM per click. |
 | **Encoder Pushbutton** | GP6 (Switch) | **Short Press:** Go to the next page (P1 … P11, then back to P1).<br/>**Long Press (1 Second):** Trigger non-volatile preset save. |
-| **Footswitch 1 (Tap / Reset)** | GP10 | **Tap Tempo:** Tap 2 or more times to synchronize BPM.<br/>**Phase Reset:** Instantly restarts all LFO accumulators to $0^\circ$ on each tap. |
+| **Footswitch 1 (Tap / Reset)** | GP10 | **Tap Tempo:** Tap 2 or more times to synchronize BPM (40–300 BPM).<br/>**Phase Reset:** Instantly restarts all LFO accumulators to $0^\circ$ on each tap. |
 | **Footswitch 2 (Mutate)** | GP11 | Step/seed the probabilistic Turing Machine shift register to inject controlled algorithmic variation. |
 | **Expression Pedal Jack** | GP26 (ADC0) | Accepts standard TRS expression pedals (0–3.3V analog voltage) for bipolar scaling of all macro destinations. |
 | **MIDI Output Port** | GP0 (TX), GP1 (RX) | Standard 31,250 baud serial MIDI (supports 5-pin DIN or Type-A/B 3.5mm TRS jack). |
@@ -54,9 +54,9 @@ The OLED interface is structured into pages. Click the encoder to move to the ne
 
 ```
 +------------------------------------+
-| P1: WAVE                       [*] |  <-- Page Title & Edit Indicator (*)
-| ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ |  <-- Real-Time Waveform Oscilloscope
-| VAL: SINE                          |  <-- Current Parameter Readout
+| P1: WAVE D1                    S1* |  <-- Page Title, Dest & Slot/Dirty Tag
+| ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ |  <-- Real-Time Destination Curve
+| VAL: SINE                          |  <-- Current Parameter Readout / Status
 +------------------------------------+
 ```
 
@@ -65,7 +65,7 @@ The OLED interface is structured into pages. Click the encoder to move to the ne
 | Page | Parameter | Range / Values | Description |
 | :--- | :--- | :--- | :--- |
 | **`P1: WAVE`** | Waveform Shape | `SINE`, `SAW`, `SQR`, `TRI` | Selects the waveform every destination plays (shared by all destinations). |
-| **`P2: BPM`** | Master Tempo | `20.0` – `300.0` BPM | Sets the base oscillator speed. Click encoder to toggle between **Fine** (0.1 BPM) and **Coarse** (1.0–5.0 BPM) adjustment. |
+| **`P2: BPM`** | Master Tempo | `40.0` – `300.0` BPM | Sets the base oscillator speed. Turn normally for 1 BPM steps; spin quickly for velocity-accelerated 5 BPM steps per detent. (Clicking encoder advances to next page). |
 | **`P3: PHASE`** | Phase Offset | $0.00$ – $6.28$ ($2\pi$ rad) | Static phase rotation relative to the master clock, applied to every destination. Wraps around at $2\pi$. |
 | **`P4: CHAN`** | Target MIDI Channel | `1` – `16` | MIDI Channel of the destination chosen on `P8` (each destination has its own). |
 | **`P5: CC`** | Target MIDI CC | `0` – `127` | MIDI CC number of the destination chosen on `P8`. |
@@ -123,7 +123,9 @@ To protect OLED displays during long stage performances or static studio session
 If you do not have physical hardware in front of you, Phase Box includes a real-time desktop simulator that runs natively on macOS, Linux, and Windows.
 
 ```bash
-# Launch the desktop simulator
+# Build and launch the desktop simulator
+cmake -B build-native -S .
+cmake --build build-native -j4
 ./build-native/phase_box_native_sim
 ```
 
@@ -164,10 +166,10 @@ Press **`[R]`** in the simulator to put every setting back to how the unit start
 - The device has no spare control for this yet, so it is simulator-only for now.
 
 ### Connecting Simulator to Hardware & DAWs
-By default the simulator sends MIDI **straight to a hardware destination named `Melodee FM-1`**. It creates no virtual port, and nothing needs patching in Audio MIDI Setup. The bottom line of the window shows where it is going, for example `MIDI out: -> Melodee FM-1`.
-- **Find the device by name:** set `PHASE_BOX_MIDI_DEST` to any part of the name, e.g. `PHASE_BOX_MIDI_DEST="Other Synth" ./build-native/phase_box_native_sim`. Capitals, spaces and dashes don't matter (`melodee fm 1` matches). If nothing matches, **nothing is sent** (it never falls back to another device) and the window lists the destinations it did see.
+By default the simulator sends MIDI **straight to a hardware destination named `FRASIL FM-1`**. It creates no virtual port, and nothing needs patching in Audio MIDI Setup. The bottom line of the window shows where it is going, for example `MIDI out: -> FRASIL FM-1`.
+- **Find the device by name:** set `PHASE_BOX_MIDI_DEST` to any part of the name, e.g. `PHASE_BOX_MIDI_DEST="Other Synth" ./build-native/phase_box_native_sim`. Capitals, spaces and dashes don't matter (`frasil fm 1` matches). If nothing matches, **nothing is sent** (it never falls back to another device) and the window lists the destinations it did see.
 - **Plug in later or re-plug:** it looks again every second, notices when the device is unplugged, and reconnects (resending every value) when it is back.
 - **What does CoreMIDI see?** `./build-native/phase_box_native_sim --list-midi` prints the destinations and sources and exits. It works even when the Audio MIDI Setup window is blank.
 - **To feed a DAW instead** (Ableton / Logic / Reaper), start it with `PHASE_BOX_MIDI_DEST=virtual`. That creates the virtual source `Phase Box Virtual Out`, which you enable in the DAW's MIDI preferences; routing it to hardware needs a patchbay such as [MIDI Patchbay](https://notahat.com/midi_patchbay/).
-- **To control the FM-1's parameters:** each destination has its own channel and CC. On `P8` pick a destination, then set `P4` (channel) and `P5` (CC). Changes are saved automatically.
+- **To control the FRASIL FM-1's parameters:** each destination has its own channel and CC. On `P8` pick a destination, then set `P4` (channel) and `P5` (CC). Changes are saved automatically.
 - **If macOS MIDI is stuck** (blank MIDI Studio, red outlines, missing devices): `bash scripts/reset_coremidi.sh --dry-run` shows what it would do, then run it without `--dry-run`. It moves the Audio MIDI Setup preferences and saved layouts into a backup folder (nothing is deleted) and restarts the MIDI services.
