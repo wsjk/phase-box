@@ -27,12 +27,13 @@ int rising_crossings(const std::vector<int>& v, int threshold) {
 PhaseBoxState fresh() { PhaseBoxState s; s.adc_expression = 1.0f; return s; } // 120 BPM: one master cycle = 0.5 s
 } // namespace
 
-TEST(SimPages, NavigationWrapsAcrossAllElevenPages) {
-    EXPECT_EQ(PAGE_COUNT, 11);
-    EXPECT_EQ(next_page(10, +1), 0);
-    EXPECT_EQ(next_page(0, -1), 10);
+TEST(SimPages, NavigationWrapsAcrossAllTwelvePages) {
+    EXPECT_EQ(PAGE_COUNT, 12);
+    EXPECT_EQ(next_page(11, +1), 0);
+    EXPECT_EQ(next_page(0, -1), 11);
     EXPECT_TRUE(std::string(page_name(9)) == "P10: MAC DIV");
     EXPECT_TRUE(std::string(page_name(10)) == "P11: TUR MIX");
+    EXPECT_TRUE(std::string(page_name(11)) == "P12: MAC OFF");
 }
 
 TEST(SimPages, FootersShowTheEditedValues) {
@@ -45,8 +46,11 @@ TEST(SimPages, FootersShowTheEditedValues) {
     EXPECT_TRUE(footer(s, P_MAC_WGT, d) == "VAL: D1 WGT 1.00");
     EXPECT_TRUE(footer(s, P_MAC_DIV, d) == "VAL: D1 x1");
     EXPECT_TRUE(footer(s, P_TUR_MIX, d) == "VAL: MIX 0.00");
+    EXPECT_TRUE(footer(s, P_MAC_OFF, d) == "VAL: D1 OFF 0.00");
     adjust(s, d, P_MAC_DIV, +1);
     EXPECT_TRUE(footer(s, P_MAC_DIV, d) == "VAL: D1 x1.5");
+    adjust(s, d, P_MAC_OFF, +1);
+    EXPECT_TRUE(footer(s, P_MAC_OFF, d) == "VAL: D1 OFF 0.05");
 }
 
 TEST(SimPages, PhaseOffsetWrapsInsteadOfGrowingForever) {
@@ -385,4 +389,32 @@ TEST(SimFreeze, ResetDoesNotTouchFreezeOrBypass) {
     s.reset_parameters();
     EXPECT_TRUE(s.frozen);
     EXPECT_TRUE(s.bypassed);
+}
+
+// ---- P12: per-destination offset ----
+TEST(SimPages, OffsetChangesBaselineAndReachesMidi) {
+    PhaseBoxState s = fresh(); int d = 0;
+    // Set weight to 0 so value is entirely dictated by offset
+    s.macros.destinations[0].scale = 0.0f;
+    for (int i = 0; i < 10; ++i) adjust(s, d, P_MAC_OFF, +1); // 10 steps of +0.05 = offset +0.50
+    EXPECT_FLOAT_EQ(s.macros.destinations[0].offset, 0.50f);
+    auto out = s.evaluateMacros(0.01f);
+    EXPECT_NEAR(out[0].value, 63, 1); // 0.50 * 127 = ~63
+}
+
+TEST(SimPages, OffsetClampsBetweenMinusOneAndPlusOne) {
+    PhaseBoxState s; int d = 0;
+    for (int i = 0; i < 50; ++i) adjust(s, d, P_MAC_OFF, +1);
+    EXPECT_FLOAT_EQ(s.macros.destinations[0].offset, 1.0f);
+    for (int i = 0; i < 100; ++i) adjust(s, d, P_MAC_OFF, -1);
+    EXPECT_FLOAT_EQ(s.macros.destinations[0].offset, -1.0f);
+}
+
+TEST(SimPages, OffsetEditsActiveDestinationIndependently) {
+    PhaseBoxState s; int d = 0;
+    adjust(s, d, P_MAC_SEL, +1); // select Dest 2 (default offset 0.5f)
+    EXPECT_EQ(d, 1);
+    for (int i = 0; i < 2; ++i) adjust(s, d, P_MAC_OFF, +1); // 0.50 + 2*0.05 = 0.60
+    EXPECT_FLOAT_EQ(s.macros.destinations[1].offset, 0.60f);
+    EXPECT_FLOAT_EQ(s.macros.destinations[0].offset, 0.0f); // Dest 1 unchanged
 }

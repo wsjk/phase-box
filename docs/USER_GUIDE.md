@@ -1,6 +1,6 @@
 # Phase Box: User Guide & Operating Manual
 
-> **Implementation status (read first).** The desktop simulator and the RP2040 firmware now share the same engine, pages P1–P11, tap tempo, Turing machine and preset logic, and the same unit tests cover both. Current limitations:
+> **Implementation status (read first).** The desktop simulator and the RP2040 firmware now share the same engine, pages P1–P12, tap tempo, Turing machine and preset logic, and the same unit tests cover both. Current limitations:
 > the firmware has been written and unit-tested on a computer but has **not yet been built or run on a real board** (first build: `firmware/` with the Pico SDK; check the OLED height and encoder direction, see the Developer Guide);
 > the firmware has no flash-backed preset storage yet, so on the device the screen shows `NO STORAGE` when you hold to save and nothing survives power-off (the simulator saves real files);
 > the firmware does not follow external MIDI clock, and preset slots 2–8 are simulator-only for now (`[` / `]`);
@@ -39,7 +39,7 @@ Phase Box features an intuitive physical control surface designed for live audio
 | :--- | :--- | :--- |
 | **OLED Display** | GP4 (SDA), GP5 (SCL) | 128×32 / 128×64 graphical display showing active page, live waveform visualizer, and parameter values. |
 | **Rotary Encoder** | GP2 (A), GP3 (B) | Turn to change the value on the current page (clockwise = up). On the BPM page one click is 1 BPM, and spinning the knob quickly steps 5 BPM per click. |
-| **Encoder Pushbutton** | GP6 (Switch) | **Short Press:** Go to the next page (P1 … P11, then back to P1).<br/>**Long Press (1 Second):** Trigger non-volatile preset save. |
+| **Encoder Pushbutton** | GP6 (Switch) | **Short Press:** Go to the next page (P1 … P12, then back to P1).<br/>**Long Press (1 Second):** Trigger non-volatile preset save. |
 | **Footswitch 1 (Tap / Reset)** | GP10 | **Tap Tempo:** Tap 2 or more times to synchronize BPM (40–300 BPM).<br/>**Phase Reset:** Instantly restarts all LFO accumulators to $0^\circ$ on each tap. |
 | **Footswitch 2 (Mutate)** | GP11 | Step/seed the probabilistic Turing Machine shift register to inject controlled algorithmic variation. |
 | **Expression Pedal Jack** | GP26 (ADC0) | Accepts standard TRS expression pedals (0–3.3V analog voltage) for bipolar scaling of all macro destinations. |
@@ -75,6 +75,7 @@ The OLED interface is structured into pages. Click the encoder to move to the ne
 | **`P9: MAC WGT`** | Macro Scale / Weight | `-2.00` to `+2.00` | Bipolar scaling factor of the destination chosen on `P8`. Negative values invert its waveform. |
 | **`P10: MAC DIV`**| Polyrhythmic Multiplier | `0.125x` to `8.0x` | Clock multiplier of the destination chosen on `P8`, stepped through `0.125, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 8`. One master cycle is one beat, so `0.5x` takes two beats per cycle and `4x` makes four cycles per beat. The OLED widens or narrows its window so you can see the ratio. |
 | **`P11: TUR MIX`**| Turing Mix | `0.00` – `1.00` | How much of the Turing sequence replaces each destination's waveform (`0.00` = waveform only, `1.00` = Turing sequence only). The sequence steps once per master cycle. |
+| **`P12: MAC OFF`**| Macro Offset / Floor | `-1.00` to `+1.00` | Baseline DC offset of the destination chosen on `P8`. Shifts the minimum and maximum CC output window up or down. |
 
 ---
 
@@ -90,13 +91,14 @@ Unlike conventional LFOs that send synchronized lock-step modulation, Phase Box 
 - When combined, the resulting modulation streams weave into complex polyrhythms that take several beats to line up again, so patterns and timbres keep evolving.
 
 #### Multi-Destination Workflow (P8 Selector)
-Pages **P4 (CHAN)**, **P5 (CC)**, **P9 (MAC WGT)**, and **P10 (MAC DIV)** modify whichever destination is selected on **P8 (MAC SEL)**:
+Pages **P4 (CHAN)**, **P5 (CC)**, **P9 (MAC WGT)**, **P10 (MAC DIV)**, and **P12 (MAC OFF)** modify whichever destination is selected on **P8 (MAC SEL)**:
 1. Navigate to **`P8: MAC SEL`** and turn the knob to select `Dest 1`, `Dest 2`, or `Dest 3`.
 2. Move to **`P4: CHAN`** to set that destination's MIDI Channel (1–16).
 3. Move to **`P5: CC`** to assign its MIDI CC number (0–127).
-4. Move to **`P9: MAC WGT`** to set its depth (`-2.00` to `+2.00`; negative values invert the wave).
+4. Move to **`P9: MAC WGT`** to set its amplitude depth (`-2.00` to `+2.00`; negative values invert the wave).
 5. Move to **`P10: MAC DIV`** to set its clock ratio (`0.125x` to `8.0x`).
-6. Select the next destination on `P8` and repeat. All 3 streams output concurrently every cycle and are automatically saved to the active preset slot.
+6. Move to **`P12: MAC OFF`** to shift its baseline floor/ceiling (`-1.00` to `+1.00`) to position the CC window.
+7. Select the next destination on `P8` and repeat. All 3 streams output concurrently every cycle and are automatically saved to the active preset slot.
 
 ### 3.2 Bipolar Expression Pedal Control
 Plugging a standard expression pedal into the 1/4" input allows hands-free master morphing:
@@ -142,8 +144,8 @@ cmake --build build-native -j4
 
 | Key | Action |
 | :--- | :--- |
-| **`[E]`** | Next Page (Forward through P1–P11) |
-| **`[Q]`** | Previous Page (Backward through P1–P11) |
+| **`[E]`** | Next Page (Forward through P1–P12) |
+| **`[Q]`** | Previous Page (Backward through P1–P12) |
 | **`[W]` or `[Up Arrow]`** | Increase Current Parameter Value |
 | **`[S]` or `[Down Arrow]`** | Decrease Current Parameter Value |
 | **`[T]` or `[Space]`** | Tap Tempo |

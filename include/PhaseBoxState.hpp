@@ -8,7 +8,7 @@ struct PhaseBoxState {
     PhaseOscillator osc;
     TuringMachine turing;
     MacroEngine macros;
-    int active_page = 0;        // 0: Wave, 1: BPM, 2: Phase, 3: Chan, 4: CC, 5: PM, 6: Mute, 7: Mac sel, 8: Mac wgt, 9: Mac div, 10: Turing mix
+    int active_page = 0;        // 0: Wave, 1: BPM, 2: Phase, 3: Chan, 4: CC, 5: PM, 6: Mute, 7: Mac sel, 8: Mac wgt, 9: Mac div, 10: Turing mix, 11: Mac off
     bool button_state = false;
     float adc_expression = 0.0f;
     // Legacy global values. P4/P5 now edit the *active destination's* channel/CC instead;

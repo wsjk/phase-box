@@ -74,8 +74,8 @@ TEST(Device, ClickGoesToTheNextPageAndWrapsAndSavesNothing) {
     r.run_ms(50);
     r.press(&DeviceInputs::enc_sw, 100);
     EXPECT_EQ(r.state.active_page, 1);
-    for (int i = 0; i < 10; ++i) r.press(&DeviceInputs::enc_sw, 100);
-    EXPECT_EQ(r.state.active_page, 0);                          // 11 pages, back to the start
+    for (int i = 0; i < 11; ++i) r.press(&DeviceInputs::enc_sw, 100);
+    EXPECT_EQ(r.state.active_page, 0);                          // 12 pages, back to the start
     EXPECT_EQ(r.mem.writes, 0);
 }
 
