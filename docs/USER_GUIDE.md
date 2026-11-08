@@ -81,13 +81,22 @@ The OLED interface is structured into pages. Click the encoder to move to the ne
 ## 3. Core Features & Operation
 
 ### 3.1 Polyrhythmic Macro Engine
-Unlike conventional LFOs that send synchronized lock-step modulation, Phase Box provides a **Polyrhythmic Macro Engine**:
+Unlike conventional LFOs that send synchronized lock-step modulation, Phase Box provides a **Polyrhythmic Macro Engine** that streams **3 independent MIDI CC messages simultaneously**:
 - Each destination outputs its own independent CC number and Channel.
 - Each destination possesses its own **Clock Multiplier** (`MAC DIV`). For example:
-  - **Destination 1:** Multiplier `1.0x` on CC 16 (Channels the main beat).
-  - **Destination 2:** Multiplier `1.5x` (dotted feel) on CC 74 (Filter Cutoff).
+  - **Destination 1:** Multiplier `1.0x` on CC 16, Channel 1 (Channels the main beat).
+  - **Destination 2:** Multiplier `1.5x` (dotted feel) on CC 74, Channel 1 (Filter Cutoff).
   - **Destination 3:** Multiplier `0.5x` (a slow two-beat swell) on CC 10, Channel 2 (Pan / Color).
 - When combined, the resulting modulation streams weave into complex polyrhythms that take several beats to line up again, so patterns and timbres keep evolving.
+
+#### Multi-Destination Workflow (P8 Selector)
+Pages **P4 (CHAN)**, **P5 (CC)**, **P9 (MAC WGT)**, and **P10 (MAC DIV)** modify whichever destination is selected on **P8 (MAC SEL)**:
+1. Navigate to **`P8: MAC SEL`** and turn the knob to select `Dest 1`, `Dest 2`, or `Dest 3`.
+2. Move to **`P4: CHAN`** to set that destination's MIDI Channel (1–16).
+3. Move to **`P5: CC`** to assign its MIDI CC number (0–127).
+4. Move to **`P9: MAC WGT`** to set its depth (`-2.00` to `+2.00`; negative values invert the wave).
+5. Move to **`P10: MAC DIV`** to set its clock ratio (`0.125x` to `8.0x`).
+6. Select the next destination on `P8` and repeat. All 3 streams output concurrently every cycle and are automatically saved to the active preset slot.
 
 ### 3.2 Bipolar Expression Pedal Control
 Plugging a standard expression pedal into the 1/4" input allows hands-free master morphing:
