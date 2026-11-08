@@ -8,7 +8,7 @@ description: >-
 
 # Phase Box Development Skill
 
-This skill provides fast, token-efficient procedures for building, testing, and developing the **Phase Box** firmware.
+This skill provides fast, token-efficient procedures for building, testing, and developing the **Phase Box** firmware and simulator.
 
 ---
 
@@ -30,28 +30,38 @@ export PICO_SDK_PATH="/Users/ww/tools/pico-sdk"
 
 ### 1. Host Unit Testing (GoogleTest on macOS)
 
-Use for fast simulation, math verification, and regression testing without hardware.
+Fastest simulation, math verification, and regression testing without hardware (400ms runtime):
 
 ```bash
 # Helper script:
 ./.agents/skills/phase-box/scripts/build_host.sh
 
 # Or manual execution:
-cmake -S tests -B build-host -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-cmake --build build-host -j4
-./build-host/run_host_tests
+cmake -S tests -B build-test -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+cmake --build build-test -j4
+./build-test/run_host_tests
 ```
 
-### 2. RP2040 Target Firmware Build (`.uf2`)
+### 2. Desktop Native Simulator (Raylib + CoreMIDI)
 
-Use for cross-compiling the deployable firmware for Raspberry Pi Pico.
+```bash
+cmake -B build-native -S .
+cmake --build build-native -j4
+./build-native/phase_box_native_sim
+```
+*Routes MIDI directly to `"FRASIL FM-1"` on macOS (override with `$PHASE_BOX_MIDI_DEST`).*
+
+### 3. RP2040 Target Firmware Build (`.uf2`)
+
+Cross-compiling the deployable firmware for Raspberry Pi Pico:
 
 ```bash
 # Helper script:
 ./.agents/skills/phase-box/scripts/build_pico.sh
 
 # Or manual execution:
-export PICO_SDK_PATH=/path/to/pico-sdk   # and make arm-none-eabi-gcc available on PATH
+export PATH="/Applications/CMake.app/Contents/bin:/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin:$PATH"
+export PICO_SDK_PATH="/Users/ww/tools/pico-sdk"
 cmake -S firmware -B firmware/build -DPICO_SDK_PATH="$PICO_SDK_PATH"
 cmake --build firmware/build -j4
 ```
@@ -65,47 +75,42 @@ Output artifacts in `firmware/build/`:
 
 See detailed notes in [Architecture Reference](./references/architecture.md).
 
-1. **Hardware Decoupling (HAL)**:
-   * Keep all algorithm math (`PhaseLFO`, `ClockManager`, `MidiRouter`, `ModulationEngine`) independent of hardware headers.
-   * Provide mock HAL implementations (`MockHalMidi`, `MockHalGpio`) for host tests.
-2. **Core 0 Workload (Real-Time 1000 Hz)**:
-   * Runs via hardware repeating timer interrupt (`add_repeating_timer_us(-1000, ...)`).
-   * Executes `Core0Task::step(uint32_t current_time_us)` at 1000 Hz.
-   * Handles UART MIDI output (31250 baud on GP0), external clock tick polling (GP1), and footswitches.
-   * **Never** perform blocking I/O, display drawing, or flash erase/writes on Core 0.
-3. **Core 1 Workload (UI & Persistence)**:
+> [!IMPORTANT]
+> **Production Stack vs. Legacy Prototypes:**
+> The active codebase is centered on `include/DeviceApp.hpp`, `include/PhaseBoxState.hpp`, `include/MacroEngine.hpp`, `include/SimControls.hpp`, and `include/PresetSession.hpp`.
+> **Do not edit `include/core/` or `src/main.cpp`** — they are unbuilt legacy prototypes.
+
+1. **Hardware Decoupling (`DeviceApp`)**:
+   * All physical inputs (quadrature encoder, buttons, footswitches, ADC0 expression), state advancing, parameter editing (pages P1–P11), preset auto-save, and OLED rendering are encapsulated in `DeviceApp.hpp`.
+   * This allows complete zero-hardware verification in `tests/test_device_app.cpp` using mock inputs.
+2. **Core 0 Workload (Real-Time Control & MIDI Engine)**:
+   * Polls inputs: Quadrature encoder (GP2, GP3), debounced switches (GP6, GP10, GP11), ADC0 expression pedal (GP26 at 200 Hz).
+   * Runs TinyUSB tasks (`tud_task()`).
+   * Steps modulation engine at 60 Hz (`DeviceApp::FRAME_US` = 16,667 µs).
+   * Filters MIDI CC messages via `MidiChangeFilter` (sends on value change + periodic 1s refresh to respect the 3,125 B/s DIN MIDI bandwidth).
+   * Fans out CCs to UART0 (31,250 baud on GP0) and TinyUSB USB-MIDI.
+   * Renders OLED frame at 30 FPS into lock-free `SeqlockBuffer<FRAME_BYTES>`.
+   * **Never perform blocking I/O, display I2C drawing, or flash erase/writes on Core 0.**
+3. **Core 1 Workload (Async Display & Screen Saver)**:
    * Launched from Core 0 via `multicore_launch_core1(core1_entry)`.
-   * Throttled OLED rendering (30 FPS max over I2C at 1 MHz Fast-Mode Plus).
-   * Rotary encoder debouncing and menu navigation state machine.
-   * Preset serialization and SPI NOR flash writes on explicit user request ("Hold-to-Save").
-
----
-
-## Completed Roadmap & Implementation Status
-
-All roadmap phases from the Handover Document and ADR are fully implemented and verified:
-
-* **Step 1 (Fix Assertions)**: Vector index access in tests resolved.
-* **Step 2 (Host Test Harness)**: GoogleTest suite with 146 unit tests (20 original + 126 regression tests: `test_regressions`, `test_hal_interfaces`, `test_sim_controls`, `test_preset_session`, `test_device_blocks`, `test_device_app`, which drives the whole device with fake pins, and `test_midi_router`).
-* **Step 3 (Core 0 Real-Time Engine)**: 1000 Hz hardware repeating timer interrupt, 4-channel LFO calculation, UART MIDI at 31250 baud on GP0, 24 PPQN external MIDI clock fallback, and tap tempo / phase reset.
-* **Step 4 (Core 1 UI & Drivers)**: SSD1306 128x32 OLED driver at 1 MHz I2C, 4-state rotary menu machine (Telemetry, Param Edit, Hold-to-Save, Tap Sync), and SPI NOR flash preset storage.
-* **Macro Engine & ADC**: GP26 analog expression pedal reading, bipolar weighted matrix scaling across channels, and nested LFO cross-modulation.
+   * Exclusively owns `i2c0` SSD1306 (GP4 SDA, GP5 SCL) at 400 kHz / 1 MHz.
+   * Reads completed frames from `SeqlockBuffer` and copies them to the display without stalling Core 0.
+   * Runs `ScreenSaver` contrast dimming (dims to 0x01 after 30s of inactivity; wakes on user activity).
 
 ---
 
 ## Extension & Maintenance Guide
 
 ### Adding New Waveforms
-1. Add new enum value to `Waveform` in `include/core/phase_lfo.hpp`.
-2. Implement phase mapping in `PhaseLFO::update()`.
-3. Add name string to `UIController::waveform_to_string()`.
-4. Add ASCII graphic pattern to `UIController::render_telemetry_view()`.
+1. Add new enum value to `WaveShape` in `include/PhaseOscillator.hpp`.
+2. Implement normalized waveform math in `PhaseOscillator::update()` in `src/PhaseOscillator.cpp`.
+3. Add name string to `wave_names` in `include/SimControls.hpp`.
 
 ### Adjusting Hardware Pinout
-Update default pins in `PicoHalMidi`, `PicoHalGpio`, `PicoHalAdc`, or `PicoHalDisplay`:
+Update constants in `include/hal/pinout.hpp` (single source of truth):
 - MIDI TX: GP0, RX: GP1
 - Encoder: GP2 (A), GP3 (B), GP6 (Switch)
 - Footswitches: GP10 (Tap/Reset), GP11 (Mutate)
 - OLED I2C0: GP4 (SDA), GP5 (SCL)
 - Expression ADC0: GP26
-
+- Detent count & direction: `ENC_TRANSITIONS_PER_DETENT`, `ENC_REVERSED`
