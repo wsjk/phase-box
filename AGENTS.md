@@ -7,7 +7,7 @@ This file is automatically loaded into agent context. It provides immediate grou
 ## ⚡ Ground Rules & Architecture
 
 1. **Active Stack vs. Unbuilt Prototype:**
-   - **ACTIVE PRODUCTION CODE:** Centered on `DeviceApp.hpp`, `PhaseBoxState.hpp`, `MacroEngine.hpp`, `SimControls.hpp`, and `PresetSession.hpp`. This is what is compiled by RP2040 firmware (`firmware/`), native simulator (`src/native_sim_main.cpp`), and 146 host unit tests (`tests/`).
+   - **ACTIVE PRODUCTION CODE:** Centered on `DeviceApp.hpp`, `PhaseBoxState.hpp`, `MacroEngine.hpp`, `SimControls.hpp`, and `PresetSession.hpp`. This is what is compiled by RP2040 firmware (`firmware/`), native simulator (`src/native_sim_main.cpp`), and 149 host unit tests (`tests/`).
    - **DO NOT TOUCH `include/core/` OR `src/main.cpp`:** These are unbuilt legacy prototypes. Do NOT grep them, import them, or edit them when extending features or fixing bugs.
 2. **Dual-Core Workload Split (RP2040 Firmware):**
    - **Core 0 (Real-Time Control & MIDI Engine):** Quadrature encoder decoding, switch debouncing, ADC0 expression sampling, 60 Hz engine advance, `MidiChangeFilter` bandwidth enforcement, dual MIDI streaming (UART0 31,250 baud on GP0 + TinyUSB), and 30 FPS OLED frame rendering into lock-free `SeqlockBuffer`.
@@ -25,7 +25,7 @@ This file is automatically loaded into agent context. It provides immediate grou
 | Task / Domain | Target Files | Key Symbols |
 | :--- | :--- | :--- |
 | **Board Pinout & Detents** | `include/hal/pinout.hpp` | `ENC_A`, `ENC_B`, `ENC_SW`, `FS_TAP`, `FS_MUTATE`, `EXPR_PEDAL` |
-| **Menu Pages P1–P11** | `include/SimControls.hpp` | `simui::adjust()`, `simui::page_name()`, `simui::footer()`, `preview_curve()` |
+| **Menu Pages P1–P12** | `include/SimControls.hpp` | `simui::adjust()`, `simui::page_name()`, `simui::footer()`, `preview_curve()` |
 | **Synthesizer State** | `include/PhaseBoxState.hpp` | `PhaseBoxState`, `advance()`, `evaluateMacros()`, `frozen`, `bypassed` |
 | **Oscillator & Waveforms**| `include/PhaseOscillator.hpp`<br/>`src/PhaseOscillator.cpp` | `WaveShape` (`SINE`, `SAW`, `SQUARE`, `TRIANGLE`), `update()` |
 | **Macro Engine & Divisions**| `include/MacroEngine.hpp` | `MacroDestination` (`scale`, `offset`, `clock_mult`), `evaluate()` |

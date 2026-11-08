@@ -1,7 +1,7 @@
 # Phase Box: Developer Architecture & C++ Engineering Guide
 
 > **Implementation status (read first).** The primary production architecture is unified around **`DeviceApp`** (`include/DeviceApp.hpp`), which encapsulates all hardware controls, parameter editing, modulation math, preset sessions, and rendering:
-> - **Shared Engine:** The RP2040 firmware target (`firmware/src/firmware_main.cpp`), the native desktop simulator (`src/native_sim_main.cpp`), and the GoogleTest host suite (`tests/test_device_app.cpp` driving the full device against mock inputs) all execute this identical engine and menu logic (pages P1–P11).
+> - **Shared Engine:** The RP2040 firmware target (`firmware/src/firmware_main.cpp`), the native desktop simulator (`src/native_sim_main.cpp`), and the GoogleTest host suite (`tests/test_device_app.cpp` driving the full device against mock inputs) all execute this identical engine and menu logic (pages P1–P12).
 > - **Dual-Core Workload:** In the RP2040 firmware, Core 0 handles real-time input polling, 60 Hz modulation engine stepping, MIDI change filtering and dispatch over both UART (GP0 at 31,250 baud) and USB (TinyUSB), and 30 FPS OLED frame rendering. Core 1 strictly owns the `i2c0` bus to copy rendered frames to the SSD1306 panel via a lock-free `SeqlockBuffer` and manage `ScreenSaver` contrast dimming, preventing slow I2C transfers from ever stalling real-time MIDI generation.
 > - **Preset Sessions:** `PresetSession` (`include/PresetSession.hpp`) manages auto-save (2 s of idle), hold-to-save (1 s encoder hold), slots 1–8, and OLED status messaging. On macOS/Linux/Windows, the simulator and tests use `FilePresetStorage` (`preset_*.bin`). On RP2040, `NoStorage` is currently linked until LittleFS flash storage with multicore lockout is added (`NO STORAGE` message on hold-to-save).
 > - **Early Layered Prototype:** `src/main.cpp` and `include/core/` are earlier experimental prototypes that are not part of any CMake build target. All active development, firmware flashing, desktop simulation, and tests build from `include/`, `src/`, `firmware/`, and `tests/`.
@@ -119,7 +119,7 @@ phase-box/
 │   ├── PhaseOscillator.hpp      # Poly-shape phase oscillator (Sine, Saw, Square, Tri) with PM
 │   ├── MacroEngine.hpp          # Polyrhythmic macro matrix & per-destination clock multipliers
 │   ├── TuringMachine.hpp        # 16-bit generative LFSR shift register with mutation
-│   ├── SimControls.hpp          # Pages P1-P11: edit rules, footers, waveform curve generation
+│   ├── SimControls.hpp          # Pages P1-P12: edit rules, footers, waveform curve generation
 │   ├── OledRenderer.hpp         # SSD1306 screen layout for 128x32 and 128x64 OLED panels
 │   ├── PresetSession.hpp        # Auto-save (2s idle), hold-to-save (1s), slots 1-8, status strings
 │   ├── ScreenSaver.hpp          # OLED burn-in protection: 30s timeout contrast dimming
@@ -153,11 +153,11 @@ phase-box/
 │   ├── include/PresetManager.hpp# Preset serialization, binary CRC validation, and storage interface
 │   ├── include/tusb_config.h    # TinyUSB stack configuration
 │   └── include/usb_descriptors.h# USB descriptor headers
-├── tests/                       # GoogleTest Host Unit Tests (146 tests across 37 suites)
+├── tests/                       # GoogleTest Host Unit Tests (149 tests across 37 suites)
 │   ├── CMakeLists.txt           # Standalone test runner build
 │   ├── test_device_app.cpp      # Full DeviceApp test driven by mock pins & inputs
 │   ├── test_device_blocks.cpp   # Isolated tests for Quadrature, Debounce, TapTempo, ScreenSaver
-│   ├── test_sim_controls.cpp    # Parameter adjust rules, footers, waveform curves for P1-P11
+│   ├── test_sim_controls.cpp    # Parameter adjust rules, footers, waveform curves for P1-P12
 │   ├── test_preset_session.cpp  # Auto-save, hold-to-save, dirty marks, slots 1-8
 │   ├── test_midi_router.cpp     # Destination matching, auto-reconnect, CoreMIDI routing
 │   ├── test_macro_engine.cpp    # Polyrhythmic multipliers & bipolar destination scaling

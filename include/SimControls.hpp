@@ -11,14 +11,14 @@
 namespace simui {
 
 enum Page {
-    P_WAVE = 0, P_BPM, P_PHASE, P_CHAN, P_CC, P_PM, P_MUTE, P_MAC_SEL, P_MAC_WGT, P_MAC_DIV, P_TUR_MIX,
+    P_WAVE = 0, P_BPM, P_PHASE, P_CHAN, P_CC, P_PM, P_MUTE, P_MAC_SEL, P_MAC_WGT, P_MAC_DIV, P_TUR_MIX, P_MAC_OFF,
     PAGE_COUNT
 };
 
 inline const char* page_name(int page) {
     static const char* names[PAGE_COUNT] = {
         "P1: WAVE", "P2: BPM", "P3: PHASE", "P4: CHAN", "P5: CC", "P6: PM",
-        "P7: MUTE", "P8: MAC SEL", "P9: MAC WGT", "P10: MAC DIV", "P11: TUR MIX"};
+        "P7: MUTE", "P8: MAC SEL", "P9: MAC WGT", "P10: MAC DIV", "P11: TUR MIX", "P12: MAC OFF"};
     return names[((page % PAGE_COUNT) + PAGE_COUNT) % PAGE_COUNT];
 }
 
@@ -27,7 +27,7 @@ inline int next_page(int page, int dir) { return ((page + dir) % PAGE_COUNT + PA
 inline float round2(float v) { return std::round(v * 100.0f) / 100.0f; }
 
 /// Apply one encoder step (dir = +1 / -1) to whatever the given page edits.
-/// Pages 4, 5, 9, 10 edit the destination chosen on page 8 (`active_dest`).
+/// Pages 4, 5, 9, 10, 12 edit the destination chosen on page 8 (`active_dest`).
 /// `fast` = the encoder is being spun quickly: BPM then moves 5 per step instead of 1.
 inline void adjust(PhaseBoxState& s, int& active_dest, int page, int dir, bool fast = true) {
     const int d = dir > 0 ? 1 : -1;
@@ -52,6 +52,7 @@ inline void adjust(PhaseBoxState& s, int& active_dest, int page, int dir, bool f
         case P_MAC_WGT: dest.scale = std::clamp(round2(dest.scale + 0.1f * d), -2.0f, 2.0f); break;
         case P_MAC_DIV: dest.clock_mult = MacroEngine::step_clock_mult(dest.clock_mult, d); break;
         case P_TUR_MIX: s.turing_mix = std::clamp(round2(s.turing_mix + 0.05f * d), 0.0f, 1.0f); break;
+        case P_MAC_OFF: dest.offset = std::clamp(round2(dest.offset + 0.05f * d), -1.0f, 1.0f); break;
         default: break;
     }
 }
@@ -74,6 +75,7 @@ inline std::string footer(const PhaseBoxState& s, int page, int active_dest) {
         case P_MAC_WGT: std::snprintf(buf, sizeof buf, "VAL: D%d WGT %.2f", idx + 1, dest.scale); break;
         case P_MAC_DIV: std::snprintf(buf, sizeof buf, "VAL: D%d x%g", idx + 1, dest.clock_mult); break;
         case P_TUR_MIX: std::snprintf(buf, sizeof buf, "VAL: MIX %.2f", s.turing_mix); break;
+        case P_MAC_OFF: std::snprintf(buf, sizeof buf, "VAL: D%d OFF %.2f", idx + 1, dest.offset); break;
         default:        buf[0] = 0; break;
     }
     return buf;

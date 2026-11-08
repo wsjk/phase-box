@@ -26,7 +26,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 - **Generative Turing LFSR:** 16-bit shift register with probabilistic mutation stepped per master cycle or manual footswitch tap.
 - **Dual MIDI Output:** Hardware serial MIDI (31,250 baud on GP0) and plug-and-play USB-MIDI class compliance (TinyUSB).
 - **Desktop Simulator:** Native Raylib desktop visualizer connecting directly to macOS `CoreMIDI` (defaulting to `FRASIL FM-1` or virtual DAW port) with live waveform visualization, preset management, freeze, and bypass modes.
-- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 146 unit tests across 37 test suites).
+- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 149 unit tests across 37 test suites).
 
 ---
 
@@ -60,7 +60,7 @@ cmake -S tests -B build-test -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 cmake --build build-test -j4
 ./build-test/run_host_tests
 ```
-*(Runs all 146 tests covering DSP math, hardware abstraction layers, DeviceApp simulation, preset session persistence, and CoreMIDI routing).*
+*(Runs all 149 tests covering DSP math, hardware abstraction layers, DeviceApp simulation, preset session persistence, and CoreMIDI routing).*
 
 ### 3. Compile RP2040 Target Firmware (`.uf2`)
 ```bash

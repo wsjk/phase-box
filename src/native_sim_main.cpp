@@ -216,7 +216,7 @@ int main(int argc, char** argv) {
         DrawText("[W/S or Up/Down] Adjust value   (P4 CHAN, P5 CC, P9 WGT, P10 DIV edit the active dest; pick it on P8)", 55, 573, 12, LIGHTGRAY);
         DrawText("[T/Space] Tap  |  [1-3] Pedal 0/.5/1  |  [M] Step Turing  |  [R] Reset ALL  |  [U] Undo reset", 55, 593, 12, LIGHTGRAY);
         DrawText(TextFormat("[Enter] hold = SAVE  |  [ ] = slot %d (auto-saves 2 s after an edit)  |  [F] FREEZE  |  [B] BYPASS (all 0)", session.slot()), 55, 613, 12, LIGHTGRAY);
-        DrawText("P1 WAVE  P2 BPM  P3 PHASE  P4 CHAN  P5 CC  P6 PM  P7 MUTE  P8 DEST  P9 WGT  P10 DIV  P11 MIX", 55, 633, 10, GRAY);
+        DrawText("P1 WAVE  P2 BPM  P3 PHASE  P4 CHAN  P5 CC  P6 PM  P7 MUTE  P8 DEST  P9 WGT  P10 DIV  P11 MIX  P12 OFF", 25, 633, 10, GRAY);
 #ifdef __APPLE__
         {
             std::string midi_line = "MIDI out: " + midi.status();
