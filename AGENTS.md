@@ -39,6 +39,20 @@ This file is automatically loaded into agent context. It provides immediate grou
 
 ---
 
+## 🧠 Agent Skills & Task Runbooks (`.agents/skills/`)
+
+Specialized procedures, architectural constraints, and step-by-step recipes are maintained in `.agents/skills/`. Agents (Claude, Gemini, Antigravity) should read the relevant `SKILL.md` when assigned tasks in these domains:
+
+| Domain / Task | Skill Directory | Key Topics |
+| :--- | :--- | :--- |
+| **Master Runbook** | [`.agents/skills/phase-box/SKILL.md`](.agents/skills/phase-box/SKILL.md) | Overall workflow, build commands, dual-core rules |
+| **RP2040 Firmware** | [`.agents/skills/phase-box-firmware/SKILL.md`](.agents/skills/phase-box-firmware/SKILL.md) | Pico SDK, cross-compiler, pinout, Core 1 OLED & screensaver |
+| **Simulator & Raylib UI** | [`.agents/skills/phase-box-sim/SKILL.md`](.agents/skills/phase-box-sim/SKILL.md) | Stompbox geometry, knob/treadle drag, CoreMIDI, Raylib guide |
+| **DSP, Waveforms & Menu** | [`.agents/skills/phase-box-dsp-macro/SKILL.md`](.agents/skills/phase-box-dsp-macro/SKILL.md) | 60 Hz pipeline, waveform recipes, Turing LFSR, P1–P12 |
+| **Presets & Storage** | [`.agents/skills/phase-box-presets/SKILL.md`](.agents/skills/phase-box-presets/SKILL.md) | PBX1 v3 binary format, CRC-32, 2s auto-save, hold-to-save |
+
+---
+
 ## 🛠️ Verification & Fast Build Commands
 
 * **Run all 170 Host Tests (430ms):**
