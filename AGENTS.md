@@ -51,6 +51,7 @@ Specialized procedures, architectural constraints, and step-by-step recipes are 
 | **DSP, Waveforms & Menu** | [`.agents/skills/phase-box-dsp-macro/SKILL.md`](.agents/skills/phase-box-dsp-macro/SKILL.md) | 60 Hz pipeline, waveform recipes, Turing LFSR, P1–P12 |
 | **Presets & Storage** | [`.agents/skills/phase-box-presets/SKILL.md`](.agents/skills/phase-box-presets/SKILL.md) | PBX1 v3 binary format, CRC-32, 2s auto-save, hold-to-save |
 | **Generic Hardware Sim** | [`.agents/skills/raylib-hardware-sim/SKILL.md`](.agents/skills/raylib-hardware-sim/SKILL.md) | Reusable template for building stompbox/hardware UIs with Raylib |
+| **Skill Creator** | [`.agents/skills/skill-creator/SKILL.md`](.agents/skills/skill-creator/SKILL.md) | Scaffolding and runbook for designing token-efficient agent skills |
 
 ---
 
