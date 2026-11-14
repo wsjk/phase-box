@@ -352,7 +352,7 @@ All algorithmic DSP math, macro scaling, device state machines, and MIDI routing
    cmake --build build-test -j4
    ./build-test/run_host_tests
    ```
-   *(All 146 unit tests across 37 suites will run and report status).*
+   *(All 170 unit tests across 40 suites will run and report status).*
 
 ---
 
@@ -361,18 +361,17 @@ All algorithmic DSP math, macro scaling, device state machines, and MIDI routing
 When you are ready to flash your code onto physical hardware:
 
 ```bash
-# 1. Ensure toolchain environment variables are set:
-export PATH="/Applications/CMake.app/Contents/bin:/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin:$PATH"
-export PICO_SDK_PATH="/Users/ww/tools/pico-sdk"
+# Option A: Automatic build script (detects toolchain and Pico SDK paths):
+./.agents/skills/phase-box/scripts/build_pico.sh
 
-# 2. Configure and build target firmware:
+# Option B: Manual build commands:
+export PATH="/Applications/CMake.app/Contents/bin:/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin:$PATH"
+export PICO_SDK_PATH="/Users/ww/src/pico-sdk"
+
 cmake -S firmware -B firmware/build -DPICO_SDK_PATH="$PICO_SDK_PATH"
 cmake --build firmware/build -j4
 
-# Helper build script:
-# ./.agents/skills/phase-box/scripts/build_pico.sh
-
-# 3. Output files:
+# Output files:
 #    - firmware/build/phase_box_firmware.uf2 (Drag-and-drop to Pico in BOOTSEL mode)
 #    - firmware/build/phase_box_firmware.elf (For GDB/Picoprobe debugging)
 ```
@@ -381,20 +380,19 @@ cmake --build firmware/build -j4
 
 ## First power-up on a real board (checklist)
 
-The firmware's behaviour is unit-tested on a computer (`DeviceApp` runs against fake pins), and `firmware_main.cpp`
-has been syntax-checked, but **it has not been built against the real Pico SDK or run on hardware yet.** Expect to
-check these on the first build:
+The firmware's behaviour is thoroughly unit-tested on a computer (`DeviceApp` runs against mock pins and displays),
+and `firmware/build/phase_box_firmware.uf2` compiles cleanly against the official Pico SDK. When flashing to a physical
+breadboard or PCB for the first time, verify these hardware integration points:
 
-1. **Build:** `export PICO_SDK_PATH=...`, then `./.agents/skills/phase-box/scripts/build_pico.sh`. Fix any SDK-version
-   differences in `firmware_main.cpp` (it uses `time_us_64`, `to_ms_since_boot`, `multicore_launch_core1`, TinyUSB `tud_midi_*`).
-2. **USB:** the board should enumerate as a USB MIDI device and send CC messages (check with a MIDI monitor).
-3. **Screen blank?** Confirm the panel height (`cmake -DPHASEBOX_OLED_HEIGHT=64 ..` for 64 rows), the I2C address
+1. **Build & Flash:** Run `./.agents/skills/phase-box/scripts/build_pico.sh` and drag `phase_box_firmware.uf2` onto the Pico in BOOTSEL mode.
+2. **USB:** The board should enumerate as a class-compliant USB MIDI device and stream CC messages (verify in macOS Audio MIDI Setup or a MIDI monitor app).
+3. **Screen blank?** Confirm the panel height (`cmake -DPHASEBOX_OLED_HEIGHT=64 ..` for 64 rows, 32 rows default), the I2C address
    (`0x3C`, some modules use `0x3D`), and SDA/SCL on GP4/GP5. The bus runs at 400 kHz; only raise it
    (`-DPHASEBOX_OLED_I2C_HZ=1000000`) if your module is happy at that speed.
 4. **Picture mirrored or upside down?** In `PicoHalDisplay::init()` change segment remap `0xA1` to `0xA0` and scan direction `0xC8` to `0xC0`.
-5. **Encoder:** wrong direction -> `ENC_REVERSED` in `include/hal/pinout.hpp`; one click = two steps, or two clicks per step ->
+5. **Encoder:** Wrong direction -> toggle `ENC_REVERSED` in `include/hal/pinout.hpp`; one click = two steps, or two clicks per step ->
    change `ENC_TRANSITIONS_PER_DETENT` (4 or 2). All controls are wired switch-to-ground (pull-ups are enabled in firmware).
 6. **Footswitches and encoder switch** are debounced for 20 ms in software; no extra hardware is needed.
-7. **DIN/TRS MIDI:** the UART pin only drives the signal; the standard current-loop resistors are on your hardware.
-8. **Not included yet:** preset storage in flash (`NoStorage` is used, so hold-to-save shows `NO STORAGE`), external MIDI clock sync,
-   and preset slots 2-8 on the device.
+7. **DIN/TRS MIDI:** The UART0 pin (GP0) drives the signal; verify standard 220-ohm current-loop resistors are wired on your jack.
+8. **Current limitations:** Preset storage in flash currently links `NoStorage` (hold-to-save confirms `NO STORAGE`), external MIDI clock sync,
+   and preset slots 2-8 are simulator-only. Core 1 screensaver dimming (30s inactivity -> 0x01 contrast) is fully operational.

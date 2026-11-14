@@ -12,6 +12,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 
 * 📖 **[User Guide & Operating Manual](docs/USER_GUIDE.md)**: Hardware controls, menu pages, tap tempo, footswitches, expression pedal, screensaver, and desktop simulator guide.
 * 🛠️ **[Developer & Architecture Guide](docs/DEVELOPER_GUIDE.md)**: Dual-core architecture, signal flow diagrams, **"C++ Crash Course for Python Programmers"**, and step-by-step contribution recipes.
+* 🎨 **[Raylib Desktop UI Guide](docs/RAYLIB_UI_GUIDE.md)**: Beginner-friendly guide to modifying the desktop simulator GUI, colors, controls, and Raylib primitives.
 * 📐 **[Context Handover Blueprint](docs/phase_box_context_handover_blueprint.md)**: Complete implementation state and execution phases.
 
 ---
@@ -25,8 +26,8 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 - **Bipolar Expression Scaling:** Full expression pedal integration with EMA smoothing and deadband clamping.
 - **Generative Turing LFSR:** 16-bit shift register with probabilistic mutation stepped per master cycle or manual footswitch tap.
 - **Dual MIDI Output:** Hardware serial MIDI (31,250 baud on GP0) and plug-and-play USB-MIDI class compliance (TinyUSB).
-- **Desktop Simulator:** Native Raylib desktop visualizer connecting directly to macOS `CoreMIDI` (defaulting to `FRASIL FM-1` or virtual DAW port) with live waveform visualization, preset management, freeze, and bypass modes.
-- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 149 unit tests across 37 test suites).
+- **Desktop Simulator:** Native Raylib desktop visualizer featuring a realistic stompbox enclosure UI, interactive mouse knob dragging (circular or vertical) and wheel detents, drag-to-set expression pedal treadle, clickable footswitches, live waveform visualizer, preset management, freeze, and bypass modes. Routes directly to macOS `CoreMIDI` (defaulting to `FRASIL FM-1` or virtual DAW port).
+- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 170 unit tests across 40 test suites).
 
 ---
 
@@ -59,13 +60,18 @@ cmake --build build-native -j4
 cmake -S tests -B build-test -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 cmake --build build-test -j4
 ./build-test/run_host_tests
+# Or helper script: ./.agents/skills/phase-box/scripts/build_host.sh
 ```
-*(Runs all 149 tests covering DSP math, hardware abstraction layers, DeviceApp simulation, preset session persistence, and CoreMIDI routing).*
+*(Runs all 170 tests covering DSP math, hardware abstraction layers, DeviceApp simulation, preset session persistence, SimLayout geometry, and CoreMIDI routing).*
 
 ### 3. Compile RP2040 Target Firmware (`.uf2`)
 ```bash
+# Helper script (auto-detects SDK and toolchain):
+./.agents/skills/phase-box/scripts/build_pico.sh
+
+# Or manual execution:
 export PATH="/Applications/CMake.app/Contents/bin:/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin:$PATH"
-export PICO_SDK_PATH="/Users/ww/tools/pico-sdk"
+export PICO_SDK_PATH="/Users/ww/src/pico-sdk"
 cmake -S firmware -B firmware/build -DPICO_SDK_PATH="$PICO_SDK_PATH"
 cmake --build firmware/build -j4
 ```

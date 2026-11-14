@@ -7,7 +7,7 @@ This file is automatically loaded into agent context. It provides immediate grou
 ## ⚡ Ground Rules & Architecture
 
 1. **Active Stack vs. Unbuilt Prototype:**
-   - **ACTIVE PRODUCTION CODE:** Centered on `DeviceApp.hpp`, `PhaseBoxState.hpp`, `MacroEngine.hpp`, `SimControls.hpp`, and `PresetSession.hpp`. This is what is compiled by RP2040 firmware (`firmware/`), native simulator (`src/native_sim_main.cpp`), and 149 host unit tests (`tests/`).
+   - **ACTIVE PRODUCTION CODE:** Centered on `DeviceApp.hpp`, `PhaseBoxState.hpp`, `MacroEngine.hpp`, `SimControls.hpp`, and `PresetSession.hpp`. This is what is compiled by RP2040 firmware (`firmware/`), native simulator (`src/native_sim_main.cpp`), and 170 host unit tests across 40 test suites (`tests/`).
    - **DO NOT TOUCH `include/core/` OR `src/main.cpp`:** These are unbuilt legacy prototypes. Do NOT grep them, import them, or edit them when extending features or fixing bugs.
 2. **Dual-Core Workload Split (RP2040 Firmware):**
    - **Core 0 (Real-Time Control & MIDI Engine):** Quadrature encoder decoding, switch debouncing, ADC0 expression sampling, 60 Hz engine advance, `MidiChangeFilter` bandwidth enforcement, dual MIDI streaming (UART0 31,250 baud on GP0 + TinyUSB), and 30 FPS OLED frame rendering into lock-free `SeqlockBuffer`.
@@ -32,16 +32,19 @@ This file is automatically loaded into agent context. It provides immediate grou
 | **Turing Shift Register** | `include/TuringMachine.hpp` | `TuringMachine`, `mutation_prob`, `step()` |
 | **Presets & Auto-Save** | `include/PresetSession.hpp`<br/>`firmware/include/PresetManager.hpp` | `PresetSession`, `update()` (2s auto-save), hold-to-save (1s), slots 1–8 |
 | **Hardware Driver Integration**| `include/DeviceApp.hpp`<br/>`firmware/src/firmware_main.cpp` | `DeviceApp`, `poll_inputs()`, `frame()`, `DualMidiOut` |
-| **Simulator Main** | `src/native_sim_main.cpp` | Raylib loop, CoreMIDI dispatch, keyboard shortcuts |
-| **Unit Test Suite** | `tests/test_device_app.cpp`<br/>`tests/test_sim_controls.cpp`, etc. | 146 GoogleTest cases across 37 suites |
+| **Simulator Main & Stompbox UI** | `src/native_sim_main.cpp`<br/>`include/SimLayout.hpp`<br/>`include/SimPot.hpp` | Raylib loop, stompbox enclosure geometry, `KnobDrag`, treadle pedal drag |
+| **CoreMIDI Router & Fallback** | `include/MidiRouter.hpp`<br/>`include/CoreMidiBackend.hpp` | `midi_route::Router`, `DEFAULT_DESTINATION` (`"FRASIL FM-1"`), auto-reconnect |
+| **OLED Renderer & Font** | `include/OledRenderer.hpp`<br/>`include/SimFont.hpp` | `OledRenderer::render()`, 128×32 / 128×64 modes, custom bitmap font |
+| **Unit Test Suite** | `tests/test_device_app.cpp`<br/>`tests/test_sim_layout.cpp`, etc. | 170 GoogleTest cases across 40 suites |
 
 ---
 
 ## 🛠️ Verification & Fast Build Commands
 
-* **Run all 146 Host Tests (400ms):**
+* **Run all 170 Host Tests (430ms):**
   ```bash
   cmake -S tests -B build-test -DCMAKE_POLICY_VERSION_MINIMUM=3.5 && cmake --build build-test -j4 && ./build-test/run_host_tests
+  # Or helper script: ./.agents/skills/phase-box/scripts/build_host.sh
   ```
 * **Build Desktop Simulator:**
   ```bash
@@ -49,7 +52,11 @@ This file is automatically loaded into agent context. It provides immediate grou
   ```
 * **Build RP2040 Firmware (.uf2):**
   ```bash
+  # Helper script (auto-detects SDK and toolchain paths):
+  ./.agents/skills/phase-box/scripts/build_pico.sh
+
+  # Or manual execution:
   export PATH="/Applications/CMake.app/Contents/bin:/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin:$PATH"
-  export PICO_SDK_PATH="/Users/ww/tools/pico-sdk"
+  export PICO_SDK_PATH="/Users/ww/src/pico-sdk"
   cmake -S firmware -B firmware/build -DPICO_SDK_PATH="$PICO_SDK_PATH" && cmake --build firmware/build -j4
   ```

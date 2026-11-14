@@ -30,19 +30,24 @@ Phase Box is an RP2040-powered polyrhythmic modulation engine and MIDI synthesiz
   - `FS_MUTATE` (GP11): Turing shift register mutation trigger / cycle.
 - **Rotary Encoder**: Incremental encoder on GP2/GP3 with integrated push button on GP6 (`ENC_SW`).
   - Turn: parameter adjust (velocity-accelerated: 1 BPM normal, 5 BPM fast spin).
-  - Click: advance page P1..P11.
+  - Click: advance page P1..P12.
   - Hold 1s: manual preset save (`SAVED`).
 - **OLED Display**: SSD1306 over I2C0 (GP4 SDA, GP5 SCL) at 400 kHz / 1 MHz.
 
 ## Core Modules & Organization
 - `include/DeviceApp.hpp`: Main hardware-injected coordinator (encoder, switches, pedal, MIDI, OLED buffer).
 - `include/PhaseBoxState.hpp`: Top-level state bundle, freeze/bypass modes, oscillator, Turing, macros.
-- `include/SimControls.hpp`: Menu pages P1–P11 adjust logic, footers, live curve generation.
+- `include/SimControls.hpp`: Menu pages P1–P12 adjust logic, footers, live curve generation.
 - `include/MacroEngine.hpp`: Polyrhythmic clock division (0.125x to 8x) and bipolar scaling.
 - `include/PhaseOscillator.hpp`: Sine LUT, Saw, Square, Triangle, and phase modulation.
 - `include/TuringMachine.hpp`: 16-bit shift register with probabilistic mutation.
 - `include/PresetSession.hpp`: Auto-save dirty state timer (2s idle), hold-to-save (1s), slots 1–8.
 - `include/OledRenderer.hpp`: Dual-panel (128x32 and 128x64) graphical display layout.
+- `include/SimLayout.hpp`: Desktop stompbox enclosure geometry, mouse hit testing, knob drag, and treadle pedal mapping.
+- `include/SimPot.hpp`: Rotary knob angle and detent mapping between display and parameter models.
+- `include/SimFont.hpp`: Scalable bitmap font for desktop simulator UI rendering.
+- `include/MidiRouter.hpp`: Hardware destination routing, 1s auto-scan, reconnection epoch tracking, virtual DAW port fallback.
+- `include/CoreMidiBackend.hpp`: macOS CoreMIDI endpoint discovery and transmission wrapper.
 - `include/ScreenSaver.hpp`: Contrast register dimming for burn-in protection.
 - `include/MidiChangeFilter.hpp`: Bandwidth-compliant CC transmission filter.
 - `include/hal/pinout.hpp`: Single source of truth for board wiring and encoder transitions.
