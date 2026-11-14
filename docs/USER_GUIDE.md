@@ -1,7 +1,7 @@
 # Phase Box: User Guide & Operating Manual
 
 > **Implementation status (read first).** The desktop simulator and the RP2040 firmware now share the same engine, pages P1–P12, tap tempo, Turing machine and preset logic, and the same unit tests cover both. Current limitations:
-> the firmware has been written and unit-tested on a computer but has **not yet been built or run on a real board** (first build: `firmware/` with the Pico SDK; check the OLED height and encoder direction, see the Developer Guide);
+> the firmware has been written, unit-tested on a computer, and successfully cross-compiled into target `.uf2` binaries (`firmware/build/phase_box_firmware.uf2`), but has **not yet been flashed to physical silicon** (check the OLED height and encoder direction upon first hardware flash, see the Developer Guide);
 > the firmware has no flash-backed preset storage yet, so on the device the screen shows `NO STORAGE` when you hold to save and nothing survives power-off (the simulator saves real files);
 > the firmware does not follow external MIDI clock, and preset slots 2–8 are simulator-only for now (`[` / `]`);
 > the simulator sends MIDI only on macOS (CoreMIDI), straight to the destination named by `PHASE_BOX_MIDI_DEST` (default `FRASIL FM-1`); on Linux/Windows it runs without MIDI output.
@@ -160,6 +160,22 @@ cmake --build build-native -j4
 | **`[2]`** | Simulate Expression Pedal at 50% (Midway) |
 | **`[3]`** | Simulate Expression Pedal at 100% (Toe down) |
 | **`[ESC]`** | Exit Simulator |
+
+### Mouse & Interactive Stompbox Controls
+The simulator UI displays a scaled physical stompbox enclosure with fully interactive mouse and trackpad controls:
+* **Rotary Knob:**
+  * **Click:** Advance to the next menu page (equivalent to pressing `ENC_SW`).
+  * **Hold (1 Second):** Fills the hold-to-save ring around the knob and commits preset save (`SAVED`).
+  * **Scroll Wheel / Trackpad:** Scrolling over the knob steps parameter values in whole detents.
+  * **Circular Drag:** Click on the knob circumference and drag circularly around the knob center (clockwise = value up, counter-clockwise = value down).
+  * **Vertical Drag:** Click near the center of the knob and drag straight up/down to adjust values.
+* **Expression Pedal Treadle:**
+  * Click or drag anywhere along the vertical expression pedal treadle on the right. Top = toe down ($1.0$), bottom = heel down ($0.0$).
+* **Footswitches:**
+  * Click the **TAP** footswitch to tap tempo and reset master LFO phase.
+  * Click the **MUTATE** footswitch to step the Turing shift register immediately.
+* **On-Screen Shortcut Buttons:**
+  * Click the buttons alongside the enclosure (**Freeze**, **Bypass**, **Reset Defaults**, **Undo Reset**, **Slot -**, **Slot +**) for one-click action triggering.
 
 ### Freeze and bypass
 - **`[F]` Freeze:** stops the LFOs and holds every destination at the value it has right now, even if you move the pedal or edit settings. Press `[F]` again and it carries on from the same point (no jump). The Turing machine pauses too. The screen shows `FROZEN`.

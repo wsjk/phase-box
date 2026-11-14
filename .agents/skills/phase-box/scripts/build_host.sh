@@ -6,13 +6,20 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
 cd "${REPO_ROOT}"
 
-CMAKE="${CMAKE:-cmake}"
+if ! command -v cmake >/dev/null 2>&1; then
+    if [ -x "/Applications/CMake.app/Contents/bin/cmake" ]; then
+        export PATH="/Applications/CMake.app/Contents/bin:$PATH"
+    fi
+fi
 
-echo "==> Configuring host tests (GoogleTest is fetched on first configure; needs network)..."
-"${CMAKE}" -S tests -B build-host -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+CMAKE="${CMAKE:-cmake}"
+BUILD_DIR="${BUILD_DIR:-build-test}"
+
+echo "==> Configuring host tests (${BUILD_DIR})..."
+"${CMAKE}" -S tests -B "${BUILD_DIR}" -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 echo "==> Building host tests..."
-"${CMAKE}" --build build-host -j4
+"${CMAKE}" --build "${BUILD_DIR}" -j4
 
 echo "==> Running host unit tests..."
-./build-host/run_host_tests
+"./${BUILD_DIR}/run_host_tests"

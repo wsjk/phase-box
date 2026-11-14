@@ -1,0 +1,50 @@
+#pragma once
+#include <algorithm>
+#include <cmath>
+
+namespace simlayout {
+
+struct Rect { float x = 0, y = 0, w = 0, h = 0; };
+struct Circle { float x = 0, y = 0, r = 0; };
+
+inline bool hit_rect(const Rect& r, float px, float py, float margin = 0) {
+    return px >= r.x - margin && px <= r.x + r.w + margin &&
+           py >= r.y - margin && py <= r.y + r.h + margin;
+}
+
+inline bool hit_circle(const Circle& c, float px, float py, float margin = 0) {
+    const float dx = px - c.x, dy = py - c.y, rr = c.r + margin;
+    return dx * dx + dy * dy <= rr * rr;
+}
+
+inline bool overlap(const Rect& a, const Rect& b) {
+    return a.x < b.x + b.w && b.x < a.x + a.w &&
+           a.y < b.y + b.h && b.y < a.y + a.h;
+}
+
+inline bool overlap(const Circle& a, const Circle& b) {
+    const float dx = a.x - b.x, dy = a.y - b.y, rr = a.r + b.r;
+    return dx * dx + dy * dy < rr * rr;
+}
+
+struct Layout {
+    int window_w = 800, window_h = 600;
+    Rect enclosure;
+    Rect oled_bezel, oled_screen;
+    Circle knob;
+    Circle footswitch;
+    Circle led;
+
+    static Layout make() {
+        Layout L;
+        L.enclosure = {50, 40, 700, 500};
+        L.oled_screen = {100, 120, 256, 128}; // 128x64 @ 2x
+        L.oled_bezel = {L.oled_screen.x - 10, L.oled_screen.y - 10, L.oled_screen.w + 20, L.oled_screen.h + 20};
+        L.knob = {550, 184, 60};
+        L.footswitch = {400, 440, 45};
+        L.led = {400, 360, 8};
+        return L;
+    }
+};
+
+} // namespace simlayout
