@@ -1,0 +1,62 @@
+#pragma once
+#include <cmath>
+#include "Layout.hpp"
+
+namespace simlayout {
+
+class KnobDrag {
+public:
+    static constexpr float DEGREES_PER_CLICK = 15.0f;
+    static constexpr float PIXELS_PER_CLICK = 6.0f;
+    static constexpr float DRAG_START_PX = 4.0f;
+    static constexpr float CENTER_ZONE_PX = 22.0f;
+
+    void begin(const Circle& knob, float x, float y) {
+        cx_ = knob.x; cy_ = knob.y;
+        start_x_ = x; start_y_ = y;
+        last_x_ = x;  last_y_ = y;
+        dragging_ = false;
+        const float dx = x - cx_, dy = y - cy_;
+        mode_vertical_ = (dx * dx + dy * dy <= CENTER_ZONE_PX * CENTER_ZONE_PX);
+        last_angle_deg_ = std::atan2(dy, dx) * 180.0f / 3.14159265f;
+        acc_degrees_ = 0.0f;
+    }
+
+    /// Moves the knob and returns how many clicks (detents) were stepped.
+    int move(float x, float y) {
+        if (!dragging_) {
+            const float dx = x - start_x_, dy = y - start_y_;
+            if (dx * dx + dy * dy < DRAG_START_PX * DRAG_START_PX) return 0;
+            dragging_ = true;
+        }
+        float delta_deg = 0.0f;
+        if (mode_vertical_) {
+            delta_deg = (last_y_ - y) * (DEGREES_PER_CLICK / PIXELS_PER_CLICK);
+        } else {
+            const float angle = std::atan2(y - cy_, x - cx_) * 180.0f / 3.14159265f;
+            float diff = angle - last_angle_deg_;
+            while (diff > 180.0f) diff -= 360.0f;
+            while (diff < -180.0f) diff += 360.0f;
+            delta_deg = diff;
+            last_angle_deg_ = angle;
+        }
+        last_x_ = x; last_y_ = y;
+        acc_degrees_ += delta_deg;
+        const int clicks = static_cast<int>(acc_degrees_ / DEGREES_PER_CLICK);
+        acc_degrees_ -= clicks * DEGREES_PER_CLICK;
+        return clicks;
+    }
+
+    bool is_dragging() const { return dragging_; }
+
+private:
+    float cx_ = 0, cy_ = 0;
+    float start_x_ = 0, start_y_ = 0;
+    float last_x_ = 0, last_y_ = 0;
+    float last_angle_deg_ = 0;
+    float acc_degrees_ = 0;
+    bool dragging_ = false;
+    bool mode_vertical_ = false;
+};
+
+} // namespace simlayout

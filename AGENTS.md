@@ -50,6 +50,7 @@ Specialized procedures, architectural constraints, and step-by-step recipes are 
 | **Simulator & Raylib UI** | [`.agents/skills/phase-box-sim/SKILL.md`](.agents/skills/phase-box-sim/SKILL.md) | Stompbox geometry, knob/treadle drag, CoreMIDI, Raylib guide |
 | **DSP, Waveforms & Menu** | [`.agents/skills/phase-box-dsp-macro/SKILL.md`](.agents/skills/phase-box-dsp-macro/SKILL.md) | 60 Hz pipeline, waveform recipes, Turing LFSR, P1–P12 |
 | **Presets & Storage** | [`.agents/skills/phase-box-presets/SKILL.md`](.agents/skills/phase-box-presets/SKILL.md) | PBX1 v3 binary format, CRC-32, 2s auto-save, hold-to-save |
+| **Generic Hardware Sim** | [`.agents/skills/raylib-hardware-sim/SKILL.md`](.agents/skills/raylib-hardware-sim/SKILL.md) | Reusable template for building stompbox/hardware UIs with Raylib |
 
 ---
 

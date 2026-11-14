@@ -1,0 +1,92 @@
+#include "raylib.h"
+#include "Layout.hpp"
+#include "KnobDrag.hpp"
+#include <algorithm>
+#include <string>
+
+using simlayout::Layout;
+using simlayout::KnobDrag;
+
+// Palette
+const Color kWindowBg  = {18, 19, 24, 255};
+const Color kBody      = {46, 50, 61, 255};
+const Color kBodyEdge  = {20, 22, 27, 255};
+const Color kMetal     = {170, 173, 182, 255};
+const Color kAmber     = {255, 176, 46, 255};
+const Color kOledBg    = {5, 9, 15, 255};
+const Color kOledOn    = {172, 232, 255, 255};
+
+int main() {
+    const Layout L = Layout::make();
+    InitWindow(L.window_w, L.window_h, "Hardware Simulator Prototype");
+    SetTargetFPS(60);
+
+    float knob_val = 50.0f; // 0 to 100
+    bool footswitch_down = false;
+    bool led_on = false;
+    KnobDrag knob_drag;
+    bool knob_pressed = false;
+
+    while (!WindowShouldClose()) {
+        Vector2 m = GetMousePosition();
+
+        // 1. Inputs
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            if (simlayout::hit_circle(L.knob, m.x, m.y)) {
+                knob_pressed = true;
+                knob_drag.begin(L.knob, m.x, m.y);
+            }
+            if (simlayout::hit_circle(L.footswitch, m.x, m.y)) {
+                footswitch_down = true;
+                led_on = !led_on; // toggle effect
+            }
+        }
+        if (!IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            knob_pressed = false;
+            footswitch_down = false;
+        }
+
+        if (knob_pressed) {
+            int clicks = knob_drag.move(m.x, m.y);
+            knob_val = std::clamp(knob_val + clicks, 0.0f, 100.0f);
+        }
+
+        // 2. Drawing
+        BeginDrawing();
+        ClearBackground(kWindowBg);
+
+        // Enclosure
+        DrawRectangleRounded(Rectangle{L.enclosure.x-4, L.enclosure.y-4, L.enclosure.w+8, L.enclosure.h+8}, 0.05f, 16, kBodyEdge);
+        DrawRectangleRounded(Rectangle{L.enclosure.x, L.enclosure.y, L.enclosure.w, L.enclosure.h}, 0.045f, 16, kBody);
+
+        // Screen Bezel & Display
+        DrawRectangleRounded(Rectangle{L.oled_bezel.x, L.oled_bezel.y, L.oled_bezel.w, L.oled_bezel.h}, 0.05f, 8, BLACK);
+        DrawRectangle(L.oled_screen.x, L.oled_screen.y, L.oled_screen.w, L.oled_screen.h, kOledBg);
+        DrawText(TextFormat("PARAM: %.0f%%", knob_val), L.oled_screen.x + 20, L.oled_screen.y + 30, 20, kOledOn);
+        DrawText(led_on ? "STATUS: ACTIVE" : "STATUS: BYPASS", L.oled_screen.x + 20, L.oled_screen.y + 70, 16, led_on ? GREEN : GRAY);
+
+        // Knob
+        DrawCircle(L.knob.x, L.knob.y, L.knob.r, Color{30, 32, 38, 255});
+        DrawCircle(L.knob.x, L.knob.y, L.knob.r - 4, kMetal);
+        float angle = -135.0f + (knob_val / 100.0f) * 270.0f;
+        float rad = angle * 3.14159265f / 180.0f;
+        DrawLineEx(Vector2{L.knob.x, L.knob.y},
+                   Vector2{L.knob.x + std::sin(rad) * (L.knob.r - 8), L.knob.y - std::cos(rad) * (L.knob.r - 8)},
+                   4.0f, BLACK);
+
+        // LED
+        DrawCircle(L.led.x, L.led.y, L.led.r + (led_on ? 4 : 0), led_on ? Fade(kAmber, 0.4f) : BLACK);
+        DrawCircle(L.led.x, L.led.y, L.led.r, led_on ? kAmber : Color{40, 30, 10, 255});
+
+        // Footswitch
+        float cap = footswitch_down ? L.footswitch.r - 14 : L.footswitch.r - 10;
+        DrawCircle(L.footswitch.x, L.footswitch.y, L.footswitch.r, BLACK);
+        DrawCircle(L.footswitch.x, L.footswitch.y, L.footswitch.r - 4, kMetal);
+        DrawCircle(L.footswitch.x, L.footswitch.y + (footswitch_down ? 2 : 0), cap, LIGHTGRAY);
+
+        EndDrawing();
+    }
+
+    CloseWindow();
+    return 0;
+}
