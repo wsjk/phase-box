@@ -18,7 +18,7 @@ This skill provides comprehensive instructions for developing, testing, and runn
 ### 1. Build Desktop Simulator
 
 ```bash
-cmake -B build-native -S .
+cmake -B build-native -S . -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 cmake --build build-native -j4
 ```
 
@@ -59,6 +59,8 @@ The simulator provides a 1:1 graphical model of the physical hardware enclosure.
 * **Footswitches:**
   * Click **TAP** footswitch to tap tempo and reset LFO phase.
   * Click **MUTATE** footswitch to trigger immediate Turing shift register step.
+  * Click **BYPASS** footswitch (right) to toggle bypass; its LED is lit while bypassed.
+  * Click (without dragging) the expression encoder to toggle freeze.
 * **Simulator Action Buttons:**
   * Click on-screen buttons: **Freeze**, **Bypass**, **Reset Defaults**, **Undo Reset**, **Slot -**, **Slot +**.
 

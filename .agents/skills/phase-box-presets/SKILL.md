@@ -76,5 +76,6 @@ When adding a parameter to `PhaseBoxState`:
 | Backend | Platform | Behavior |
 | :--- | :--- | :--- |
 | `FilePresetStorage` | Desktop / Tests | Reads/writes `preset_1.bin` through `preset_8.bin` in current directory (or `$PHASE_BOX_PRESET_DIR`). |
-| `NoStorage` | RP2040 Firmware | Active default on Pico until flash sector LittleFS backend is linked; shows `NO STORAGE` on hold-to-save. |
+| `FlashPresetStorage` | RP2040 Firmware | `include/FlashPresetStorage.hpp` over `PicoFlash`: last 64 KB of flash, 2 sectors per slot, append-only 512-byte records with sequence + CRC, power-loss safe. Host-tested with a RAM `FlashDevice` fake (`tests/test_flash_preset_storage.cpp`). |
+| `NoStorage` | Tests | Storage that refuses everything; hold-to-save shows `NO STORAGE`. |
 | `MemoryPresetStorage`| Unit Tests | In-memory RAM buffer for testing dirty-timers and slot swapping without filesystem I/O. |

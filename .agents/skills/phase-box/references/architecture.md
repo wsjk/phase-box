@@ -9,7 +9,7 @@ Phase Box is an RP2040-powered polyrhythmic modulation engine and MIDI synthesiz
 
 ## Dual-Core Workload Split
 - **Core 0 (Real-Time Control & MIDI Engine)**:
-  - Input polling: Quadrature encoder (GP2/GP3), debounced switches (GP6 encoder push, GP10 tap tempo, GP11 mutate), quadrature expression encoder (GP7/GP8).
+  - Input polling: Quadrature encoder (GP2/GP3), debounced switches (GP6 encoder push, GP9 freeze, GP10 tap tempo, GP11 mutate, GP12 bypass), quadrature expression encoder (GP7/GP8).
   - TinyUSB device servicing (`tud_task()`).
   - 60 Hz modulation frame step (`PhaseBoxState::advance()` & `evaluateMacros()`).
   - Polyrhythmic macro clock multipliers (0.125x to 8x across 3 destinations).
@@ -24,10 +24,12 @@ Phase Box is an RP2040-powered polyrhythmic modulation engine and MIDI synthesiz
 
 ## Hardware Interface
 - **MIDI UART**: `uart0`, TX on GP0, RX on GP1, 31,250 baud (8N1).
-- **Expression Encoder**: GP7 (A) / GP8 (B), 0.0f - 1.0f in 20 clicks (`PhaseBoxState::turn_expression`).
+- **Expression Encoder**: GP7 (A) / GP8 (B), 0.0f - 1.0f in 20 clicks (`PhaseBoxState::turn_expression`); push switch GP9 = freeze.
 - **Footswitches**:
   - `FS_TAP` (GP10): Tap tempo (40–300 BPM) & instant LFO phase reset.
   - `FS_MUTATE` (GP11): Turing shift register mutation trigger / cycle.
+  - `FS_TAP` + `FS_MUTATE` held 2 s: reset to defaults / undo reset.
+  - `FS_BYPASS` (GP12): bypass on / off.
 - **Rotary Encoder**: Incremental encoder on GP2/GP3 with integrated push button on GP6 (`ENC_SW`).
   - Turn: parameter adjust (velocity-accelerated: 1 BPM normal, 5 BPM fast spin).
   - Click: advance page P1..P12.

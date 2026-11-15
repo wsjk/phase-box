@@ -2,8 +2,8 @@
 
 > **Implementation status (read first).** The desktop simulator and the RP2040 firmware now share the same engine, pages P1–P12, tap tempo, Turing machine and preset logic, and the same unit tests cover both. Current limitations:
 > the firmware has been written, unit-tested on a computer, and successfully cross-compiled into target `.uf2` binaries (`firmware/build/phase_box_firmware.uf2`), but has **not yet been flashed to physical silicon** (check the OLED height and encoder direction upon first hardware flash, see the Developer Guide);
-> the firmware has no flash-backed preset storage yet, so on the device the screen shows `NO STORAGE` when you hold to save and nothing survives power-off (the simulator saves real files);
-> the firmware does not follow external MIDI clock, and preset slots 2–8 are simulator-only for now (`[` / `]`);
+> presets on the device are saved to the RP2040's own flash (the simulator saves files); this is unit-tested but, like the rest of the firmware, not yet tried on a real board;
+> the firmware does not follow external MIDI clock;
 > the simulator sends MIDI only on macOS (CoreMIDI), straight to the destination named by `PHASE_BOX_MIDI_DEST` (default `FRASIL FM-1`); on Linux/Windows it runs without MIDI output.
 
 
@@ -26,8 +26,9 @@ Phase Box features an intuitive physical control surface designed for live audio
        |  +--------------------+                               |
        |    128x32/64 OLED                                     |
        |                                                       |
-       |   [ TAP / RESET ]    ( O )      [ MUTATE / CYCLE ]    |
-       |    Footswitch 1    EXPRESSION      Footswitch 2       |
+       |  [TAP / RESET]  ( O )   [MUTATE / CYCLE]   [BYPASS]   |
+       |  Footswitch 1  EXPRESSION  Footswitch 2  Footswitch 3 |
+       |               (click: freeze)                         |
        |                                                       |
        |  [MIDI OUT DIN/TRS]                                   |
        +-------------------------------------------------------+
@@ -39,10 +40,13 @@ Phase Box features an intuitive physical control surface designed for live audio
 | :--- | :--- | :--- |
 | **OLED Display** | GP4 (SDA), GP5 (SCL) | 128×32 / 128×64 graphical display showing active page, live waveform visualizer, and parameter values. |
 | **Rotary Encoder** | GP2 (A), GP3 (B) | Turn to change the value on the current page (clockwise = up). On the BPM page one click is 1 BPM, and spinning the knob quickly steps 5 BPM per click. |
-| **Encoder Pushbutton** | GP6 (Switch) | **Short Press:** Go to the next page (P1 … P12, then back to P1).<br/>**Long Press (1 Second):** Trigger non-volatile preset save. |
+| **Encoder Pushbutton** | GP6 (Switch) | **Short Press:** Go to the next page (P1 … P12, then back to P1).<br/>**Long Press (1 Second):** Save the preset now (`SAVED`).<br/>**Press and turn:** Previous / next preset slot (1–8). The press then neither saves nor changes page. |
 | **Footswitch 1 (Tap / Reset)** | GP10 | **Tap Tempo:** Tap 2 or more times to synchronize BPM (40–300 BPM).<br/>**Phase Reset:** Instantly restarts all LFO accumulators to $0^\circ$ on each tap. |
 | **Footswitch 2 (Mutate)** | GP11 | Step/seed the probabilistic Turing Machine shift register to inject controlled algorithmic variation. |
-| **Expression Encoder** | GP7 (A), GP8 (B) | Turn to set the global modulation depth (0.00–1.00, 20 clicks end to end; clockwise = up). Scales every macro destination. No push switch. |
+| **Footswitches 1 + 2 together** | GP10 + GP11 | **Hold both for 2 seconds:** reset everything to defaults (`RESET`). Hold them again before changing anything else to undo it (`UNDONE`). See [Resetting everything to defaults](#resetting-everything-to-defaults). |
+| **Footswitch 3 (Bypass)** | GP12 | Bypass on / off: every destination sends 0 (`BYPASS`). See [Freeze and bypass](#freeze-and-bypass). |
+| **Expression Encoder** | GP7 (A), GP8 (B) | Turn to set the global modulation depth (0.00–1.00, 20 clicks end to end; clockwise = up). Scales every macro destination. |
+| **Expression Encoder Pushbutton** | GP9 (Switch) | Freeze on / off (`FROZEN`). See [Freeze and bypass](#freeze-and-bypass). |
 | **MIDI Output Port** | GP0 (TX), GP1 (RX) | Standard 31,250 baud serial MIDI (supports 5-pin DIN or Type-A/B 3.5mm TRS jack). |
 | **USB-C Port** | Native RP2040 USB | Class-compliant USB MIDI device (no drivers required for macOS, Windows, Linux, or iOS). |
 
@@ -118,15 +122,16 @@ The Turing machine takes one step per master cycle and its value is blended into
 ### 3.4 Screen Burn-In Protection (Screensaver)
 To protect OLED displays during long stage performances or static studio sessions:
 - If no encoder or footswitch activity is detected for **30 seconds**, the screen contrast automatically dims to its minimum visibility setting (`0x01`).
-- Turning either encoder, pressing the value encoder, or stepping on either footswitch wakes the display back to full brightness (`0xCF`) straight away.
+- Turning or pressing either encoder, or stepping on any footswitch, wakes the display back to full brightness (`0xCF`) straight away.
 
 ### 3.5 Auto-Save & Preset Persistence
 - **Automatic Background Save:** Whenever you tweak any saved parameter, an internal "dirty-state" timer begins. If no further adjustments are made for **2 seconds**, Phase Box silently writes your current configuration to the current preset slot. Anything that is not part of a preset (the page you are on, the expression value, the running phase) never triggers a save.
 - **Manual Save:** Press and hold the encoder button for 1 second until the screen confirms `SAVED` (a bar fills along the divider while you hold). A shorter press is an ordinary short press and saves nothing.
 - Settings automatically restore on power-up, silently.
 - **Unsaved marker:** the top-right of the screen shows the slot, for example `S1`, and `S1*` while there are changes that have not been written yet.
-- **Slots 1–8:** `[` and `]` in the simulator. Switching first saves any pending edits to the slot you are leaving, then loads the new one (`LOADED`). An empty slot (`EMPTY`) keeps your current settings and writes nothing until you change something or hold-save, so browsing empty slots never creates files.
+- **Slots 1–8:** press and turn the encoder on the unit, or `[` and `]` in the simulator. Switching first saves any pending edits to the slot you are leaving, then loads the new one (`LOADED`). An empty slot (`EMPTY`) keeps your current settings and writes nothing until you change something or hold-save, so browsing empty slots never creates files.
 - **If a save fails** the screen shows `SAVE FAILED`; auto-save then waits 10 seconds before retrying, and a manual hold-save always tries immediately. A damaged preset file shows `BAD PRESET` and is ignored.
+- **On the unit:** presets live in the last 64 KB of the RP2040's flash and survive power-off and firmware updates that fit below that area. Each save pauses the unit for about a millisecond (about 45 ms every eighth save of a slot), so MIDI and the screen can hiccup very briefly. If power is lost during a save, the previous save of that slot is kept.
 - **Simulator files:** presets are stored as `preset_1.bin` … `preset_8.bin` in the current directory, or in `$PHASE_BOX_PRESET_DIR` if set.
 
 ---
@@ -137,7 +142,7 @@ If you do not have physical hardware in front of you, Phase Box includes a real-
 
 ```bash
 # Build and launch the desktop simulator
-cmake -B build-native -S .
+cmake -B build-native -S . -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 cmake --build build-native -j4
 ./build-native/phase_box_native_sim
 ```
@@ -169,28 +174,30 @@ The simulator UI displays a scaled physical stompbox enclosure with fully intera
   * **Scroll Wheel / Trackpad:** Scrolling over the knob steps parameter values in whole detents.
   * **Circular Drag:** Click on the knob circumference and drag circularly around the knob center (clockwise = value up, counter-clockwise = value down).
   * **Vertical Drag:** Click near the center of the knob and drag straight up/down to adjust values.
-* **Expression Encoder** (between the footswitches):
+* **Expression Encoder** (between TAP and MUTATE):
   * Drag around it (or straight up/down from its centre), or scroll over it, to turn it in whole clicks. The amber ring and the number under it show the value (0.00–1.00).
+  * Click it (without dragging) to freeze / unfreeze, like pressing it on the unit.
 * **Footswitches:**
   * Click the **TAP** footswitch to tap tempo and reset master LFO phase.
   * Click the **MUTATE** footswitch to step the Turing shift register immediately.
+  * Click the **BYPASS** footswitch to switch bypass on / off; the LED above it is lit while bypassed.
 * **On-Screen Shortcut Buttons:**
-  * Click the buttons alongside the enclosure (**Freeze**, **Bypass**, **Reset Defaults**, **Undo Reset**, **Slot -**, **Slot +**) for one-click action triggering.
+  * Click the buttons alongside the enclosure (**Freeze**, **Bypass**, **Reset Defaults**, **Undo Reset**, **Slot -**, **Slot +**) for one-click action triggering. The simulator has no press-and-turn or two-footswitch hold (one mouse), so reset, undo and slots are buttons and keys here.
 
 ### Freeze and bypass
-- **`[F]` Freeze:** stops the LFOs and holds every destination at the value it has right now, even if you turn the expression encoder or edit settings. Press `[F]` again and it carries on from the same point (no jump). The Turing machine pauses too. The screen shows `FROZEN`.
-- **`[B]` Bypass:** every destination sends **0** and the display shows a flat line (`BYPASS`). The LFOs keep running silently, so when you switch back they are still in time. Bypass wins over freeze; if you were frozen, letting go of bypass returns to the held values.
+- **Freeze** (expression encoder click on the unit, `[F]` in the simulator): stops the LFOs and holds every destination at the value it has right now, even if you turn the expression encoder or edit settings. Press it again and it carries on from the same point (no jump). The Turing machine pauses too. The screen shows `FROZEN`.
+- **Bypass** (Footswitch 3 on the unit, `[B]` in the simulator): every destination sends **0** and the display shows a flat line (`BYPASS`). The LFOs keep running silently, so when you switch back they are still in time. Bypass wins over freeze; if you were frozen, letting go of bypass returns to the held values.
 - Bypass sends exactly 0 on each destination's CC, which is not always a "neutral" value for the synth parameter (for example, 0 on a filter cutoff is fully closed).
-- Neither is saved in presets, and `[R]` reset does not change them. The device has no spare control for them yet, so they are simulator-only for now.
+- Neither is saved in presets, and reset does not change them.
 
 ### Resetting everything to defaults
-Press **`[R]`** in the simulator to put every setting back to how the unit starts up:
+On the unit, **hold Footswitches 1 and 2 together for 2 seconds** (press them at the same time or one after the other). In the simulator, press **`[R]`**. Every setting goes back to how the unit starts up:
 - **Reset:** waveform, BPM (120), phase offset, phase modulation, Turing mutation and mix, the Turing pattern, and every destination's channel, CC, weight, offset and multiplier. All LFOs restart at 0 degrees.
 - **Not reset:** the expression encoder value (`[Z]`/`[X]`; a performance control, not a setting), the page you are on, which destination is selected, and which preset slot you are in.
 - **It is saved like any other edit.** About 2 seconds later auto-save writes the defaults into the current slot, which replaces what was saved there.
-- **Undo with `[U]`.** It brings back exactly what you had before the reset, even if auto-save has already stored the defaults. Undo works for one step and only until you change another setting (then it shows `EDITED SINCE RESET`, and your new change is kept). Switching preset slots also cancels it, and quitting forgets it.
-- Pressing `[R]` when everything is already at defaults shows `ALREADY DEFAULT` and changes nothing.
-- The device has no spare control for this yet, so it is simulator-only for now.
+- **Undo: hold Footswitches 1 + 2 for 2 seconds again** (`[U]` in the simulator). It brings back exactly what you had before the reset, even if auto-save has already stored the defaults. Undo works for one step and only until you change another setting (then it shows `EDITED SINCE RESET`, and your new change is kept). Switching preset slots also cancels it, and quitting forgets it.
+- Resetting when everything is already at defaults shows `ALREADY DEFAULT` and changes nothing.
+- On the unit, holding the footswitches undoes when there is something to undo, and resets otherwise. Pressing them also taps Footswitch 1 (the LFOs restart at 0 degrees; the tempo is not changed) and steps the Turing machine once.
 
 ### Connecting Simulator to Hardware & DAWs
 By default the simulator sends MIDI **straight to a hardware destination named `FRASIL FM-1`**. It creates no virtual port, and nothing needs patching in Audio MIDI Setup. The bottom line of the window shows where it is going, for example `MIDI out: -> FRASIL FM-1`.

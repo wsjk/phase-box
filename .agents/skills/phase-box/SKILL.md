@@ -30,7 +30,7 @@ export PICO_SDK_PATH="/Users/ww/src/pico-sdk"
 
 ### 1. Host Unit Testing (GoogleTest on macOS)
 
-Fastest simulation, math verification, and regression testing without hardware (170 tests across 40 suites, ~430ms runtime):
+Fastest simulation, math verification, and regression testing without hardware (186 tests across 42 suites, ~430ms runtime):
 
 ```bash
 # Helper script (auto-detects tools and runs tests):
@@ -45,7 +45,7 @@ cmake --build build-test -j4
 ### 2. Desktop Native Simulator (Raylib + CoreMIDI)
 
 ```bash
-cmake -B build-native -S .
+cmake -B build-native -S . -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 cmake --build build-native -j4
 ./build-native/phase_box_native_sim
 ```
@@ -84,7 +84,7 @@ See detailed notes in [Architecture Reference](./references/architecture.md).
    * All physical inputs (both quadrature encoders, buttons, footswitches), state advancing, parameter editing (pages P1–P12), preset auto-save, and OLED rendering are encapsulated in `DeviceApp.hpp`.
    * This allows complete zero-hardware verification in `tests/test_device_app.cpp` using mock inputs.
 2. **Core 0 Workload (Real-Time Control & MIDI Engine)**:
-   * Polls inputs: Quadrature encoder (GP2, GP3), debounced switches (GP6, GP10, GP11), expression encoder (GP7, GP8).
+   * Polls inputs: Quadrature encoder (GP2, GP3), debounced switches (GP6 encoder, GP9 freeze, GP10 tap, GP11 mutate, GP12 bypass), expression encoder (GP7, GP8).
    * Runs TinyUSB tasks (`tud_task()`).
    * Steps modulation engine at 60 Hz (`DeviceApp::FRAME_US` = 16,667 µs).
    * Filters MIDI CC messages via `MidiChangeFilter` (sends on value change + periodic 1s refresh to respect the 3,125 B/s DIN MIDI bandwidth).
@@ -110,7 +110,7 @@ See detailed notes in [Architecture Reference](./references/architecture.md).
 Update constants in `include/hal/pinout.hpp` (single source of truth):
 - MIDI TX: GP0, RX: GP1
 - Encoder: GP2 (A), GP3 (B), GP6 (Switch)
-- Footswitches: GP10 (Tap/Reset), GP11 (Mutate)
+- Footswitches: GP10 (Tap/Reset), GP11 (Mutate), GP12 (Bypass)
 - OLED I2C0: GP4 (SDA), GP5 (SCL)
-- Expression encoder: GP7 (A), GP8 (B)
+- Expression encoder: GP7 (A), GP8 (B), GP9 (Switch = freeze)
 - Detent count & direction: `ENC_TRANSITIONS_PER_DETENT` (both encoders), `ENC_REVERSED`, `EXP_ENC_REVERSED`

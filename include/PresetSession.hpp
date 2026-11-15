@@ -120,6 +120,9 @@ public:
         return ev;
     }
 
+    /// Use up the current press: no hold-save and no ShortPress when it is let go (the encoder was turned while held).
+    void cancel_press() { if (was_down_) fired_ = true; }
+
     /// 0..1 progress of the current hold (for a progress bar); 0 when not holding.
     float hold_progress(uint32_t now_ms) const {
         if (!was_down_ || fired_) return 0.0f;

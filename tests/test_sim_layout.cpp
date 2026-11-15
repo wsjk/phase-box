@@ -26,11 +26,11 @@ TEST(SimLayout, TheDeviceControlsStayInsideTheEnclosureAndDoNotOverlap) {
         const Layout L = Layout::make(rows);
         const Rect& e = L.enclosure;
         auto in_enclosure = [&](const Circle& c) { return c.x - c.r >= e.x && c.x + c.r <= e.x + e.w && c.y - c.r >= e.y && c.y + c.r <= e.y + e.h; };
-        for (const Circle* c : {&L.knob_ring, &L.foot_tap, &L.foot_mutate, &L.led_tap, &L.led_mutate, &L.led_power, &L.jack_midi, &L.exp_knob_ring}) EXPECT_TRUE(in_enclosure(*c));
+        for (const Circle* c : {&L.knob_ring, &L.foot_tap, &L.foot_mutate, &L.foot_bypass, &L.led_tap, &L.led_mutate, &L.led_bypass, &L.led_power, &L.jack_midi, &L.exp_knob_ring}) EXPECT_TRUE(in_enclosure(*c));
         EXPECT_TRUE(L.oled_bezel.x >= e.x && L.oled_bezel.x + L.oled_bezel.w <= e.x + e.w);
         EXPECT_TRUE(L.usb_port.x + L.usb_port.w <= e.x + e.w && L.usb_port.y >= e.y);
 
-        const std::vector<Circle> circles = {L.knob_ring, L.foot_tap, L.foot_mutate, L.led_tap, L.led_mutate, L.led_power, L.jack_midi, L.exp_knob_ring};
+        const std::vector<Circle> circles = {L.knob_ring, L.foot_tap, L.foot_mutate, L.foot_bypass, L.led_tap, L.led_mutate, L.led_bypass, L.led_power, L.jack_midi, L.exp_knob_ring};
         for (size_t i = 0; i < circles.size(); ++i) {
             for (size_t j = i + 1; j < circles.size(); ++j) EXPECT_FALSE(overlap(circles[i], circles[j]));
             EXPECT_FALSE(overlap(circles[i], L.oled_bezel));
@@ -44,7 +44,9 @@ TEST(SimLayout, FollowsTheDrawingInTheUserGuide) {
     const Layout L = Layout::make(64);
     EXPECT_TRUE(L.oled_bezel.x + L.oled_bezel.w < L.knob.x - L.knob.r);        // OLED left of the encoder
     EXPECT_TRUE(L.foot_tap.y - L.foot_tap.r > L.oled_bezel.y + L.oled_bezel.h); // footswitches below the OLED
-    EXPECT_TRUE(L.foot_tap.x < L.foot_mutate.x);                                // Tap on the left, Mutate on the right
+    EXPECT_TRUE(L.foot_tap.x < L.foot_mutate.x);                                // Tap on the left, then Mutate,
+    EXPECT_TRUE(L.foot_mutate.x < L.foot_bypass.x);                             // then Bypass on the right
+    EXPECT_NEAR(L.foot_bypass.y, L.foot_tap.y, 0.01f);
     EXPECT_TRUE(L.exp_knob.x > L.foot_tap.x && L.exp_knob.x < L.foot_mutate.x); // expression encoder between the footswitches
     EXPECT_NEAR(L.exp_knob.y, L.foot_tap.y, 0.01f);
     EXPECT_TRUE(L.jack_midi.y > L.foot_tap.y + L.foot_tap.r);                   // jacks along the bottom
@@ -71,6 +73,8 @@ TEST(SimLayout, ClicksHitTheRightControl) {
     EXPECT_FALSE(hit_circle(L.knob, L.foot_mutate.x, L.foot_mutate.y));
     EXPECT_TRUE(hit_circle(L.foot_tap, L.foot_tap.x, L.foot_tap.y));
     EXPECT_FALSE(hit_circle(L.foot_tap, L.foot_mutate.x, L.foot_mutate.y));
+    EXPECT_TRUE(hit_circle(L.foot_bypass, L.foot_bypass.x, L.foot_bypass.y));
+    EXPECT_FALSE(hit_circle(L.foot_bypass, L.foot_mutate.x, L.foot_mutate.y));
     EXPECT_TRUE(hit_circle(L.exp_knob, L.exp_knob.x, L.exp_knob.y));
     EXPECT_FALSE(hit_circle(L.exp_knob, L.foot_tap.x, L.foot_tap.y));
     EXPECT_FALSE(hit_circle(L.exp_knob_ring, L.knob.x, L.knob.y));

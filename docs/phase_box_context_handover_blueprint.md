@@ -8,9 +8,9 @@ This document contains the complete state, architecture specifications, and impl
 
 * **Target Hardware:** Raspberry Pi Pico (RP2040 micro-controller)
 * **Architecture:** Asymmetric Dual-Core Operational Model
-  * **Core 0:** Real-time control loop, input polling (quadrature encoder GP2/3, debounce GP6/10/11, ADC0 GP26), 60 Hz DSP engine (Phase Oscillator, Turing-machine mutation logic, multi-destination polyrhythmic macro scaling, MidiChangeFilter bandwidth limiting), and dual MIDI transmission (UART0 31,250 baud on GP0 + TinyUSB USB-MIDI). Renders OLED frames to lock-free `SeqlockBuffer`.
+  * **Core 0:** Real-time control loop, input polling (quadrature encoder GP2/3, debounce GP6/9/10/11/12, expression encoder GP7/8), 60 Hz DSP engine (Phase Oscillator, Turing-machine mutation logic, multi-destination polyrhythmic macro scaling, MidiChangeFilter bandwidth limiting), and dual MIDI transmission (UART0 31,250 baud on GP0 + TinyUSB USB-MIDI). Renders OLED frames to lock-free `SeqlockBuffer`.
   * **Core 1:** Async display loop. Exclusively owns `i2c0` SSD1306 (GP4 SDA, GP5 SCL), reads rendered frames from `SeqlockBuffer`, and runs automatic screen burn-in contrast dimming via `ScreenSaver`.
-* **Storage:** State serialization format `PBX1` (version 3 with CRC32) with an automated 2-second idle "dirty-state" auto-save watcher in `PresetSession`. (Linked to `NoStorage` on RP2040 until flash backend is added; `FilePresetStorage` on desktop).
+* **Storage:** State serialization format `PBX1` (version 3 with CRC32) with an automated 2-second idle "dirty-state" auto-save watcher in `PresetSession`. (`FlashPresetStorage` in the last 64 KB of flash on RP2040; `FilePresetStorage` on desktop).
 * **Build Configuration:** CMake toolchain cross-compiling via `arm-none-eabi-gcc` and `pico-sdk`. Tested and generates `phase_box_firmware.uf2`.
 
 ---
@@ -21,8 +21,8 @@ This document contains the complete state, architecture specifications, and impl
 2. **USB MIDI Class Compliance (`firmware/src/usb_descriptors.c` & `firmware/include/tusb_config.h`):** Configured TinyUSB streaming interface enabling plug-and-play USB MIDI CC output to DAWs/hardware.
 3. **Preset State Serialization & Session (`firmware/include/PresetManager.hpp`, `include/PresetSession.hpp`):** Safe, atomic serialization with CRC32, dirty-timer auto-save (2s idle), hold-to-save (1s hold), and 8 preset slots.
 4. **OLED Screen Burn-In Protection (`include/ScreenSaver.hpp`, `firmware/src/firmware_main.cpp`):** Automatic inactivity timer (30 seconds) dimming SSD1306 contrast to minimum (`0x01`), with immediate restore to `0xCF` on user activity.
-5. **Desktop Simulator & Stompbox UI (`src/native_sim_main.cpp`, `include/SimLayout.hpp`, `include/SimPot.hpp`):** Raylib native desktop simulation with interactive mouse knob dragging, detent scrolling, treadle pedal drag, footswitches, and macOS CoreMIDI routing directly to `FRASIL FM-1`.
-6. **Host Test Suite (`tests/`):** 170 GoogleTest unit test cases across 40 test suites covering DSP math, hardware abstraction layers, DeviceApp simulation, preset session persistence, SimLayout geometry, and CoreMIDI routing.
+5. **Desktop Simulator & Stompbox UI (`src/native_sim_main.cpp`, `include/SimLayout.hpp`, `include/SimPot.hpp`):** Raylib native desktop simulation with interactive mouse knob dragging, detent scrolling, expression encoder drag/scroll and click-to-freeze, three footswitches (TAP, MUTATE, BYPASS), and macOS CoreMIDI routing directly to `FRASIL FM-1`.
+6. **Host Test Suite (`tests/`):** 186 GoogleTest unit test cases across 42 test suites covering DSP math, hardware abstraction layers, DeviceApp simulation, preset session persistence, SimLayout geometry, and CoreMIDI routing.
 
 ---
 

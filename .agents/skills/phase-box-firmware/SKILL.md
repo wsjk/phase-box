@@ -17,7 +17,8 @@ This skill provides step-by-step procedures for cross-compiling, debugging, and 
 
 1. **Dual-Core Workload Split**:
    - **Core 0 (Real-Time Control & MIDI Engine)**:
-     - High-frequency input polling: Quadrature encoder (GP2, GP3), debounced switches (GP6, GP10, GP11), quadrature expression encoder (GP7, GP8).
+     - High-frequency input polling: Quadrature encoder (GP2, GP3), debounced switches (GP6 encoder, GP9 freeze, GP10 tap, GP11 mutate, GP12 bypass), quadrature expression encoder (GP7, GP8).
+     - Preset saves to flash via `FlashPresetStorage` -> `PicoFlash` (`flash_safe_execute`; pauses both cores ~1 ms, ~45 ms every 8th save of a slot). Core 1 calls `flash_safe_execute_core_init()` first; never write flash any other way.
      - TinyUSB service (`tud_task()`).
      - 60 Hz modulation engine step (`FRAME_US` = 16,667 µs).
      - `MidiChangeFilter` bandwidth enforcement (DIN MIDI limit: 3,125 B/s).
@@ -76,8 +77,8 @@ See [pinout_and_hardware.md](./references/pinout_and_hardware.md) for full circu
 
 | Signal | RP2040 Pin | Hardware Role |
 | :--- | :--- | :--- |
-| `UART0_TX` | **GP0** | 31,250 baud serial MIDI TX (connect via 220Ω resistor) |
-| `UART0_RX` | **GP1** | Serial MIDI RX (reserved) |
+| `MIDI_TX` | **GP0** | 31,250 baud serial MIDI TX (connect via 220Ω resistor) |
+| `MIDI_RX` | **GP1** | Serial MIDI RX (reserved) |
 | `ENC_A` | **GP2** | Rotary encoder phase A (pulled high, switch to GND) |
 | `ENC_B` | **GP3** | Rotary encoder phase B (pulled high, switch to GND) |
 | `OLED_SDA` | **GP4** | `i2c0` data line (SSD1306 address `0x3C`) |
@@ -85,8 +86,10 @@ See [pinout_and_hardware.md](./references/pinout_and_hardware.md) for full circu
 | `ENC_SW` | **GP6** | Encoder pushbutton (pulled high, switch to GND) |
 | `EXP_ENC_A` | **GP7** | Expression encoder phase A (pulled high, switch to GND) |
 | `EXP_ENC_B` | **GP8** | Expression encoder phase B (pulled high, switch to GND) |
-| `FS_TAP` | **GP10** | Footswitch 1: Tap tempo & phase reset |
+| `EXP_ENC_SW` | **GP9** | Expression encoder pushbutton: freeze on / off |
+| `FS_TAP` | **GP10** | Footswitch 1: Tap tempo & phase reset (hold with FS 2 for 2 s: reset / undo) |
 | `FS_MUTATE` | **GP11** | Footswitch 2: Turing machine mutate trigger |
+| `FS_BYPASS` | **GP12** | Footswitch 3: bypass on / off |
 
 ---
 

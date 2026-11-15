@@ -345,3 +345,111 @@ TEST(Device, TheScreenSaysFrozenOrBypassAndShowsAFlatLineInBypass) {
         EXPECT_GE(lit, 60);
     }
 }
+
+TEST(Device, ExpressionEncoderClickTogglesFreeze) {
+    Rig r;
+    r.run_ms(50);
+    r.press(&DeviceInputs::exp_sw, 60);
+    EXPECT_TRUE(r.state.frozen);
+    EXPECT_GT(r.app.last_activity_ms(), 1050u);                 // the press woke the screen
+    r.press(&DeviceInputs::exp_sw, 60);
+    EXPECT_FALSE(r.state.frozen);
+}
+
+TEST(Device, ThirdFootswitchTogglesBypass) {
+    Rig r;
+    r.run_ms(50);
+    r.press(&DeviceInputs::bypass, 60);
+    EXPECT_TRUE(r.state.bypassed);
+    r.midi.sent.clear();
+    r.run_ms(1100);                                             // past the 1 s refresh
+    ASSERT_FALSE(r.midi.sent.empty());
+    for (const auto& m : r.midi.sent) EXPECT_EQ(m.val, 0);      // every destination sends 0
+    r.press(&DeviceInputs::bypass, 60);
+    EXPECT_FALSE(r.state.bypassed);
+}
+
+TEST(Device, PressAndTurnChangesSlotWithoutSavingOrChangingPage) {
+    Rig r;
+    r.run_ms(50);
+    r.in.enc_sw = true; r.run_ms(40);
+    r.detent(+1);
+    EXPECT_EQ(r.presets.slot(), 2);
+    r.detent(+1);
+    EXPECT_EQ(r.presets.slot(), 3);
+    r.detent(-1);
+    EXPECT_EQ(r.presets.slot(), 2);
+    EXPECT_EQ(r.state.osc.shape, PhaseOscillator::SINE);        // the value on the page did not change
+    r.run_ms(1500);                                             // held well past the hold-to-save time
+    EXPECT_EQ(r.mem.writes, 0);
+    r.in.enc_sw = false; r.run_ms(60);
+    EXPECT_EQ(r.state.active_page, 0);                          // and letting go is not a page click
+}
+
+TEST(Device, PressAndTurnStopsAtSlotsOneAndEight) {
+    Rig r;
+    r.run_ms(50);
+    r.in.enc_sw = true; r.run_ms(40);
+    r.detent(-1);
+    EXPECT_EQ(r.presets.slot(), 1);
+    for (int i = 0; i < 10; ++i) r.detent(+1);
+    EXPECT_EQ(r.presets.slot(), 8);
+    r.in.enc_sw = false; r.run_ms(60);
+}
+
+TEST(Device, PressAndTurnBringsBackWhatEachSlotHolds) {
+    Rig r;
+    r.run_ms(50);
+    r.detent(+1);                                               // slot 1: SAW
+    r.in.enc_sw = true; r.run_ms(40); r.detent(+1); r.in.enc_sw = false; r.run_ms(60);
+    ASSERT_EQ(r.presets.slot(), 2);
+    EXPECT_GE(r.mem.writes, 1);                                 // the edit in slot 1 was saved on the way out
+    r.detent(+1);                                               // slot 2 (empty, kept SAW): now SQUARE
+    r.run_ms(2500);                                             // auto-saved
+    r.in.enc_sw = true; r.run_ms(40); r.detent(-1); r.in.enc_sw = false; r.run_ms(60);
+    EXPECT_EQ(r.state.osc.shape, PhaseOscillator::SAW);
+    r.in.enc_sw = true; r.run_ms(40); r.detent(+1); r.in.enc_sw = false; r.run_ms(60);
+    EXPECT_EQ(r.state.osc.shape, PhaseOscillator::SQUARE);
+}
+
+TEST(Device, HoldingBothFootswitchesResetsAndHoldingThemAgainUndoes) {
+    Rig r;
+    r.run_ms(50);
+    r.detent(+1);                                               // an edit: SAW
+    r.run_ms(100);
+    r.in.tap = r.in.mutate = true;
+    r.run_ms(1900);
+    EXPECT_EQ(r.state.osc.shape, PhaseOscillator::SAW);         // not yet
+    r.run_ms(200);
+    EXPECT_EQ(r.state.osc.shape, PhaseOscillator::SINE);        // reset after 2 s
+    r.run_ms(3000);                                             // still held: it happens once
+    r.in.tap = r.in.mutate = false; r.run_ms(60);
+    EXPECT_EQ(r.state.osc.shape, PhaseOscillator::SINE);
+
+    r.in.mutate = true; r.run_ms(30); r.in.tap = true;          // pressed one after the other also counts
+    r.run_ms(2100);
+    r.in.tap = r.in.mutate = false; r.run_ms(60);
+    EXPECT_EQ(r.state.osc.shape, PhaseOscillator::SAW);         // undone
+}
+
+TEST(Device, TheTapInsideTheResetComboDoesNotChangeTheTempo) {
+    Rig r;
+    r.run_ms(50);
+    r.press(&DeviceInputs::tap, 30);                            // a tap just before the combo ...
+    r.run_ms(500);
+    r.in.tap = r.in.mutate = true;                              // ... would otherwise make this one set ~110 BPM
+    r.run_ms(100);
+    EXPECT_NEAR(r.state.osc.bpm, 120.0f, 0.01f);
+    r.in.tap = r.in.mutate = false; r.run_ms(60);
+}
+
+TEST(Device, ResetComboAfterAnEditResetsAgainInsteadOfUndoing) {
+    Rig r;
+    r.run_ms(50);
+    r.detent(+1);                                               // SAW
+    r.in.tap = r.in.mutate = true; r.run_ms(2100); r.in.tap = r.in.mutate = false; r.run_ms(60);
+    ASSERT_EQ(r.state.osc.shape, PhaseOscillator::SINE);
+    r.detent(+1); r.detent(+1);                                 // edited since the reset: SQUARE
+    r.in.tap = r.in.mutate = true; r.run_ms(2100); r.in.tap = r.in.mutate = false; r.run_ms(60);
+    EXPECT_EQ(r.state.osc.shape, PhaseOscillator::SINE);        // reset again, not back to SAW
+}
