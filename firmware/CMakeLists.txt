@@ -26,6 +26,8 @@ target_link_libraries(phase_box_firmware
     hardware_i2c
     hardware_uart
     hardware_gpio
+    hardware_flash
+    pico_flash
     pico_multicore
     tinyusb_device
     tinyusb_board
