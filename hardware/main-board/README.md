@@ -9,9 +9,18 @@ A two-layer carrier board for a Raspberry Pi Pico module, sized for a Hammond **
 | `phase-box.kicad_sch` | Schematic |
 | `phase-box.kicad_pcb` | Board |
 | `phase-box-schematic.pdf` | Schematic as a PDF |
+| `render-top.png`, `render-bottom.png` | 3D renders of both sides |
+| `fab/phase-box-gerbers.zip` | Gerbers + Excellon drill files, ready to upload to a fab |
+| `fab/phase-box-bom.csv`, `fab/phase-box-pos.csv` | Bill of materials and pick-and-place positions |
+| `fab/assembly-top.pdf`, `fab/assembly-bottom.pdf` | Assembly drawings (reference designators) |
 
-Status: the schematic passes ERC with no violations. The board passes DRC and matches the schematic
-(schematic parity check), but **it is not routed yet**.
+Status: the schematic passes ERC with no violations. The board is fully routed (Freerouting 2.5.0)
+with GND pours on both layers, and passes DRC with no violations, no unconnected items and no
+schematic parity issues.
+
+Design rules: 0.2 mm clearance, 0.25 mm signal tracks, 0.4 mm power tracks, 0.6/0.3 mm vias. Minimum
+track width is 0.15 mm because the router narrows a few tracks to 0.19 mm between Pico pins. Standard
+2-layer fab processes (0.127 mm minimum) handle this.
 
 ## What is on the board
 
@@ -37,6 +46,9 @@ Status: the schematic passes ERC with no violations. The board passes DRC and ma
 | J2 FS2 MUTATE | signal | GND | | momentary SPST footswitch |
 | J3 MIDI DIN | DIN pin 4 (source) | DIN pin 2 (shield) | DIN pin 5 (sink) | panel-mount 5-pin DIN |
 | J4 MIDI TRS | tip | ring | sleeve | panel-mount 3.5 mm TRS |
+
+The back silkscreen reads in pad order as seen from the back, where pin 1 (square pad) is on the right:
+`DIN 5-2-4` and `S-R-T` above J3 and J4, and `TRS B <-> A` under SW1.
 
 The Pico's micro-USB needs a short panel-mount USB extension, for example USB-C (panel) to micro-USB.
 
