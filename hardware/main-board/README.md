@@ -51,6 +51,32 @@ The back silkscreen reads in pad order as seen from the back, where pin 1 (squar
 `DIN 5-2-4` and `S-R-T` above J3 and J4, and `TRS B <-> A` under SW1.
 
 The Pico's micro-USB needs a short panel-mount USB extension, for example USB-C (panel) to micro-USB.
+If you use USB-C at the panel and want to power the pedal from USB-C to USB-C chargers, the panel end
+needs 5.1 kΩ CC pull-downs (cheap pigtails often leave them out). USB-A to USB-C cables work without them.
+
+## Power and intended setup
+
+The board is powered only through the Pico's USB (no 9 V jack). It draws roughly 40–60 mA: Pico
+about 25 mA, OLED 10–20 mA, and up to about 7 mA per MIDI output while sending.
+
+The intended rig puts a **CME H2MIDI Pro** between the Phase Box and the Raspberry Pis:
+
+```
+9 V pedalboard supply ──> H2MIDI Pro (DC in, 5.5 × 2.1 mm, centre-negative)
+Phase Box USB ──────────> H2MIDI Pro USB-A host port (power + USB-MIDI)
+H2MIDI Pro USB-C ───────> Raspberry Pi (USB host)
+H2MIDI Pro DIN OUT ─────> Raspberry Pi with a MIDI input
+Phase Box DIN/TRS out ──> optional, another device directly
+```
+
+- The H2MIDI Pro's USB-A host port supplies up to 5 V / 500 mA in total, well above what the Phase Box
+  needs. Its manual says to use a self-powered hub if the devices on that port need more.
+- The Phase Box firmware is a class-compliant USB-MIDI device (TinyUSB), which is what that host port
+  expects.
+- Avoid USB power banks as the only supply: many switch off below 50–100 mA.
+- If everything always goes through the H2MIDI Pro over USB, the MIDI out parts (U2, R17–R20, SW1, J3,
+  J4) can be left unpopulated on the same board.
+- The H2MIDI Pro's routing settings and how each Pi sees it have not been tried with this board.
 
 ## Parts list
 
