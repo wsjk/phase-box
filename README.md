@@ -6,6 +6,10 @@ Phase Box is a dedicated hardware modulation engine and MIDI generator built on 
 
 Designed specifically for controlling video synthesizers (such as LZX Industries, Auto Waaaves, and r_e_c_u_r), modular audio rigs, and DAWs.
 
+![Phase Box Raylib desktop simulator: stompbox enclosure with OLED, encoder knob, footswitches, expression pedal and live CC monitor](docs/images/simulator.png)
+
+*The Raylib desktop simulator (`./build-native/phase_box_native_sim`).*
+
 ---
 
 ## 📚 Documentation Quick Links
