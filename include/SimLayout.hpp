@@ -1,8 +1,8 @@
 #pragma once
 // Where everything sits in the simulator window. The enclosure follows the drawing in docs/USER_GUIDE.md
-// (section 1): OLED on the left, rotary encoder on the right, two footswitches below, MIDI OUT and
-// EXPRESSION IN jacks along the bottom, USB-C top right. Pure geometry (no graphics library), so it is
-// unit-tested: bounds, overlaps, hit-testing, mouse-wheel and pedal mapping.
+// (section 1): OLED on the left, rotary encoder on the right, two footswitches below with the expression
+// encoder between them, MIDI OUT jack along the bottom, USB-C top right. Pure geometry (no graphics
+// library), so it is unit-tested: bounds, overlaps, hit-testing and mouse-wheel mapping.
 #include <algorithm>
 #include <cmath>
 
@@ -41,9 +41,9 @@ struct Layout {
     Circle knob, knob_ring;                   // encoder cap, and the ring around it (turn / hold feedback)
     Circle foot_tap, foot_mutate;
     Circle led_tap, led_mutate, led_power;
-    Circle jack_midi, jack_exp;
+    Circle exp_knob, exp_knob_ring;           // expression encoder cap, and its value ring
+    Circle jack_midi;
     Rect usb_port;
-    Rect treadle;                             // the simulated expression pedal (drag to move)
     Rect buttons[BUTTON_COUNT];               // simulator-only shortcuts (not on the real unit)
     Rect monitor;                             // text readouts under the enclosure
 
@@ -62,23 +62,15 @@ struct Layout {
         L.led_tap = {262, 320, 7};
         L.led_mutate = {650, 320, 7};
         L.led_power = {270, 50, 4};
+        L.exp_knob = {456, 380, 40};
+        L.exp_knob_ring = {456, 380, 60};
         L.jack_midi = {110, 468, 14};
-        L.jack_exp = {690, 468, 14};
         L.usb_port = {702, 36, 52, 20};
-        L.treadle = {830, 60, 80, 300};
         for (int i = 0; i < BUTTON_COUNT; ++i) L.buttons[i] = {940, 64.0f + 48.0f * i, 190, 36};
         L.monitor = {30, 520, 1100, 260};
         return L;
     }
 };
-
-/// Pedal position from the mouse height: top of the treadle = toe down = 1.0, bottom = heel down = 0.0.
-inline float expression_from_y(const Rect& treadle, float y) {
-    return std::clamp(1.0f - (y - treadle.y) / treadle.h, 0.0f, 1.0f);
-}
-inline float y_from_expression(const Rect& treadle, float e) {
-    return treadle.y + (1.0f - std::clamp(e, 0.0f, 1.0f)) * treadle.h;
-}
 
 /// Mouse wheel / trackpad scroll -> whole encoder clicks. Fractions are carried over in `acc`.
 inline int detents_from_wheel(float& acc, float wheel, float per_detent = 0.5f) {

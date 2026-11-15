@@ -15,8 +15,8 @@ TEST(SimLayout, EverythingFitsInTheWindowForBothPanelSizes) {
         const Layout L = Layout::make(rows);
         EXPECT_TRUE(inside(L, L.enclosure)); EXPECT_TRUE(inside(L, L.oled_bezel)); EXPECT_TRUE(inside(L, L.oled_screen));
         EXPECT_TRUE(inside(L, L.knob_ring)); EXPECT_TRUE(inside(L, L.foot_tap)); EXPECT_TRUE(inside(L, L.foot_mutate));
-        EXPECT_TRUE(inside(L, L.jack_midi)); EXPECT_TRUE(inside(L, L.jack_exp)); EXPECT_TRUE(inside(L, L.usb_port));
-        EXPECT_TRUE(inside(L, L.treadle)); EXPECT_TRUE(inside(L, L.monitor));
+        EXPECT_TRUE(inside(L, L.jack_midi)); EXPECT_TRUE(inside(L, L.exp_knob_ring)); EXPECT_TRUE(inside(L, L.usb_port));
+        EXPECT_TRUE(inside(L, L.monitor));
         for (const Rect& b : L.buttons) EXPECT_TRUE(inside(L, b));
     }
 }
@@ -26,11 +26,11 @@ TEST(SimLayout, TheDeviceControlsStayInsideTheEnclosureAndDoNotOverlap) {
         const Layout L = Layout::make(rows);
         const Rect& e = L.enclosure;
         auto in_enclosure = [&](const Circle& c) { return c.x - c.r >= e.x && c.x + c.r <= e.x + e.w && c.y - c.r >= e.y && c.y + c.r <= e.y + e.h; };
-        for (const Circle* c : {&L.knob_ring, &L.foot_tap, &L.foot_mutate, &L.led_tap, &L.led_mutate, &L.led_power, &L.jack_midi, &L.jack_exp}) EXPECT_TRUE(in_enclosure(*c));
+        for (const Circle* c : {&L.knob_ring, &L.foot_tap, &L.foot_mutate, &L.led_tap, &L.led_mutate, &L.led_power, &L.jack_midi, &L.exp_knob_ring}) EXPECT_TRUE(in_enclosure(*c));
         EXPECT_TRUE(L.oled_bezel.x >= e.x && L.oled_bezel.x + L.oled_bezel.w <= e.x + e.w);
         EXPECT_TRUE(L.usb_port.x + L.usb_port.w <= e.x + e.w && L.usb_port.y >= e.y);
 
-        const std::vector<Circle> circles = {L.knob_ring, L.foot_tap, L.foot_mutate, L.led_tap, L.led_mutate, L.led_power, L.jack_midi, L.jack_exp};
+        const std::vector<Circle> circles = {L.knob_ring, L.foot_tap, L.foot_mutate, L.led_tap, L.led_mutate, L.led_power, L.jack_midi, L.exp_knob_ring};
         for (size_t i = 0; i < circles.size(); ++i) {
             for (size_t j = i + 1; j < circles.size(); ++j) EXPECT_FALSE(overlap(circles[i], circles[j]));
             EXPECT_FALSE(overlap(circles[i], L.oled_bezel));
@@ -45,7 +45,8 @@ TEST(SimLayout, FollowsTheDrawingInTheUserGuide) {
     EXPECT_TRUE(L.oled_bezel.x + L.oled_bezel.w < L.knob.x - L.knob.r);        // OLED left of the encoder
     EXPECT_TRUE(L.foot_tap.y - L.foot_tap.r > L.oled_bezel.y + L.oled_bezel.h); // footswitches below the OLED
     EXPECT_TRUE(L.foot_tap.x < L.foot_mutate.x);                                // Tap on the left, Mutate on the right
-    EXPECT_TRUE(L.jack_midi.x < L.jack_exp.x);                                  // MIDI OUT left, EXPRESSION IN right
+    EXPECT_TRUE(L.exp_knob.x > L.foot_tap.x && L.exp_knob.x < L.foot_mutate.x); // expression encoder between the footswitches
+    EXPECT_NEAR(L.exp_knob.y, L.foot_tap.y, 0.01f);
     EXPECT_TRUE(L.jack_midi.y > L.foot_tap.y + L.foot_tap.r);                   // jacks along the bottom
     EXPECT_TRUE(L.usb_port.x > L.enclosure.x + L.enclosure.w / 2);              // USB-C at the top right
     EXPECT_TRUE(L.usb_port.y < L.enclosure.y + 40);
@@ -70,22 +71,15 @@ TEST(SimLayout, ClicksHitTheRightControl) {
     EXPECT_FALSE(hit_circle(L.knob, L.foot_mutate.x, L.foot_mutate.y));
     EXPECT_TRUE(hit_circle(L.foot_tap, L.foot_tap.x, L.foot_tap.y));
     EXPECT_FALSE(hit_circle(L.foot_tap, L.foot_mutate.x, L.foot_mutate.y));
+    EXPECT_TRUE(hit_circle(L.exp_knob, L.exp_knob.x, L.exp_knob.y));
+    EXPECT_FALSE(hit_circle(L.exp_knob, L.foot_tap.x, L.foot_tap.y));
+    EXPECT_FALSE(hit_circle(L.exp_knob_ring, L.knob.x, L.knob.y));
     for (int i = 0; i < BUTTON_COUNT; ++i) {
         const Rect& b = L.buttons[i];
         EXPECT_TRUE(hit_rect(b, b.x + b.w / 2, b.y + b.h / 2));
         for (int j = 0; j < BUTTON_COUNT; ++j) if (j != i) EXPECT_FALSE(overlap(b, L.buttons[j]));
     }
     EXPECT_FALSE(hit_rect(L.buttons[0], L.buttons[1].x + 5, L.buttons[1].y + 5));
-}
-
-TEST(SimLayout, PedalPositionFromTheMouse) {
-    const Layout L = Layout::make(64);
-    EXPECT_NEAR(expression_from_y(L.treadle, L.treadle.y), 1.0f, 0.001f);                      // top = toe down
-    EXPECT_NEAR(expression_from_y(L.treadle, L.treadle.y + L.treadle.h), 0.0f, 0.001f);        // bottom = heel down
-    EXPECT_NEAR(expression_from_y(L.treadle, L.treadle.y + L.treadle.h / 2), 0.5f, 0.001f);
-    EXPECT_NEAR(expression_from_y(L.treadle, -500), 1.0f, 0.001f);                              // dragging past the ends clamps
-    EXPECT_NEAR(expression_from_y(L.treadle, 5000), 0.0f, 0.001f);
-    EXPECT_NEAR(expression_from_y(L.treadle, y_from_expression(L.treadle, 0.3f)), 0.3f, 0.001f);
 }
 
 TEST(SimLayout, ScrollingTurnsTheKnobInWholeClicks) {

@@ -9,7 +9,7 @@ Phase Box is an RP2040-powered polyrhythmic modulation engine and MIDI synthesiz
 
 ## Dual-Core Workload Split
 - **Core 0 (Real-Time Control & MIDI Engine)**:
-  - Input polling: Quadrature encoder (GP2/GP3), debounced switches (GP6 encoder push, GP10 tap tempo, GP11 mutate), smoothed ADC0 expression pedal (GP26).
+  - Input polling: Quadrature encoder (GP2/GP3), debounced switches (GP6 encoder push, GP10 tap tempo, GP11 mutate), quadrature expression encoder (GP7/GP8).
   - TinyUSB device servicing (`tud_task()`).
   - 60 Hz modulation frame step (`PhaseBoxState::advance()` & `evaluateMacros()`).
   - Polyrhythmic macro clock multipliers (0.125x to 8x across 3 destinations).
@@ -24,7 +24,7 @@ Phase Box is an RP2040-powered polyrhythmic modulation engine and MIDI synthesiz
 
 ## Hardware Interface
 - **MIDI UART**: `uart0`, TX on GP0, RX on GP1, 31,250 baud (8N1).
-- **Expression Pedal (ADC)**: GP26 (ADC0), normalized 0.0f - 1.0f with EMA filter.
+- **Expression Encoder**: GP7 (A) / GP8 (B), 0.0f - 1.0f in 20 clicks (`PhaseBoxState::turn_expression`).
 - **Footswitches**:
   - `FS_TAP` (GP10): Tap tempo (40–300 BPM) & instant LFO phase reset.
   - `FS_MUTATE` (GP11): Turing shift register mutation trigger / cycle.
@@ -35,7 +35,7 @@ Phase Box is an RP2040-powered polyrhythmic modulation engine and MIDI synthesiz
 - **OLED Display**: SSD1306 over I2C0 (GP4 SDA, GP5 SCL) at 400 kHz / 1 MHz.
 
 ## Core Modules & Organization
-- `include/DeviceApp.hpp`: Main hardware-injected coordinator (encoder, switches, pedal, MIDI, OLED buffer).
+- `include/DeviceApp.hpp`: Main hardware-injected coordinator (both encoders, switches, MIDI, OLED buffer).
 - `include/PhaseBoxState.hpp`: Top-level state bundle, freeze/bypass modes, oscillator, Turing, macros.
 - `include/SimControls.hpp`: Menu pages P1–P12 adjust logic, footers, live curve generation.
 - `include/MacroEngine.hpp`: Polyrhythmic clock division (0.125x to 8x) and bipolar scaling.
@@ -43,7 +43,7 @@ Phase Box is an RP2040-powered polyrhythmic modulation engine and MIDI synthesiz
 - `include/TuringMachine.hpp`: 16-bit shift register with probabilistic mutation.
 - `include/PresetSession.hpp`: Auto-save dirty state timer (2s idle), hold-to-save (1s), slots 1–8.
 - `include/OledRenderer.hpp`: Dual-panel (128x32 and 128x64) graphical display layout.
-- `include/SimLayout.hpp`: Desktop stompbox enclosure geometry, mouse hit testing, knob drag, and treadle pedal mapping.
+- `include/SimLayout.hpp`: Desktop stompbox enclosure geometry, mouse hit testing, knob drag (value and expression encoders), and mouse-wheel mapping.
 - `include/SimPot.hpp`: Rotary knob angle and detent mapping between display and parameter models.
 - `include/SimFont.hpp`: Scalable bitmap font for desktop simulator UI rendering.
 - `include/MidiRouter.hpp`: Hardware destination routing, 1s auto-scan, reconnection epoch tracking, virtual DAW port fallback.

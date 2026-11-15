@@ -1,5 +1,5 @@
 // The whole device, driven with fake pins: turn/click/hold the encoder, step on the footswitches,
-// move the pedal, and check what comes out as MIDI, settings, saved presets and OLED pixels.
+// turn the expression encoder, and check what comes out as MIDI, settings, saved presets and OLED pixels.
 #include <gtest/gtest.h>
 #include <cstring>
 #include <map>
@@ -50,11 +50,14 @@ struct Rig {
     }
     void run_ms(int ms) { for (int i = 0; i < ms; ++i) step(); }
 
-    void detent(int dir) {   // one click of the encoder, 1 ms per signal change
+    // One click of an encoder (A/B pins given), 1 ms per signal change.
+    void click(bool DeviceInputs::*a, bool DeviceInputs::*b, int dir) {
         static const bool cw[4][2]  = {{0,1},{0,0},{1,0},{1,1}};
         static const bool ccw[4][2] = {{1,0},{0,0},{0,1},{1,1}};
-        for (int i = 0; i < 4; ++i) { in.enc_a = dir > 0 ? cw[i][0] : ccw[i][0]; in.enc_b = dir > 0 ? cw[i][1] : ccw[i][1]; step(); }
+        for (int i = 0; i < 4; ++i) { in.*a = dir > 0 ? cw[i][0] : ccw[i][0]; in.*b = dir > 0 ? cw[i][1] : ccw[i][1]; step(); }
     }
+    void detent(int dir) { click(&DeviceInputs::enc_a, &DeviceInputs::enc_b, dir); }       // page/value encoder
+    void exp_detent(int dir) { click(&DeviceInputs::exp_a, &DeviceInputs::exp_b, dir); }   // expression encoder
     void press(bool DeviceInputs::*pin, int hold_ms) { in.*pin = true; run_ms(hold_ms); in.*pin = false; run_ms(40); }
 };
 } // namespace
@@ -155,16 +158,35 @@ TEST(Device, MutateFootswitchStepsTheTuringMachine) {
     EXPECT_TRUE(r.state.turing_norm != after_one);
 }
 
-TEST(Device, ExpressionPedalScalesTheOutputButIsNotScreenActivity) {
+TEST(Device, ExpressionEncoderStepsTheDepthAndStopsAtTheEnds) {
     Rig r;
     r.run_ms(50);
-    const uint32_t before = r.app.last_activity_ms();
-    r.in.expression = 0.75f;
+    const int page = r.state.active_page;
+    const float bpm = r.state.osc.bpm;
+    for (int i = 0; i < 5; ++i) r.exp_detent(+1);
+    EXPECT_NEAR(r.state.expression, 5.0f / PhaseBoxState::EXPRESSION_CLICKS, 0.0001f);
+    r.exp_detent(-1);
+    EXPECT_NEAR(r.state.expression, 4.0f / PhaseBoxState::EXPRESSION_CLICKS, 0.0001f);
+    EXPECT_EQ(r.state.active_page, page);                         // it never touches the page or its value
+    EXPECT_FLOAT_EQ(r.state.osc.bpm, bpm);
+    for (int i = 0; i < 30; ++i) r.exp_detent(+1);
+    EXPECT_FLOAT_EQ(r.state.expression, 1.0f);                    // stops at the top...
+    for (int i = 0; i < 30; ++i) r.exp_detent(-1);
+    EXPECT_FLOAT_EQ(r.state.expression, 0.0f);                    // ...and at the bottom
+}
+
+TEST(Device, ExpressionEncoderScalesTheOutputAndWakesTheScreen) {
+    Rig r;
+    auto& d = r.state.macros.destinations[0];
+    d.scale = 1.0f; d.offset = 0.0f;
+    r.state.osc.shape = PhaseOscillator::SQUARE;
     r.run_ms(100);
-    EXPECT_NEAR(r.state.adc_expression, 0.75f, 0.0001f);
-    EXPECT_EQ(r.app.last_activity_ms(), before);
-    r.in.expression = 3.0f; r.run_ms(10);
-    EXPECT_NEAR(r.state.adc_expression, 1.0f, 0.0001f);          // out-of-range readings are clamped
+    const uint32_t before = r.app.last_activity_ms();
+    const auto peak = [&] { int hi = 0; for (int i = 0; i < 600; ++i) { r.step(); hi = std::max(hi, r.state.live_values[0]); } return hi; };
+    const int half_depth = peak();                                // expression 0 = 0.5x depth
+    for (int i = 0; i < PhaseBoxState::EXPRESSION_CLICKS; ++i) r.exp_detent(+1);
+    EXPECT_GT(r.app.last_activity_ms(), before);
+    EXPECT_GT(peak(), half_depth);                                // expression 1 = full depth
 }
 
 TEST(Device, EncoderAndFootswitchesCountAsActivityForTheScreensaver) {
@@ -196,7 +218,7 @@ TEST(Device, MidiIsSentOnChangeWithAPeriodicRefreshNotEveryFrame) {
 
 TEST(Device, ARunningLfoStaysWithinTheDinMidiByteBudget) {
     Rig r;
-    r.state.adc_expression = 1.0f;
+    r.state.expression = 1.0f;
     r.run_ms(4000);
     const double bytes_per_sec = r.midi.sent.size() * 3.0 / 4.0;
     EXPECT_LT(bytes_per_sec, 3125.0 * 0.5);                     // under half of what a DIN port can carry

@@ -102,7 +102,7 @@ inline std::vector<float> preview_curve(const PhaseBoxState& s, int dest_index, 
     std::vector<float> out(width > 0 ? width : 0);
     for (int x = 0; x < width; ++x) {
         out[x] = MacroEngine::sample(dest, span * static_cast<float>(x) / static_cast<float>(width),
-                                     s.adc_expression, src);
+                                     s.expression, src);
     }
     return out;
 }

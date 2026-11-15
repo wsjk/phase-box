@@ -23,16 +23,16 @@ Default window dimensions: `1160 × 800` pixels.
          |                                                          |
          |  [LED Tap]                       [LED Mutate]            |
          |                                                          |
-         |  (Foot Tap)                      (Foot Mutate)           |
-         |  (262, 380, r=46)                (650, 380, r=46)        |
+         |  (Foot Tap)      (Expression)    (Foot Mutate)           |
+         |  (262, 380, r=46) (456, 380,     (650, 380, r=46)        |
+         |                   r=40/60)                               |
          +---------------------------------------------------------+
-          (830, 60) [Treadle Expression Pedal: 80 x 300]
           (940, 64) [Simulator Action Buttons: 190 x 36 each]
 ```
 
 ### Alignment Constraints Verified in Tests
 1. **Centerline Alignment:** The OLED display and the rotary encoder share the exact same vertical center line (`cy = 190.0f`).
-2. **Non-Overlapping Controls:** Hit-test radiuses for the encoder knob, footswitches, LEDs, and screen bezels never intersect.
+2. **Non-Overlapping Controls:** Hit-test radiuses for both encoder knobs, footswitches, LEDs, and screen bezels never intersect.
 3. **Responsive OLED Scaling:** Supports 32-row (128×32) and 64-row (128×64) panel rendering at 3× pixel scaling (`oled_scale = 3`).
 
 ## Knob Interaction Mechanics (`simlayout::KnobDrag`)
@@ -53,8 +53,8 @@ The encoder knob supports two drag modalities plus mouse wheel detents:
    - Evaluated via `detents_from_wheel(float& acc, float wheel, float per_detent = 0.5f)`.
    - Accumulates wheel fractions and fires clean discrete clicks.
 
-## Expression Pedal Mapping
+## Expression Encoder
 
-* Evaluated via `expression_from_y(const Rect& treadle, float y)`:
-  $$\text{expression} = \text{clamp}\left(1.0 - \frac{y - \text{treadle}.y}{\text{treadle}.h},\ 0.0,\ 1.0\right)$$
-* Inverse mapping `y_from_expression(const Rect& treadle, float e)` determines visual indicator bar position.
+* `L.exp_knob` / `L.exp_knob_ring`, between the footswitches. It uses its own `KnobDrag` and wheel accumulator, so it never turns the value knob.
+* Every click calls `PhaseBoxState::turn_expression(±1)`: 1/20 per click, clamped to 0.0–1.0 (same code path as the firmware).
+* `draw_expression_encoder()` shows the value as an amber arc from −135° (0.0) to +135° (1.0).

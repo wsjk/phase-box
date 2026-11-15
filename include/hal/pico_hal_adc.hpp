@@ -1,6 +1,5 @@
 #pragma once
 #include "hal/hal_adc.hpp"
-#include "hal/pinout.hpp"
 #include <cstdint>
 
 #if __has_include("hardware/adc.h") && __has_include("hardware/gpio.h")
@@ -13,7 +12,8 @@ namespace phasebox::hal {
 
 class PicoHalAdc : public AdcInput {
 public:
-    static constexpr unsigned PIN_EXP_PEDAL = pins::EXPR_PEDAL; // GP26 = ADC0
+    // Legacy prototype only (include/core/): the unit has no analog input; expression is an encoder (pinout.hpp).
+    static constexpr unsigned PIN_EXP_PEDAL = 26; // GP26 = ADC0
 
 #if defined(PHASEBOX_PICO_ADC_AVAILABLE)
     PicoHalAdc(unsigned exp_pin = PIN_EXP_PEDAL) : exp_pin_(exp_pin) {}

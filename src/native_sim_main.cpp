@@ -199,16 +199,12 @@ void draw_button(const simlayout::Rect& r, const char* label, bool active) {
     centered_text(label, r.x + r.w / 2, r.y + r.h / 2 - 8, 12, active ? Color{30, 20, 5, 255} : kSilk, true);
 }
 
-void draw_treadle(const simlayout::Rect& t, float value) {
-    DrawRectangleRounded(Rectangle{t.x - 4, t.y - 4, t.w + 8, t.h + 8}, 0.12f, 8, kShadow);
-    DrawRectangleRounded(R(t), 0.12f, 8, Color{38, 41, 51, 255});
-    const float hy = std::clamp(simlayout::y_from_expression(t, value), t.y + 16, t.y + t.h - 16);   // keep the handle on its track
-    DrawRectangle(static_cast<int>(t.x + 8), static_cast<int>(hy), static_cast<int>(t.w - 16), static_cast<int>(t.y + t.h - hy - 8), Fade(kAmber, 0.35f));   // filled up to the pedal position
-    DrawRectangleRounded(Rectangle{t.x + 4, hy - 13, t.w - 8, 26}, 0.35f, 8, kMetalDark);
-    DrawRectangleRounded(Rectangle{t.x + 6, hy - 11, t.w - 12, 22}, 0.35f, 8, kMetal);
-    centered_text(TextFormat("%.2f", value), t.x + t.w / 2, hy - 5, 10, Color{30, 32, 38, 255});   // the pedal position, on the handle
-    centered_text("TOE", t.x + t.w / 2, t.y + 6, 10, kSilkDim);
-    centered_text("HEEL", t.x + t.w / 2, t.y + t.h - 16, 10, kSilkDim);
+// Expression encoder: an endless knob with a ring that shows the value (0 at -135 degrees, 1 at +135).
+void draw_expression_encoder(const Circle& k, const Circle& ring, float angle_deg, float value) {
+    draw_knob(k, angle_deg, false, 0.0f, false);
+    const float start = simpot::MIN_DEGREES - 90.0f;
+    DrawRing(V(k.x, k.y), ring.r - 6, ring.r - 1, start, start + simpot::SWEEP_DEGREES, 64, kShadow);
+    if (value > 0.0f) DrawRing(V(k.x, k.y), ring.r - 6, ring.r - 1, start, start + simpot::SWEEP_DEGREES * value, 64, kAmber);
 }
 
 } // namespace
@@ -272,12 +268,18 @@ int main(int argc, char** argv) {
     uint32_t last_cc_ms = 0;                 // MIDI goes out every 30 ms of frame time
 
     // mouse / knob state
-    bool knob_down = false, tap_down = false, mutate_down = false, pedal_drag = false;
-    float wheel_acc = 0.0f, knob_angle = 0.0f;
-    simlayout::KnobDrag knob_drag;
+    bool knob_down = false, tap_down = false, mutate_down = false, exp_down = false;
+    float wheel_acc = 0.0f, knob_angle = 0.0f, exp_wheel_acc = 0.0f, exp_angle = 0.0f;
+    simlayout::KnobDrag knob_drag, exp_drag;
     bool have_detent = false;
     uint32_t last_detent_ms = 0, mutate_flash_until = 0;
     float prev_turing_norm = state.turing_norm;
+
+    // PHASE_BOX_SCREENSHOT=file.png saves one window capture after ~2 s (for docs/images) and quits.
+    // The expression encoder is set part way so its value ring shows in the picture.
+    const char* shot_env = std::getenv("PHASE_BOX_SCREENSHOT");
+    int shot_frames = (shot_env && *shot_env) ? 120 : -1;
+    if (shot_frames > 0) state.turn_expression(PhaseBoxState::EXPRESSION_CLICKS * 3 / 5);
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -289,20 +291,24 @@ int main(int argc, char** argv) {
             simui::adjust(state, active_dest, state.active_page, dir, fast);
             knob_angle += dir * 15.0f;
         };
+        auto turn_expression = [&](int clicks) {         // the expression encoder: endless, the value stops at 0 and 1
+            state.turn_expression(clicks);
+            exp_angle += clicks * 15.0f;
+        };
         auto do_tap = [&]() {                            // Footswitch 1: tap tempo + restart the LFOs at 0 degrees
             float tapped_bpm;
             if (tap_tempo.tap(now_ms, tapped_bpm)) state.osc.bpm = tapped_bpm;
             state.restart_phase();
         };
 
-        // ---- mouse: knob, footswitches, pedal, simulator buttons ----
+        // ---- mouse: knobs, footswitches, simulator buttons ----
         const Vector2 m = GetMousePosition();
         const bool lmb_down = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             if (simlayout::hit_circle(L.knob, m.x, m.y)) { knob_down = true; knob_drag.begin(L.knob, m.x, m.y); pot_pos = simpot::norm(state, active_dest, state.active_page); }   // encoder switch, or the start of a drag
             else if (simlayout::hit_circle(L.foot_tap, m.x, m.y)) { tap_down = true; do_tap(); }
             else if (simlayout::hit_circle(L.foot_mutate, m.x, m.y)) { mutate_down = true; state.step_turing(); }
-            else if (simlayout::hit_rect(L.treadle, m.x, m.y, 6)) pedal_drag = true;
+            else if (simlayout::hit_circle(L.exp_knob, m.x, m.y)) { exp_down = true; exp_drag.begin(L.exp_knob, m.x, m.y); }
             else for (int i = 0; i < simlayout::BUTTON_COUNT; ++i) {
                 if (!simlayout::hit_rect(L.buttons[i], m.x, m.y)) continue;
                 switch (i) {
@@ -315,7 +321,7 @@ int main(int argc, char** argv) {
                 }
             }
         }
-        if (!lmb_down) knob_down = tap_down = mutate_down = pedal_drag = false;
+        if (!lmb_down) knob_down = tap_down = mutate_down = exp_down = false;
         if (knob_down) {                                  // dragging the knob turns it
             if (pot_mode) {                               // the pointer follows the hand, and stops at the end stops
                 const float degrees = knob_drag.move_degrees(m.x, m.y);
@@ -332,7 +338,8 @@ int main(int argc, char** argv) {
                 }
             }
         }
-        if (pedal_drag) state.adc_expression = simlayout::expression_from_y(L.treadle, m.y);
+        if (exp_down) { const int clicks = exp_drag.move(m.x, m.y); if (clicks) turn_expression(clicks); }
+        if (!lmb_down) exp_drag.end();
 
         const float wheel = GetMouseWheelMove();         // scroll over the knob turns it
         if (simlayout::hit_circle(L.knob_ring, m.x, m.y, 10)) {
@@ -344,6 +351,12 @@ int main(int argc, char** argv) {
             }
         } else {
             wheel_acc = 0.0f;
+        }
+        if (simlayout::hit_circle(L.exp_knob_ring, m.x, m.y, 6)) {   // scroll over the expression encoder turns it
+            const int clicks = simlayout::detents_from_wheel(exp_wheel_acc, wheel);
+            if (clicks) turn_expression(clicks);
+        } else {
+            exp_wheel_acc = 0.0f;
         }
 
         // ---- keyboard (everything still works) ----
@@ -363,9 +376,8 @@ int main(int argc, char** argv) {
 
         if (IsKeyPressed(KEY_T) || IsKeyPressed(KEY_SPACE)) do_tap();
 
-        if (IsKeyPressed(KEY_ONE)) state.adc_expression = 0.0f;
-        if (IsKeyPressed(KEY_TWO)) state.adc_expression = 0.5f;
-        if (IsKeyPressed(KEY_THREE)) state.adc_expression = 1.0f;
+        if (IsKeyPressed(KEY_Z)) turn_expression(-1);   // expression encoder, one click down / up
+        if (IsKeyPressed(KEY_X)) turn_expression(+1);
 
         state.advance(dt); // master phase; Turing steps on each master cycle
         if (state.turing_norm != prev_turing_norm) { prev_turing_norm = state.turing_norm; mutate_flash_until = now_ms + 150; }
@@ -440,20 +452,13 @@ int main(int argc, char** argv) {
 
         draw_jack(L.jack_midi);
         ui_text("MIDI OUT  DIN/TRS", static_cast<int>(L.jack_midi.x + 24), static_cast<int>(L.jack_midi.y - 8), 12, kSilk, true);
-        draw_jack(L.jack_exp);
-        const char* exp_label = "EXPRESSION IN  TRS";
-        ui_text(exp_label, static_cast<int>(L.jack_exp.x - 24) - ui_measure(exp_label, 12, true), static_cast<int>(L.jack_exp.y - 8), 12, kSilk, true);
 #ifdef __APPLE__
         draw_led(Circle{L.jack_midi.x + 24 + 138, L.jack_midi.y, 4}, kGreenLed, midi.connected());   // lit while the destination is connected
 #endif
 
-        // expression pedal (simulated) and its cable to the EXPRESSION IN jack
-        const float cable_x = L.treadle.x + L.treadle.w / 2;
-        DrawLineEx(V(L.jack_exp.x, L.jack_exp.y + 14), V(L.jack_exp.x, 505), 5.0f, Color{10, 10, 12, 255});
-        DrawLineEx(V(L.jack_exp.x, 505), V(cable_x, 505), 5.0f, Color{10, 10, 12, 255});
-        DrawLineEx(V(cable_x, 505), V(cable_x, L.treadle.y + L.treadle.h + 4), 5.0f, Color{10, 10, 12, 255});
-        ui_text("EXP PEDAL", static_cast<int>(L.treadle.x - 4), 32, 12, kSilk, true);
-        draw_treadle(L.treadle, state.adc_expression);
+        draw_expression_encoder(L.exp_knob, L.exp_knob_ring, exp_angle, state.expression);
+        centered_text("EXPRESSION", L.exp_knob.x, L.exp_knob_ring.y + L.exp_knob_ring.r + 2, 12, kSilk, true);
+        centered_text(TextFormat("%.2f", state.expression), L.exp_knob.x, L.exp_knob_ring.y + L.exp_knob_ring.r + 18, 10, kAmber);
 
         // simulator-only shortcuts
         ui_text("SIMULATOR ONLY", static_cast<int>(L.buttons[0].x), 32, 12, kAmber, true);
@@ -499,9 +504,9 @@ int main(int argc, char** argv) {
             if (simui::PAGE_COUNT > 11) dest_pages += ", P12 OFF";
             ui_text(("[W/S or Up/Down] Adjust value   (" + dest_pages + " edit the active dest; pick it on P8)").c_str(), mx + 15, my + 166, 12, LIGHTGRAY);
         }
-        ui_text("[T/Space] Tap  |  [1-3] Pedal 0/.5/1  |  [M] Step Turing  |  [R] Reset ALL  |  [U] Undo reset", mx + 15, my + 184, 12, LIGHTGRAY);
+        ui_text("[T/Space] Tap  |  [Z/X] Expression -/+  |  [M] Step Turing  |  [R] Reset ALL  |  [U] Undo reset", mx + 15, my + 184, 12, LIGHTGRAY);
         ui_text(TextFormat("[Enter] hold = SAVE  |  [ ] = slot %d (auto-saves 2 s after an edit)  |  [F] FREEZE  |  [B] BYPASS (all 0)", session.slot()), mx + 15, my + 202, 12, LIGHTGRAY);
-        ui_text("Mouse: drag or scroll the knob = turn  |  click knob = next page, hold 1 s = save  |  click footswitches  |  drag pedal", mx + 15, my + 220, 12, LIGHTGRAY);
+        ui_text("Mouse: drag or scroll the knob = turn  |  click knob = next page, hold 1 s = save  |  click footswitches  |  drag or scroll EXPRESSION", mx + 15, my + 220, 12, LIGHTGRAY);
         {   // every page, straight from the page table, so new pages show up here by themselves
             std::string pages;
             for (int i = 0; i < simui::PAGE_COUNT; ++i) {
@@ -515,6 +520,7 @@ int main(int argc, char** argv) {
         ui_text("[ESC] Quit", mx + static_cast<int>(L.monitor.w) - 85, my + 8, 12, RED);
 
         EndDrawing();
+        if (shot_frames > 0 && --shot_frames == 0) { TakeScreenshot(shot_env); break; }
     }
 
     unload_fonts();

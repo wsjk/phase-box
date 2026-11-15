@@ -6,7 +6,7 @@ Phase Box is a dedicated hardware modulation engine and MIDI generator built on 
 
 Designed specifically for controlling video synthesizers (such as LZX Industries, Auto Waaaves, and r_e_c_u_r), modular audio rigs, and DAWs.
 
-![Phase Box Raylib desktop simulator: stompbox enclosure with OLED, encoder knob, footswitches, expression pedal and live CC monitor](docs/images/simulator.png)
+![Phase Box Raylib desktop simulator: stompbox enclosure with OLED, encoder knob, footswitches, expression encoder and live CC monitor](docs/images/simulator.png)
 
 *The Raylib desktop simulator (`./build-native/phase_box_native_sim`).*
 
@@ -14,7 +14,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 
 ## 📚 Documentation Quick Links
 
-* 📖 **[User Guide & Operating Manual](docs/USER_GUIDE.md)**: Hardware controls, menu pages, tap tempo, footswitches, expression pedal, screensaver, and desktop simulator guide.
+* 📖 **[User Guide & Operating Manual](docs/USER_GUIDE.md)**: Hardware controls, menu pages, tap tempo, footswitches, expression encoder, screensaver, and desktop simulator guide.
 * 🛠️ **[Developer & Architecture Guide](docs/DEVELOPER_GUIDE.md)**: Dual-core architecture, signal flow diagrams, **"C++ Crash Course for Python Programmers"**, and step-by-step contribution recipes.
 * 🎨 **[Raylib Desktop UI Guide](docs/RAYLIB_UI_GUIDE.md)**: Beginner-friendly guide to modifying the desktop simulator GUI, colors, controls, and Raylib primitives.
 * 📐 **[Context Handover Blueprint](docs/phase_box_context_handover_blueprint.md)**: Complete implementation state and execution phases.
@@ -24,13 +24,13 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 ## ⚡ Key Features
 
 - **Asymmetric Dual-Core Architecture:**
-  - **Core 0 (Real-Time Control & MIDI Engine):** Quadrature rotary encoder decoding, switch debouncing, ADC0 expression sampling, 60 Hz modulation engine step, Turing LFSR mutation, bandwidth-managed MIDI CC dispatch over UART (31,250 baud on GP0) and TinyUSB USB-MIDI, and 30 FPS OLED frame rendering into lock-free shared buffers.
+  - **Core 0 (Real-Time Control & MIDI Engine):** Quadrature decoding of both rotary encoders (value + expression), switch debouncing, 60 Hz modulation engine step, Turing LFSR mutation, bandwidth-managed MIDI CC dispatch over UART (31,250 baud on GP0) and TinyUSB USB-MIDI, and 30 FPS OLED frame rendering into lock-free shared buffers.
   - **Core 1 (Async Display & Screen Saver):** Dedicated SSD1306 128×32/64 OLED driver on `i2c0` offloading all display traffic from Core 0 via lock-free seqlock framebuffers, plus automatic screen burn-in contrast dimming.
 - **Polyrhythmic Macro Engine:** Independent clock multipliers/subdivisions per CC destination (0.125× to 8×: 1/8×, 1/4×, 1/2×, 3/4×, 1×, 1.5×, 2×, 3×, 4×, 8×) for generative, non-repeating modulation patterns.
-- **Bipolar Expression Scaling:** Full expression pedal integration with EMA smoothing and deadband clamping.
+- **Expression Encoder:** A second rotary encoder sets a global depth (0.00–1.00 in 20 clicks) that scales every destination from 50% to 100%.
 - **Generative Turing LFSR:** 16-bit shift register with probabilistic mutation stepped per master cycle or manual footswitch tap.
 - **Dual MIDI Output:** Hardware serial MIDI (31,250 baud on GP0) and plug-and-play USB-MIDI class compliance (TinyUSB).
-- **Desktop Simulator:** Native Raylib desktop visualizer featuring a realistic stompbox enclosure UI, interactive mouse knob dragging (circular or vertical) and wheel detents, drag-to-set expression pedal treadle, clickable footswitches, live waveform visualizer, preset management, freeze, and bypass modes. Routes directly to macOS `CoreMIDI` (defaulting to `FRASIL FM-1` or virtual DAW port).
+- **Desktop Simulator:** Native Raylib desktop visualizer featuring a realistic stompbox enclosure UI, interactive mouse knob dragging (circular or vertical) and wheel detents, drag/scroll expression encoder with value ring, clickable footswitches, live waveform visualizer, preset management, freeze, and bypass modes. Routes directly to macOS `CoreMIDI` (defaulting to `FRASIL FM-1` or virtual DAW port).
 - **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 170 unit tests across 40 test suites).
 
 ---
@@ -44,7 +44,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 | **OLED Display** | **GP4** (SDA), **GP5** (SCL) | `i2c0` at 400 kHz / 1 MHz (Address: `0x3C`, 128×32 or 128×64). |
 | **Footswitch 1** | **GP10** | Tap tempo (40–300 BPM) & instant phase reset. |
 | **Footswitch 2** | **GP11** | Turing shift register mutation trigger / cycle. |
-| **Expression Pedal**| **GP26** (ADC0) | Analog 0.0V–3.3V input with software EMA filtering. |
+| **Expression Encoder** | **GP7** (A), **GP8** (B) | Global modulation depth, 20 clicks from 0.00 to 1.00 (no push switch). |
 | **USB** | **USB D+ / D-** | Class-compliant TinyUSB MIDI device streaming. |
 
 ---

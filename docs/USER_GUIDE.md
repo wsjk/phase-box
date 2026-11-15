@@ -26,10 +26,10 @@ Phase Box features an intuitive physical control surface designed for live audio
        |  +--------------------+                               |
        |    128x32/64 OLED                                     |
        |                                                       |
-       |   [ TAP / RESET ]               [ MUTATE / CYCLE ]    |
-       |    Footswitch 1                    Footswitch 2       |
+       |   [ TAP / RESET ]    ( O )      [ MUTATE / CYCLE ]    |
+       |    Footswitch 1    EXPRESSION      Footswitch 2       |
        |                                                       |
-       |  [MIDI OUT DIN/TRS]               [EXPRESSION IN]     |
+       |  [MIDI OUT DIN/TRS]                                   |
        +-------------------------------------------------------+
 ```
 
@@ -42,7 +42,7 @@ Phase Box features an intuitive physical control surface designed for live audio
 | **Encoder Pushbutton** | GP6 (Switch) | **Short Press:** Go to the next page (P1 … P12, then back to P1).<br/>**Long Press (1 Second):** Trigger non-volatile preset save. |
 | **Footswitch 1 (Tap / Reset)** | GP10 | **Tap Tempo:** Tap 2 or more times to synchronize BPM (40–300 BPM).<br/>**Phase Reset:** Instantly restarts all LFO accumulators to $0^\circ$ on each tap. |
 | **Footswitch 2 (Mutate)** | GP11 | Step/seed the probabilistic Turing Machine shift register to inject controlled algorithmic variation. |
-| **Expression Pedal Jack** | GP26 (ADC0) | Accepts standard TRS expression pedals (0–3.3V analog voltage) for bipolar scaling of all macro destinations. |
+| **Expression Encoder** | GP7 (A), GP8 (B) | Turn to set the global modulation depth (0.00–1.00, 20 clicks end to end; clockwise = up). Scales every macro destination. No push switch. |
 | **MIDI Output Port** | GP0 (TX), GP1 (RX) | Standard 31,250 baud serial MIDI (supports 5-pin DIN or Type-A/B 3.5mm TRS jack). |
 | **USB-C Port** | Native RP2040 USB | Class-compliant USB MIDI device (no drivers required for macOS, Windows, Linux, or iOS). |
 
@@ -100,11 +100,13 @@ Pages **P4 (CHAN)**, **P5 (CC)**, **P9 (MAC WGT)**, **P10 (MAC DIV)**, and **P12
 6. Move to **`P12: MAC OFF`** to shift its baseline floor/ceiling (`-1.00` to `+1.00`) to position the CC window.
 7. Select the next destination on `P8` and repeat. All 3 streams output concurrently every cycle and are automatically saved to the active preset slot.
 
-### 3.2 Bipolar Expression Pedal Control
-Plugging a standard expression pedal into the 1/4" input allows hands-free master morphing:
-- At **heel down (0.0)**: Modulation depth is halved (50%).
-- At **toe down (1.0)**: Modulation is at full depth.
-- The pedal only scales depth. A destination with a **negative weight** is inverted at every pedal position, not just when the pedal moves.
+### 3.2 Expression Encoder (Global Depth)
+The second rotary encoder, between the footswitches, sets one depth value for all destinations:
+- Each click moves the value by **0.05**; it stops at **0.00** and **1.00** (20 clicks end to end).
+- At **0.00**: Modulation depth is halved (50%). This is the value at power-up.
+- At **1.00**: Modulation is at full depth.
+- It only scales depth. A destination with a **negative weight** is inverted at every expression value.
+- The value is not stored in presets and `[R]` reset does not change it; it starts at 0.00 after every power-up.
 
 ### 3.3 Turing Machine Generative Mutation
 The Turing machine takes one step per master cycle and its value is blended into every destination by `P11: TUR MIX` (default `0.00`, so nothing changes until you raise it). `P7: MUT` sets how much the sequence mutates; **Footswitch 2** (key `[M]` in the simulator) steps it immediately.
@@ -116,10 +118,10 @@ The Turing machine takes one step per master cycle and its value is blended into
 ### 3.4 Screen Burn-In Protection (Screensaver)
 To protect OLED displays during long stage performances or static studio sessions:
 - If no encoder or footswitch activity is detected for **30 seconds**, the screen contrast automatically dims to its minimum visibility setting (`0x01`).
-- Turning the encoder, pressing it, or stepping on either footswitch wakes the display back to full brightness (`0xCF`) straight away. Moving the expression pedal does not count as activity.
+- Turning either encoder, pressing the value encoder, or stepping on either footswitch wakes the display back to full brightness (`0xCF`) straight away.
 
 ### 3.5 Auto-Save & Preset Persistence
-- **Automatic Background Save:** Whenever you tweak any saved parameter, an internal "dirty-state" timer begins. If no further adjustments are made for **2 seconds**, Phase Box silently writes your current configuration to the current preset slot. Anything that is not part of a preset (the page you are on, the pedal position, the running phase) never triggers a save.
+- **Automatic Background Save:** Whenever you tweak any saved parameter, an internal "dirty-state" timer begins. If no further adjustments are made for **2 seconds**, Phase Box silently writes your current configuration to the current preset slot. Anything that is not part of a preset (the page you are on, the expression value, the running phase) never triggers a save.
 - **Manual Save:** Press and hold the encoder button for 1 second until the screen confirms `SAVED` (a bar fills along the divider while you hold). A shorter press is an ordinary short press and saves nothing.
 - Settings automatically restore on power-up, silently.
 - **Unsaved marker:** the top-right of the screen shows the slot, for example `S1`, and `S1*` while there are changes that have not been written yet.
@@ -156,9 +158,7 @@ cmake --build build-native -j4
 | **`[U]`** | Undo the last reset (shows `UNDONE`) |
 | **`[F]`** | **Freeze** / resume: hold every output where it is (shows `FROZEN`) |
 | **`[B]`** | **Bypass** on/off: every destination sends 0 (shows `BYPASS`) |
-| **`[1]`** | Simulate Expression Pedal at 0% (Heel down) |
-| **`[2]`** | Simulate Expression Pedal at 50% (Midway) |
-| **`[3]`** | Simulate Expression Pedal at 100% (Toe down) |
+| **`[Z]`** / **`[X]`** | Expression encoder one click down / up |
 | **`[ESC]`** | Exit Simulator |
 
 ### Mouse & Interactive Stompbox Controls
@@ -169,8 +169,8 @@ The simulator UI displays a scaled physical stompbox enclosure with fully intera
   * **Scroll Wheel / Trackpad:** Scrolling over the knob steps parameter values in whole detents.
   * **Circular Drag:** Click on the knob circumference and drag circularly around the knob center (clockwise = value up, counter-clockwise = value down).
   * **Vertical Drag:** Click near the center of the knob and drag straight up/down to adjust values.
-* **Expression Pedal Treadle:**
-  * Click or drag anywhere along the vertical expression pedal treadle on the right. Top = toe down ($1.0$), bottom = heel down ($0.0$).
+* **Expression Encoder** (between the footswitches):
+  * Drag around it (or straight up/down from its centre), or scroll over it, to turn it in whole clicks. The amber ring and the number under it show the value (0.00–1.00).
 * **Footswitches:**
   * Click the **TAP** footswitch to tap tempo and reset master LFO phase.
   * Click the **MUTATE** footswitch to step the Turing shift register immediately.
@@ -178,7 +178,7 @@ The simulator UI displays a scaled physical stompbox enclosure with fully intera
   * Click the buttons alongside the enclosure (**Freeze**, **Bypass**, **Reset Defaults**, **Undo Reset**, **Slot -**, **Slot +**) for one-click action triggering.
 
 ### Freeze and bypass
-- **`[F]` Freeze:** stops the LFOs and holds every destination at the value it has right now, even if you move the pedal or edit settings. Press `[F]` again and it carries on from the same point (no jump). The Turing machine pauses too. The screen shows `FROZEN`.
+- **`[F]` Freeze:** stops the LFOs and holds every destination at the value it has right now, even if you turn the expression encoder or edit settings. Press `[F]` again and it carries on from the same point (no jump). The Turing machine pauses too. The screen shows `FROZEN`.
 - **`[B]` Bypass:** every destination sends **0** and the display shows a flat line (`BYPASS`). The LFOs keep running silently, so when you switch back they are still in time. Bypass wins over freeze; if you were frozen, letting go of bypass returns to the held values.
 - Bypass sends exactly 0 on each destination's CC, which is not always a "neutral" value for the synth parameter (for example, 0 on a filter cutoff is fully closed).
 - Neither is saved in presets, and `[R]` reset does not change them. The device has no spare control for them yet, so they are simulator-only for now.
@@ -186,7 +186,7 @@ The simulator UI displays a scaled physical stompbox enclosure with fully intera
 ### Resetting everything to defaults
 Press **`[R]`** in the simulator to put every setting back to how the unit starts up:
 - **Reset:** waveform, BPM (120), phase offset, phase modulation, Turing mutation and mix, the Turing pattern, and every destination's channel, CC, weight, offset and multiplier. All LFOs restart at 0 degrees.
-- **Not reset:** the expression pedal (`[1]`–`[3]`; it is an input, not a setting), the page you are on, which destination is selected, and which preset slot you are in.
+- **Not reset:** the expression encoder value (`[Z]`/`[X]`; a performance control, not a setting), the page you are on, which destination is selected, and which preset slot you are in.
 - **It is saved like any other edit.** About 2 seconds later auto-save writes the defaults into the current slot, which replaces what was saved there.
 - **Undo with `[U]`.** It brings back exactly what you had before the reset, even if auto-save has already stored the defaults. Undo works for one step and only until you change another setting (then it shows `EDITED SINCE RESET`, and your new change is kept). Switching preset slots also cancels it, and quitting forgets it.
 - Pressing `[R]` when everything is already at defaults shows `ALREADY DEFAULT` and changes nothing.

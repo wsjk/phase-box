@@ -18,7 +18,6 @@
 #include "PresetManager.hpp"
 #include "PresetSession.hpp"
 #include "ScreenSaver.hpp"
-#include "hal/hal_adc.hpp"
 #include "hal/pico_hal_display.hpp"
 #include "hal/pico_hal_midi.hpp"
 #include "hal/pinout.hpp"
@@ -34,13 +33,11 @@ namespace {
 constexpr uint16_t OLED_W = 128;
 constexpr uint16_t OLED_H = PHASEBOX_OLED_HEIGHT;
 constexpr size_t FRAME_BYTES = static_cast<size_t>(OLED_W) * OLED_H / 8;
-constexpr uint32_t ADC_INTERVAL_US = 5000;   // pedal read at 200 Hz
 
 phasebox::hal::SeqlockBuffer<FRAME_BYTES> g_shared_frame;   // Core 0 -> Core 1
 std::atomic<uint32_t> g_last_activity_ms{0};                // Core 0 -> Core 1
 
 phasebox::hal::PicoHalMidi g_uart_midi;   // uart0: GP0 (TX), GP1 (RX), 31250 baud
-phasebox::hal::HalAdc g_adc;              // GP26 / ADC0, smoothed
 PhaseBoxState g_state;
 NoStorage g_storage;                      // TODO: a flash-backed PresetStorage makes presets survive power-off
 PresetSession g_presets(g_storage);
@@ -89,7 +86,7 @@ void core1_entry() {
 
 void init_input_pins() {
     namespace pins = phasebox::hal::pins;
-    const unsigned list[] = {pins::ENC_A, pins::ENC_B, pins::ENC_SW, pins::FS_TAP, pins::FS_MUTATE};
+    const unsigned list[] = {pins::ENC_A, pins::ENC_B, pins::EXP_ENC_A, pins::EXP_ENC_B, pins::ENC_SW, pins::FS_TAP, pins::FS_MUTATE};
     for (unsigned p : list) {
         gpio_init(p);
         gpio_set_dir(p, GPIO_IN);
@@ -107,7 +104,6 @@ int main() {
     tusb_init();
 
     g_uart_midi.init();
-    g_adc.init();
     init_input_pins();
 
     g_state.turing.seed(time_us_32());   // a different Turing sequence each power-up
@@ -115,26 +111,20 @@ int main() {
 
     multicore_launch_core1(core1_entry);
 
-    float expression = 0.0f;
-    uint64_t next_adc_us = time_us_64();
     uint64_t next_frame_us = time_us_64();
 
     for (;;) {
         tud_task();                                   // USB service on every pass
         const uint64_t now_us = time_us_64();
 
-        if (now_us >= next_adc_us) {
-            expression = g_adc.read_normalized();
-            next_adc_us = now_us + ADC_INTERVAL_US;
-        }
-
         DeviceInputs in;
         in.enc_a = gpio_get(pins::ENC_A);
         in.enc_b = gpio_get(pins::ENC_B);
+        in.exp_a = gpio_get(pins::EXP_ENC_A);
+        in.exp_b = gpio_get(pins::EXP_ENC_B);
         in.enc_sw = !gpio_get(pins::ENC_SW);          // active low
         in.tap = !gpio_get(pins::FS_TAP);
         in.mutate = !gpio_get(pins::FS_MUTATE);
-        in.expression = expression;
         g_app.poll_inputs(in, now_us);                // as often as possible so no encoder edge is missed
 
         if (now_us >= next_frame_us) {

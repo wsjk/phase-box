@@ -29,7 +29,7 @@ Every 16,667 µs (`FRAME_US`), the engine steps the modulation state machine:
                            |
                      [ Bipolar Scale & DC Offset ]
                            |
-                     [ Expression Pedal Scaling ]
+                     [ Expression Encoder Scaling ]
                            |
                      [ Performance Filter (Freeze / Bypass) ]
                            |

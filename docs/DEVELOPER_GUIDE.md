@@ -30,7 +30,7 @@ The Raspberry Pi RP2040 contains two 32-bit ARM Cortex-M0+ processor cores opera
 |  |   - Quadrature Decoder (GP2,3) |  |   - SSD1306 OLED via I2C0     | |
 |  |   - Debounced Switches (GP6,10,|  |     (GP4 SDA, GP5 SCL)        | |
 |  |     GP11: Enc, Tap, Mutate)    |  |   - Reads Seqlock Frame Buffer| |
-|  |   - ADC0 Expr. Pedal (GP26)    |  |   - ScreenSaver Dimming       | |
+|  |   - Expression Encoder (GP7,8) |  |   - ScreenSaver Dimming       | |
 |  |   - TinyUSB Service (tud_task) |  |     (30 s Idle -> 0x01 min)   | |
 |  |  [60 Hz Frame Execution]       |  |   - Zero Real-Time Blocking   | |
 |  |   - Master Phase & Turing LFSR |  +-------------------------------+ |
@@ -67,8 +67,7 @@ flowchart TD
     Wave["Waveform Generator<br/>(Sine LUT / Saw / Square / Triangle)"] --> Macro
     PM["Phase Modulation<br/>(PM Depth 0.0-5.0)"] --> Macro
     
-    ADC["Analog ADC0 (GP26)<br/>(Expression Pedal)"] --> Smoothing["EMA Filter & Clamping [0.0-1.0]"]
-    Smoothing --> Macro
+    ExpEnc["Expression Encoder (GP7/GP8)<br/>(0.0-1.0 in 20 clicks)"] --> Macro
     
     Macro --> Weight["5. Bipolar Scaling & Offset<br/>(Weight -2.0 to +2.0, Baseline Offset)"]
     Weight --> Perf["6. Performance Modes<br/>(Freeze Held Values / Bypass 0s)"]
@@ -95,8 +94,8 @@ flowchart TD
    Available multipliers: $0.125\times$, $0.25\times$, $0.5\times$, $0.75\times$, $1\times$, $1.5\times$, $2\times$, $3\times$, $4\times$, $8\times$.
    The synthesis waveform (Sine LUT, Sawtooth, Square, or Triangle with optional Phase Modulation) is evaluated at $\theta_{\text{dest}}$ and blended with the Turing register:
    $$\text{raw} = (1 - \text{tur\_mix}) \cdot \text{wave}(\theta_{\text{dest}}) + \text{tur\_mix} \cdot \text{turing\_norm}$$
-   The resulting value is scaled by the destination's bipolar weight, offset, and expression pedal attenuation:
-   $$\text{value} = \text{clamp}\left(\Big((\text{raw} \cdot \text{scale} \cdot \text{expression}) + \text{offset}\Big) \cdot 127,\ 0,\ 127\right)$$
+   The resulting value is scaled by the destination's bipolar weight, offset, and the expression encoder value $E \in [0, 1]$ (depth 50% at $E=0$, 100% at $E=1$):
+   $$\text{value} = \text{clamp}\left(\Big((\text{raw} \cdot \text{scale} \cdot (0.5 + 0.5E)) + \text{offset}\Big) \cdot 127,\ 0,\ 127\right)$$
 
 4. **Performance Modes (Freeze & Bypass):**
    - **Freeze (`[F]`):** Halts oscillator advancement and latches every destination at its current live value. Releasing freeze resumes modulation from the exact latched phase without jumps.
@@ -133,11 +132,11 @@ phase-box/
 │   │   ├── debounce.hpp         # Software debounce filter for buttons & footswitches
 │   │   ├── frame_buffer.hpp     # Monochrome 128x32/64 OLED frame buffer
 │   │   ├── seqlock_buffer.hpp   # Lock-free single-writer single-reader inter-core frame buffer
-│   │   ├── hal_adc.hpp          # ADC input interface & EMA smoothing
+│   │   ├── hal_adc.hpp          # ADC input interface & EMA smoothing (legacy prototypes only; the unit has no analog input)
 │   │   ├── hal_display.hpp      # Display interface definitions
 │   │   ├── pico_hal_display.hpp # RP2040 hardware I2C SSD1306 driver
 │   │   ├── pico_hal_midi.hpp    # RP2040 hardware UART0 MIDI driver
-│   │   ├── pico_hal_adc.hpp     # RP2040 hardware ADC driver
+│   │   ├── pico_hal_adc.hpp     # RP2040 hardware ADC driver (legacy prototypes only)
 │   │   └── mock_*.hpp           # GoogleTest mocks for zero-hardware testing
 │   └── core/                    # Early layered prototypes (see Implementation Status)
 ├── src/                         # C++ Implementations
@@ -321,10 +320,10 @@ Hardware pin mappings are defined in the HAL headers and drivers. To change a pi
   - `ENC_A` = GP2, `ENC_B` = GP3, `ENC_SW` = GP6
   - `FS_TAP` = GP10, `FS_MUTATE` = GP11
   - `OLED_SDA` = GP4, `OLED_SCL` = GP5 (`i2c0`)
-  - `EXPR_PEDAL` = GP26 (ADC0)
+  - `EXP_ENC_A` = GP7, `EXP_ENC_B` = GP8 (expression encoder)
 * **MIDI TX/RX:** [include/hal/pico_hal_midi.hpp](../include/hal/pico_hal_midi.hpp) (Default: GP0 TX, GP1 RX).
 * **OLED Configuration:** Set height with `cmake -DPHASEBOX_OLED_HEIGHT=64 ..` (32 rows by default; 64 rows supported). Default bus speed is 400 kHz (`-DPHASEBOX_OLED_I2C_HZ=1000000` for 1 MHz).
-* **Encoder Reversal / Detents:** Change `ENC_REVERSED` or `ENC_TRANSITIONS_PER_DETENT` in [include/hal/pinout.hpp](../include/hal/pinout.hpp).
+* **Encoder Reversal / Detents:** Change `ENC_REVERSED`, `EXP_ENC_REVERSED` or `ENC_TRANSITIONS_PER_DETENT` (shared by both encoders) in [include/hal/pinout.hpp](../include/hal/pinout.hpp).
 
 ---
 

@@ -41,7 +41,7 @@ TEST(AutoSave, NothingIsWrittenWithoutAnEdit) {
 TEST(AutoSave, IgnoresStateThatIsNotPartOfAPreset) {
     MemStorage m; PresetSession ps(m); PhaseBoxState s;
     ps.update(s, 0);
-    s.active_page = 7; s.adc_expression = 1.0f; s.osc.phase = 3.0f; s.button_state = true; s.turing_norm = 0.9f;
+    s.active_page = 7; s.expression = 1.0f; s.osc.phase = 3.0f; s.button_state = true; s.turing_norm = 0.9f;
     for (uint32_t t = 16; t < 10000; t += 16) ps.update(s, t);
     EXPECT_EQ(m.writes, 0);
 }

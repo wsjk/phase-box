@@ -17,7 +17,7 @@ This skill provides step-by-step procedures for cross-compiling, debugging, and 
 
 1. **Dual-Core Workload Split**:
    - **Core 0 (Real-Time Control & MIDI Engine)**:
-     - High-frequency input polling: Quadrature encoder (GP2, GP3), debounced switches (GP6, GP10, GP11), ADC0 expression pedal (GP26 at 200 Hz).
+     - High-frequency input polling: Quadrature encoder (GP2, GP3), debounced switches (GP6, GP10, GP11), quadrature expression encoder (GP7, GP8).
      - TinyUSB service (`tud_task()`).
      - 60 Hz modulation engine step (`FRAME_US` = 16,667 µs).
      - `MidiChangeFilter` bandwidth enforcement (DIN MIDI limit: 3,125 B/s).
@@ -83,9 +83,10 @@ See [pinout_and_hardware.md](./references/pinout_and_hardware.md) for full circu
 | `OLED_SDA` | **GP4** | `i2c0` data line (SSD1306 address `0x3C`) |
 | `OLED_SCL` | **GP5** | `i2c0` clock line (400 kHz standard, up to 1 MHz) |
 | `ENC_SW` | **GP6** | Encoder pushbutton (pulled high, switch to GND) |
+| `EXP_ENC_A` | **GP7** | Expression encoder phase A (pulled high, switch to GND) |
+| `EXP_ENC_B` | **GP8** | Expression encoder phase B (pulled high, switch to GND) |
 | `FS_TAP` | **GP10** | Footswitch 1: Tap tempo & phase reset |
 | `FS_MUTATE` | **GP11** | Footswitch 2: Turing machine mutate trigger |
-| `EXPR_PEDAL`| **GP26** (ADC0)| 0.0V–3.3V analog expression voltage (TRS tip) |
 
 ---
 
@@ -98,9 +99,9 @@ See [pinout_and_hardware.md](./references/pinout_and_hardware.md) for full circu
 2. **Display Inverted or Upside Down**:
    - In `include/hal/pico_hal_display.hpp`, update `PicoHalDisplay::init()` commands: segment remap (`0xA0` vs `0xA1`) and scan direction (`0xC0` vs `0xC8`).
 3. **Encoder Steps Backward or Double-Ticks**:
-   - Backward: Change `#define ENC_REVERSED 1` in `include/hal/pinout.hpp`.
+   - Backward: Set `ENC_REVERSED` (value encoder) or `EXP_ENC_REVERSED` (expression encoder) to `true` in `include/hal/pinout.hpp`.
    - Detents: Change `ENC_TRANSITIONS_PER_DETENT` (usually 4 or 2) in `include/hal/pinout.hpp`.
 4. **USB MIDI Not Recognized**:
    - Confirm `firmware/src/usb_descriptors.c` and `firmware/include/tusb_config.h` are compiling. Check macOS Audio MIDI Setup or run `system_profiler SPUSBDataType`.
-5. **Expression Pedal Jitter**:
-   - Adjust EMA smoothing constant `ALPHA` in `include/hal/hal_adc.hpp`.
+5. **Expression Encoder Does Nothing**:
+   - Confirm GP7 (A) and GP8 (B) wiring; the common pin goes to GND (internal pull-ups are enabled).
