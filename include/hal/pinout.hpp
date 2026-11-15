@@ -3,7 +3,9 @@
 
 // Single source of truth for the board wiring (matches the README and docs/USER_GUIDE.md).
 namespace phasebox::hal::pins {
-constexpr uint8_t ENC_A      = 2;   // rotary encoder phase A
+constexpr uint8_t UART_TX    = 0;   // uart0 TX: DIN/TRS MIDI out (31,250 baud)
+constexpr uint8_t UART_RX    = 1;   // uart0 RX: reserved for MIDI in (needs an optocoupler; nothing reads it yet)
+constexpr uint8_t ENC_A     = 2;   // rotary encoder phase A
 constexpr uint8_t ENC_B      = 3;   // rotary encoder phase B
 constexpr uint8_t OLED_SDA   = 4;   // I2C0 SDA
 constexpr uint8_t OLED_SCL   = 5;   // I2C0 SCL

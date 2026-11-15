@@ -391,7 +391,10 @@ breadboard or PCB for the first time, verify these hardware integration points:
 4. **Picture mirrored or upside down?** In `PicoHalDisplay::init()` change segment remap `0xA1` to `0xA0` and scan direction `0xC8` to `0xC0`.
 5. **Encoder:** Wrong direction -> toggle `ENC_REVERSED` in `include/hal/pinout.hpp`; one click = two steps, or two clicks per step ->
    change `ENC_TRANSITIONS_PER_DETENT` (4 or 2). All controls are wired switch-to-ground (pull-ups are enabled in firmware).
-6. **Footswitches and encoder switch** are debounced for 20 ms in software; no extra hardware is needed.
-7. **DIN/TRS MIDI:** The UART0 pin (GP0) drives the signal; verify standard 220-ohm current-loop resistors are wired on your jack.
+6. **Footswitches and encoder switch** are debounced for 20 ms in software. The RP2040's internal pull-ups are weak (about 50 kΩ),
+   so if footswitch wires are long or the inputs trigger falsely, add a 10 kΩ pull-up to 3V3 and 100 nF to ground on each line.
+7. **DIN/TRS MIDI out:** GP0 (UART0 TX) drives the signal. The 220 Ω resistors are for 5 V senders; at 3.3 V the MIDI spec uses
+   33 Ω from 3V3 to DIN pin 4 and 10 Ω from GP0 to DIN pin 5. On a TRS jack, Type A and Type B swap those two contacts.
+   GP1 (UART0 RX) is reserved for MIDI in, which nothing reads yet; it needs an optocoupler (6N138 or H11L1) and must never be wired straight to a MIDI jack.
 8. **Current limitations:** Preset storage in flash currently links `NoStorage` (hold-to-save confirms `NO STORAGE`), external MIDI clock sync,
    and preset slots 2-8 are simulator-only. Core 1 screensaver dimming (30s inactivity -> 0x01 contrast) is fully operational.
