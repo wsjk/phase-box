@@ -77,8 +77,8 @@ See [pinout_and_hardware.md](./references/pinout_and_hardware.md) for full circu
 
 | Signal | RP2040 Pin | Hardware Role |
 | :--- | :--- | :--- |
-| `MIDI_TX` | **GP0** | 31,250 baud serial MIDI TX (connect via 220Ω resistor) |
-| `MIDI_RX` | **GP1** | Serial MIDI RX (reserved) |
+| `UART_TX` | **GP0** | 31,250 baud serial MIDI TX (3.3 V wiring: see pinout_and_hardware.md) |
+| `UART_RX` | **GP1** | Serial MIDI RX (reserved) |
 | `ENC_A` | **GP2** | Rotary encoder phase A (pulled high, switch to GND) |
 | `ENC_B` | **GP3** | Rotary encoder phase B (pulled high, switch to GND) |
 | `OLED_SDA` | **GP4** | `i2c0` data line (SSD1306 address `0x3C`) |

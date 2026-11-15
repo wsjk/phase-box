@@ -322,7 +322,7 @@ Hardware pin mappings are defined in the HAL headers and drivers. To change a pi
   - `FS_TAP` = GP10, `FS_MUTATE` = GP11, `FS_BYPASS` = GP12
   - `OLED_SDA` = GP4, `OLED_SCL` = GP5 (`i2c0`)
   - `EXP_ENC_A` = GP7, `EXP_ENC_B` = GP8, `EXP_ENC_SW` = GP9 (expression encoder; its switch = freeze)
-  - `MIDI_TX` = GP0, `MIDI_RX` = GP1 (`uart0`, passed to `PicoHalMidi` in `firmware_main.cpp`)
+  - `UART_TX` = GP0, `UART_RX` = GP1 (`uart0`; `PicoHalMidi` defaults)
   - Free for future controls: GP13–GP22, GP26–GP28.
 * **OLED Configuration:** Set height with `cmake -DPHASEBOX_OLED_HEIGHT=64 ..` (32 rows by default; 64 rows supported). Default bus speed is 400 kHz (`-DPHASEBOX_OLED_I2C_HZ=1000000` for 1 MHz).
 * **Encoder Reversal / Detents:** Change `ENC_REVERSED`, `EXP_ENC_REVERSED` or `ENC_TRANSITIONS_PER_DETENT` (shared by both encoders) in [include/hal/pinout.hpp](../include/hal/pinout.hpp).
@@ -393,8 +393,11 @@ breadboard or PCB for the first time, verify these hardware integration points:
 4. **Picture mirrored or upside down?** In `PicoHalDisplay::init()` change segment remap `0xA1` to `0xA0` and scan direction `0xC8` to `0xC0`.
 5. **Encoder:** Wrong direction -> toggle `ENC_REVERSED` in `include/hal/pinout.hpp`; one click = two steps, or two clicks per step ->
    change `ENC_TRANSITIONS_PER_DETENT` (4 or 2). All controls are wired switch-to-ground (pull-ups are enabled in firmware).
-6. **Footswitches and encoder switch** are debounced for 20 ms in software; no extra hardware is needed.
-7. **DIN/TRS MIDI:** The UART0 pin (GP0) drives the signal; verify standard 220-ohm current-loop resistors are wired on your jack.
+6. **Footswitches and encoder switch** are debounced for 20 ms in software. The RP2040's internal pull-ups are weak (about 50 kΩ),
+   so if footswitch wires are long or the inputs trigger falsely, add a 10 kΩ pull-up to 3V3 and 100 nF to ground on each line.
+7. **DIN/TRS MIDI out:** GP0 (UART0 TX) drives the signal. The 220 Ω resistors are for 5 V senders; at 3.3 V the MIDI spec uses
+   33 Ω from 3V3 to DIN pin 4 and 10 Ω from GP0 to DIN pin 5. On a TRS jack, Type A and Type B swap those two contacts.
+   GP1 (UART0 RX) is reserved for MIDI in, which nothing reads yet; it needs an optocoupler (6N138 or H11L1) and must never be wired straight to a MIDI jack.
 8. **Presets:** hold the encoder 1 s (`SAVED`), power-cycle, and check the settings come back. Press and turn the encoder to change slot.
    Saving pauses both cores briefly (see `firmware/include/PicoFlash.hpp`).
 9. **Current limitations:** no external MIDI clock sync. Core 1 screensaver dimming (30s inactivity -> 0x01 contrast) is fully operational.

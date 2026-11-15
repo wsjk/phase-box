@@ -1,5 +1,6 @@
 #pragma once
 #include "hal/hal_midi.hpp"
+#include "hal/pinout.hpp"
 #include <cstdint>
 
 #if __has_include("hardware/uart.h") && __has_include("hardware/gpio.h")
@@ -22,7 +23,7 @@ public:
     static constexpr uint8_t MIDI_TIMING_CLOCK = 0xF8;
 
 #if defined(PHASEBOX_PICO_UART_AVAILABLE)
-    PicoHalMidi(uart_inst_t* uart = uart0, unsigned tx_pin = 0, unsigned rx_pin = 1, unsigned baud_rate = MIDI_BAUD_RATE)
+    PicoHalMidi(uart_inst_t* uart = uart0, unsigned tx_pin = pins::UART_TX, unsigned rx_pin = pins::UART_RX, unsigned baud_rate = MIDI_BAUD_RATE)
         : uart_(uart), tx_pin_(tx_pin), rx_pin_(rx_pin), baud_rate_(baud_rate) {}
 
     void init() {

@@ -40,7 +40,7 @@ constexpr size_t FRAME_BYTES = static_cast<size_t>(OLED_W) * OLED_H / 8;
 phasebox::hal::SeqlockBuffer<FRAME_BYTES> g_shared_frame;   // Core 0 -> Core 1
 std::atomic<uint32_t> g_last_activity_ms{0};                // Core 0 -> Core 1
 
-phasebox::hal::PicoHalMidi g_uart_midi(uart0, phasebox::hal::pins::MIDI_TX, phasebox::hal::pins::MIDI_RX);   // 31250 baud
+phasebox::hal::PicoHalMidi g_uart_midi;   // uart0 on pins::UART_TX / UART_RX, 31250 baud
 PhaseBoxState g_state;
 PicoFlash g_flash;
 FlashPresetStorage g_storage(g_flash);    // slots 1-8, kept through power-off

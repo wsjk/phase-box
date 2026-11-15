@@ -24,7 +24,7 @@ This file is automatically loaded into agent context. It provides immediate grou
 
 | Task / Domain | Target Files | Key Symbols |
 | :--- | :--- | :--- |
-| **Board Pinout & Detents** | `include/hal/pinout.hpp` | `MIDI_TX`, `MIDI_RX`, `ENC_A`, `ENC_B`, `ENC_SW`, `EXP_ENC_A`, `EXP_ENC_B`, `EXP_ENC_SW`, `FS_TAP`, `FS_MUTATE`, `FS_BYPASS` |
+| **Board Pinout & Detents** | `include/hal/pinout.hpp` | `UART_TX`, `UART_RX`, `ENC_A`, `ENC_B`, `ENC_SW`, `EXP_ENC_A`, `EXP_ENC_B`, `EXP_ENC_SW`, `FS_TAP`, `FS_MUTATE`, `FS_BYPASS` |
 | **Menu Pages P1–P12** | `include/SimControls.hpp` | `simui::adjust()`, `simui::page_name()`, `simui::footer()`, `preview_curve()` |
 | **Synthesizer State** | `include/PhaseBoxState.hpp` | `PhaseBoxState`, `advance()`, `evaluateMacros()`, `frozen`, `bypassed` |
 | **Oscillator & Waveforms**| `include/PhaseOscillator.hpp`<br/>`src/PhaseOscillator.cpp` | `WaveShape` (`SINE`, `SAW`, `SQUARE`, `TRIANGLE`), `update()` |

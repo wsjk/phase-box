@@ -6,8 +6,8 @@ All hardware pins and detent constants are centralized in `include/hal/pinout.hp
 
 ```cpp
 namespace phasebox::hal::pins {
-constexpr uint8_t MIDI_TX    = 0;   // uart0 TX, 31,250 baud MIDI out (DIN/TRS)
-constexpr uint8_t MIDI_RX    = 1;   // uart0 RX (reserved; MIDI in is not used yet)
+constexpr uint8_t UART_TX    = 0;   // uart0 TX: DIN/TRS MIDI out (31,250 baud)
+constexpr uint8_t UART_RX    = 1;   // uart0 RX: reserved for MIDI in (needs an optocoupler; nothing reads it yet)
 constexpr uint8_t ENC_A      = 2;   // rotary encoder phase A
 constexpr uint8_t ENC_B      = 3;   // rotary encoder phase B
 constexpr uint8_t OLED_SDA   = 4;   // I2C0 SDA
@@ -37,6 +37,13 @@ Free GPIO for future controls: GP13–GP22, GP26–GP28 (GP23–GP25 and GP29 ar
 * All switches (`ENC_SW`, `EXP_ENC_SW`, `FS_TAP`, `FS_MUTATE`, `FS_BYPASS`) are wired **normally-open to ground**.
 * RP2040 internal pull-ups are enabled on all input pins (`gpio_pull_up()`).
 * Software debouncing uses a 20ms transition filter (`include/hal/debounce.hpp`).
+* The internal pull-ups are weak (~50 kΩ). For long footswitch leads, add 10 kΩ to 3V3 and 100 nF to GND per line.
+
+## MIDI Wiring
+
+* MIDI out at 3.3 V: 33 Ω from 3V3 to DIN pin 4, 10 Ω from GP0 to DIN pin 5 (220 Ω values are for 5 V senders). TRS Type A and Type B swap these two contacts.
+* MIDI in (GP1) is not implemented. It needs an optocoupler (6N138 / H11L1); never connect a MIDI jack directly to GP1.
+* OLED I2C runs at 400 kHz (the SSD1306 rating). `-DPHASEBOX_OLED_I2C_HZ=1000000` is out of spec and only for modules known to cope.
 
 ## Expression Encoder
 
