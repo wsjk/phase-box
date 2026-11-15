@@ -13,7 +13,7 @@ with the PR number.
 ### Added
 
 - `CHANGELOG.md`, and a rule in `AGENTS.md`: every change checks `README.md` and `docs/*.md`
-  and adds a changelog line.
+  and adds a changelog line. (#33)
 
 ## 2026-11-14
 
