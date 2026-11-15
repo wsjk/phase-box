@@ -167,6 +167,8 @@ phase-box/
 │   ├── test_hal_interfaces.cpp  # Mock HAL contract verification
 │   ├── test_preset_manager.cpp  # Binary preset encoding & CRC integrity
 │   └── test_regressions.cpp     # System regression tests
+├── cmake/version.cmake          # PHASEBOX_VERSION from the latest v* git tag
+├── .github/                     # Release workflow: tags and publishes a GitHub Release on every merge to main
 ├── scripts/                     # Utility scripts
 │   └── reset_coremidi.sh        # macOS CoreMIDI preference and state recovery tool
 └── docs/                        # Project Documentation
@@ -376,6 +378,20 @@ cmake --build firmware/build -j4
 #    - firmware/build/phase_box_firmware.uf2 (Drag-and-drop to Pico in BOOTSEL mode)
 #    - firmware/build/phase_box_firmware.elf (For GDB/Picoprobe debugging)
 ```
+
+### Version numbers and releases
+
+Every merge to `main` is a release. `.github/workflows/release.yml` (logic in `.github/scripts/release.sh`) tags the
+merge commit `vX.Y.Z` and publishes a [GitHub Release](https://github.com/wsjk/phase-box/releases) whose notes list
+the merged PRs by title. Those notes are the project's changelog, so write each PR title as a release-note line. The
+bump is a patch (0.1.0 → 0.1.1) unless the PR has a `minor` or `major` label; `.github/release.yml` groups the notes
+by the same labels. The first release is v0.1.0.
+
+`cmake/version.cmake`, included by the root `CMakeLists.txt` and `firmware/CMakeLists.txt`, sets `PHASEBOX_VERSION`
+from `git describe` when CMake configures: `0.3.0` on a release commit, `0.3.0-2-gabc1234` two commits later, with
+`-dirty` for uncommitted changes, and `0.0.0-g<sha>` before the first tag. The simulator's window title shows it, and
+the firmware stores it as its program version (`picotool info firmware/build/phase_box_firmware.uf2`). Re-run `cmake`
+to pick up a new commit or tag.
 
 ---
 

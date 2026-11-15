@@ -18,6 +18,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 * 🛠️ **[Developer & Architecture Guide](docs/DEVELOPER_GUIDE.md)**: Dual-core architecture, signal flow diagrams, **"C++ Crash Course for Python Programmers"**, and step-by-step contribution recipes.
 * 🎨 **[Raylib Desktop UI Guide](docs/RAYLIB_UI_GUIDE.md)**: Beginner-friendly guide to modifying the desktop simulator GUI, colors, controls, and Raylib primitives.
 * 📐 **[Context Handover Blueprint](docs/phase_box_context_handover_blueprint.md)**: Complete implementation state and execution phases.
+* 📝 **[Releases](https://github.com/wsjk/phase-box/releases)**: The changelog. Every merge to `main` is tagged and released, and the notes list the merged PRs. The version shows in the simulator's title bar and in `picotool info` for the firmware.
 
 ---
 

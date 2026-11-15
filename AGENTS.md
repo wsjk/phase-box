@@ -17,6 +17,11 @@ This file is automatically loaded into agent context. It provides immediate grou
    - Serial DIN MIDI runs at 31,250 baud (~3,125 B/s). Always route CC messages through `MidiChangeFilter` (sends on value change + periodic 1s refresh) rather than blasting raw CCs every cycle.
 4. **Default MIDI Target:**
    - Desktop simulator routes CoreMIDI directly to `"FRASIL FM-1"` (configurable via `$PHASE_BOX_MIDI_DEST="name"`; `"virtual"` creates a DAW virtual port).
+5. **Docs Check and Release Notes (every commit or PR):**
+   - Before you commit a change to code, build files or hardware, run `ls docs/*.md`, then read `README.md` and every file listed. Fix any text the change makes wrong (controls, pages, pinout, wiring, build commands, test counts) in the same commit. Also check `AGENTS.md`, the affected `.agents/skills/` files and any README in the folder you changed.
+   - There is no changelog file. Each merge to `main` is released automatically (`.github/workflows/release.yml`), and the release notes are the merged PR titles, so write the PR title as a release-note line. Label the PR `minor` for a new feature or behaviour change, or `major` for a breaking one (for example, a preset format that old presets cannot load); otherwise it is a patch release.
+   - Fix only what the change makes wrong. For a full audit of all docs against the code, use the `docs-drift-check` skill if it is installed.
+   - Say in the PR description which docs you updated, or that none needed it.
 
 ---
 
