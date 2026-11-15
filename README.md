@@ -41,7 +41,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 | :--- | :--- | :--- |
 | **MIDI Serial** | **GP0** (TX), **GP1** (RX) | `uart0` running at 31,250 baud (8N1). |
 | **Rotary Encoder** | **GP2** (A), **GP3** (B), **GP6** (Switch) | Navigation, velocity-accelerated tuning, hold-to-save. |
-| **OLED Display** | **GP4** (SDA), **GP5** (SCL) | `i2c0` at 400 kHz / 1 MHz (Address: `0x3C`, 128×32 or 128×64). |
+| **OLED Display** | **GP4** (SDA), **GP5** (SCL) | `i2c0` at 400 kHz; 1 MHz is optional and beyond the SSD1306's rating (Address: `0x3C`, 128×32 or 128×64). |
 | **Footswitch 1** | **GP10** | Tap tempo (40–300 BPM) & instant phase reset. |
 | **Footswitch 2** | **GP11** | Turing shift register mutation trigger / cycle. |
 | **Expression Encoder** | **GP7** (A), **GP8** (B) | Global modulation depth, 20 clicks from 0.00 to 1.00 (no push switch). |
