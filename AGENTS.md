@@ -17,6 +17,11 @@ This file is automatically loaded into agent context. It provides immediate grou
    - Serial DIN MIDI runs at 31,250 baud (~3,125 B/s). Always route CC messages through `MidiChangeFilter` (sends on value change + periodic 1s refresh) rather than blasting raw CCs every cycle.
 4. **Default MIDI Target:**
    - Desktop simulator routes CoreMIDI directly to `"FRASIL FM-1"` (configurable via `$PHASE_BOX_MIDI_DEST="name"`; `"virtual"` creates a DAW virtual port).
+5. **Docs and Changelog Check (every change):**
+   - Before you commit a change to code, build files or hardware, read `README.md` and every `docs/*.md`. Fix any text the change makes wrong (controls, pages, pinout, wiring, build commands, test counts) in the same commit. Also check `AGENTS.md`, the affected `.agents/skills/` files and any README in the folder you changed.
+   - Add one line to `CHANGELOG.md` under `## Unreleased` (Added, Changed, Fixed or Removed). Add the PR number to the line once the PR exists. Leave it out only for changes nobody using or building the device would notice, such as typo fixes.
+   - Fix only what the change makes wrong. For a full audit of all docs against the code, use the `docs-drift-check` skill if it is installed.
+   - In the final report, say which docs you checked and which you changed.
 
 ---
 
