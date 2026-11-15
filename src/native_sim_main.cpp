@@ -228,7 +228,7 @@ int main(int argc, char** argv) {
     const Layout L = Layout::make(rows_env ? std::atoi(rows_env) : 64);
 
     if (!std::getenv("PHASE_BOX_NO_HIGHDPI")) SetConfigFlags(FLAG_WINDOW_HIGHDPI);   // sharp on Retina screens
-    InitWindow(L.window_w, L.window_h, "Phase Box - Polyrhythmic Macro Simulator");
+    InitWindow(L.window_w, L.window_h, "Phase Box " PHASEBOX_VERSION " - Polyrhythmic Macro Simulator");
     load_fonts();
     SetTargetFPS(60);
 
@@ -268,7 +268,7 @@ int main(int argc, char** argv) {
     uint32_t last_cc_ms = 0;                 // MIDI goes out every 30 ms of frame time
 
     // mouse / knob state
-    bool knob_down = false, tap_down = false, mutate_down = false, exp_down = false;
+    bool knob_down = false, tap_down = false, mutate_down = false, bypass_down = false, exp_down = false;
     float wheel_acc = 0.0f, knob_angle = 0.0f, exp_wheel_acc = 0.0f, exp_angle = 0.0f;
     simlayout::KnobDrag knob_drag, exp_drag;
     bool have_detent = false;
@@ -308,6 +308,7 @@ int main(int argc, char** argv) {
             if (simlayout::hit_circle(L.knob, m.x, m.y)) { knob_down = true; knob_drag.begin(L.knob, m.x, m.y); pot_pos = simpot::norm(state, active_dest, state.active_page); }   // encoder switch, or the start of a drag
             else if (simlayout::hit_circle(L.foot_tap, m.x, m.y)) { tap_down = true; do_tap(); }
             else if (simlayout::hit_circle(L.foot_mutate, m.x, m.y)) { mutate_down = true; state.step_turing(); }
+            else if (simlayout::hit_circle(L.foot_bypass, m.x, m.y)) { bypass_down = true; state.bypassed = !state.bypassed; }
             else if (simlayout::hit_circle(L.exp_knob, m.x, m.y)) { exp_down = true; exp_drag.begin(L.exp_knob, m.x, m.y); }
             else for (int i = 0; i < simlayout::BUTTON_COUNT; ++i) {
                 if (!simlayout::hit_rect(L.buttons[i], m.x, m.y)) continue;
@@ -321,7 +322,8 @@ int main(int argc, char** argv) {
                 }
             }
         }
-        if (!lmb_down) knob_down = tap_down = mutate_down = exp_down = false;
+        if (!lmb_down && exp_down && !exp_drag.dragged()) state.toggle_freeze();   // a click (not a drag) on the expression encoder
+        if (!lmb_down) knob_down = tap_down = mutate_down = bypass_down = exp_down = false;
         if (knob_down) {                                  // dragging the knob turns it
             if (pot_mode) {                               // the pointer follows the hand, and stops at the end stops
                 const float degrees = knob_drag.move_degrees(m.x, m.y);
@@ -445,10 +447,13 @@ int main(int argc, char** argv) {
 
         draw_led(L.led_tap, kAmber, state.osc.phase < 0.8f);                       // flashes on every beat
         draw_led(L.led_mutate, kCyan, now_ms < mutate_flash_until);                // flashes on every Turing step
+        draw_led(L.led_bypass, kAmber, state.bypassed);                            // lit while bypassed
         draw_footswitch(L.foot_tap, tap_down);
         draw_footswitch(L.foot_mutate, mutate_down);
+        draw_footswitch(L.foot_bypass, bypass_down);
         centered_text("TAP / RESET", L.foot_tap.x, L.foot_tap.y + L.foot_tap.r + 5, 12, kSilk, true);
         centered_text("MUTATE / CYCLE", L.foot_mutate.x, L.foot_mutate.y + L.foot_mutate.r + 5, 12, kSilk, true);
+        centered_text("BYPASS", L.foot_bypass.x, L.foot_bypass.y + L.foot_bypass.r + 5, 12, kSilk, true);
 
         draw_jack(L.jack_midi);
         ui_text("MIDI OUT  DIN/TRS", static_cast<int>(L.jack_midi.x + 24), static_cast<int>(L.jack_midi.y - 8), 12, kSilk, true);
@@ -458,11 +463,13 @@ int main(int argc, char** argv) {
 
         draw_expression_encoder(L.exp_knob, L.exp_knob_ring, exp_angle, state.expression);
         centered_text("EXPRESSION", L.exp_knob.x, L.exp_knob_ring.y + L.exp_knob_ring.r + 2, 12, kSilk, true);
+        centered_text("CLICK: FREEZE", L.exp_knob.x, L.exp_knob_ring.y - L.exp_knob_ring.r - 12, 9, kSilkDim);
         centered_text(TextFormat("%.2f", state.expression), L.exp_knob.x, L.exp_knob_ring.y + L.exp_knob_ring.r + 18, 10, kAmber);
 
-        // simulator-only shortcuts
-        ui_text("SIMULATOR ONLY", static_cast<int>(L.buttons[0].x), 32, 12, kAmber, true);
-        ui_text("(not on the unit)", static_cast<int>(L.buttons[0].x), 47, 9, kSilkDim);
+        // one-click shortcuts (the unit: expression click = freeze, BYPASS footswitch, TAP + MUTATE held 2 s = reset /
+        // undo, encoder pressed + turned = slot)
+        ui_text("SHORTCUTS", static_cast<int>(L.buttons[0].x), 32, 12, kAmber, true);
+        ui_text("(the unit has its own controls)", static_cast<int>(L.buttons[0].x), 47, 9, kSilkDim);
         draw_button(L.buttons[simlayout::BTN_FREEZE], "FREEZE   (F)", state.frozen);
         draw_button(L.buttons[simlayout::BTN_BYPASS], "BYPASS   (B)", state.bypassed);
         draw_button(L.buttons[simlayout::BTN_RESET], "RESET ALL  (R)", false);
@@ -506,7 +513,7 @@ int main(int argc, char** argv) {
         }
         ui_text("[T/Space] Tap  |  [Z/X] Expression -/+  |  [M] Step Turing  |  [R] Reset ALL  |  [U] Undo reset", mx + 15, my + 184, 12, LIGHTGRAY);
         ui_text(TextFormat("[Enter] hold = SAVE  |  [ ] = slot %d (auto-saves 2 s after an edit)  |  [F] FREEZE  |  [B] BYPASS (all 0)", session.slot()), mx + 15, my + 202, 12, LIGHTGRAY);
-        ui_text("Mouse: drag or scroll the knob = turn  |  click knob = next page, hold 1 s = save  |  click footswitches  |  drag or scroll EXPRESSION", mx + 15, my + 220, 12, LIGHTGRAY);
+        ui_text("Mouse: drag or scroll the knob = turn  |  click knob = next page, hold 1 s = save  |  click footswitches  |  drag/scroll EXPRESSION, click = freeze", mx + 15, my + 220, 12, LIGHTGRAY);
         {   // every page, straight from the page table, so new pages show up here by themselves
             std::string pages;
             for (int i = 0; i < simui::PAGE_COUNT; ++i) {

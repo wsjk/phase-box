@@ -12,11 +12,11 @@
 // (version 3; version 2 files from earlier builds are rejected and defaults are used)
 // Loading validates magic, version, length, CRC and every field's range, and only
 // then commits to the live state (a bad file never half-applies).
-/// Where encoded presets are kept: files on the desktop; a flash backend can implement this for the device.
+/// Where encoded presets are kept: files on the desktop (FilePresetStorage), flash on the device (FlashPresetStorage).
 class PresetStorage {
 public:
     virtual ~PresetStorage() = default;
-    /// False for a backend that cannot store anything (the device until flash storage is added).
+    /// False for a backend that cannot store anything (NoStorage, or flash that overlaps the firmware).
     virtual bool available() const { return true; }
     virtual bool write(int slot, const uint8_t* data, size_t n) = 0;
     /// Bytes read into `out`, or 0 if the slot is empty or unreadable.
@@ -171,6 +171,8 @@ private:
         return true;
     }
 
+public:
+    /// CRC-32 (IEEE, as in zip/PNG). Also used by FlashPresetStorage for its record headers.
     static uint32_t crc32(const uint8_t* data, size_t len) {
         uint32_t crc = 0xFFFFFFFFu;
         for (size_t i = 0; i < len; ++i) {

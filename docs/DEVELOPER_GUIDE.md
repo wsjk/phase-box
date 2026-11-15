@@ -3,7 +3,7 @@
 > **Implementation status (read first).** The primary production architecture is unified around **`DeviceApp`** (`include/DeviceApp.hpp`), which encapsulates all hardware controls, parameter editing, modulation math, preset sessions, and rendering:
 > - **Shared Engine:** The RP2040 firmware target (`firmware/src/firmware_main.cpp`), the native desktop simulator (`src/native_sim_main.cpp`), and the GoogleTest host suite (`tests/test_device_app.cpp` driving the full device against mock inputs) all execute this identical engine and menu logic (pages P1–P12).
 > - **Dual-Core Workload:** In the RP2040 firmware, Core 0 handles real-time input polling, 60 Hz modulation engine stepping, MIDI change filtering and dispatch over both UART (GP0 at 31,250 baud) and USB (TinyUSB), and 30 FPS OLED frame rendering. Core 1 strictly owns the `i2c0` bus to copy rendered frames to the SSD1306 panel via a lock-free `SeqlockBuffer` and manage `ScreenSaver` contrast dimming, preventing slow I2C transfers from ever stalling real-time MIDI generation.
-> - **Preset Sessions:** `PresetSession` (`include/PresetSession.hpp`) manages auto-save (2 s of idle), hold-to-save (1 s encoder hold), slots 1–8, and OLED status messaging. On macOS/Linux/Windows, the simulator and tests use `FilePresetStorage` (`preset_*.bin`). On RP2040, `NoStorage` is currently linked until LittleFS flash storage with multicore lockout is added (`NO STORAGE` message on hold-to-save).
+> - **Preset Sessions:** `PresetSession` (`include/PresetSession.hpp`) manages auto-save (2 s of idle), hold-to-save (1 s encoder hold), slots 1–8, and OLED status messaging. On macOS/Linux/Windows, the simulator and tests use `FilePresetStorage` (`preset_*.bin`). On RP2040, `FlashPresetStorage` (`include/FlashPresetStorage.hpp`) keeps the slots in the last 64 KB of flash through `PicoFlash` (`firmware/include/PicoFlash.hpp`, `flash_safe_execute`): two 4 KB sectors per slot, records appended with a sequence number and CRC, the other sector erased only when one is full, so a power cut never loses the last good save.
 > - **Early Layered Prototype:** `src/main.cpp` and `include/core/` are earlier experimental prototypes that are not part of any CMake build target. All active development, firmware flashing, desktop simulation, and tests build from `include/`, `src/`, `firmware/`, and `tests/`.
 
 
@@ -28,8 +28,9 @@ The Raspberry Pi RP2040 contains two 32-bit ARM Cortex-M0+ processor cores opera
 |  |                                |  |                               | |
 |  |  [High-Frequency Polling Loop] |  |  [Async Display Service Loop] | |
 |  |   - Quadrature Decoder (GP2,3) |  |   - SSD1306 OLED via I2C0     | |
-|  |   - Debounced Switches (GP6,10,|  |     (GP4 SDA, GP5 SCL)        | |
-|  |     GP11: Enc, Tap, Mutate)    |  |   - Reads Seqlock Frame Buffer| |
+|  |   - Debounced Switches (GP6,9, |  |     (GP4 SDA, GP5 SCL)        | |
+|  |     10,11,12: Enc, Freeze, Tap,|  |   - Reads Seqlock Frame Buffer| |
+|  |     Mutate, Bypass)            |  |                               | |
 |  |   - Expression Encoder (GP7,8) |  |   - ScreenSaver Dimming       | |
 |  |   - TinyUSB Service (tud_task) |  |     (30 s Idle -> 0x01 min)   | |
 |  |  [60 Hz Frame Execution]       |  |   - Zero Real-Time Blocking   | |
@@ -166,6 +167,8 @@ phase-box/
 │   ├── test_hal_interfaces.cpp  # Mock HAL contract verification
 │   ├── test_preset_manager.cpp  # Binary preset encoding & CRC integrity
 │   └── test_regressions.cpp     # System regression tests
+├── cmake/version.cmake          # PHASEBOX_VERSION from the latest v* git tag
+├── .github/                     # Release workflow: tags and publishes a GitHub Release on every merge to main
 ├── scripts/                     # Utility scripts
 │   └── reset_coremidi.sh        # macOS CoreMIDI preference and state recovery tool
 └── docs/                        # Project Documentation
@@ -318,10 +321,11 @@ register_bits = (register_bits << 1) | feedback_bit;
 Hardware pin mappings are defined in the HAL headers and drivers. To change a pin, update the corresponding default argument or constant:
 * **Hardware Pinout (Single Source of Truth):** [include/hal/pinout.hpp](../include/hal/pinout.hpp)
   - `ENC_A` = GP2, `ENC_B` = GP3, `ENC_SW` = GP6
-  - `FS_TAP` = GP10, `FS_MUTATE` = GP11
+  - `FS_TAP` = GP10, `FS_MUTATE` = GP11, `FS_BYPASS` = GP12
   - `OLED_SDA` = GP4, `OLED_SCL` = GP5 (`i2c0`)
-  - `EXP_ENC_A` = GP7, `EXP_ENC_B` = GP8 (expression encoder)
-* **MIDI TX/RX:** [include/hal/pico_hal_midi.hpp](../include/hal/pico_hal_midi.hpp) (Default: GP0 TX, GP1 RX).
+  - `EXP_ENC_A` = GP7, `EXP_ENC_B` = GP8, `EXP_ENC_SW` = GP9 (expression encoder; its switch = freeze)
+  - `UART_TX` = GP0, `UART_RX` = GP1 (`uart0`; `PicoHalMidi` defaults)
+  - Free for future controls: GP13–GP22, GP26–GP28.
 * **OLED Configuration:** Set height with `cmake -DPHASEBOX_OLED_HEIGHT=64 ..` (32 rows by default; 64 rows supported). Default bus speed is 400 kHz (`-DPHASEBOX_OLED_I2C_HZ=1000000` for 1 MHz).
 * **Encoder Reversal / Detents:** Change `ENC_REVERSED`, `EXP_ENC_REVERSED` or `ENC_TRANSITIONS_PER_DETENT` (shared by both encoders) in [include/hal/pinout.hpp](../include/hal/pinout.hpp).
 
@@ -351,7 +355,7 @@ All algorithmic DSP math, macro scaling, device state machines, and MIDI routing
    cmake --build build-test -j4
    ./build-test/run_host_tests
    ```
-   *(All 170 unit tests across 40 suites will run and report status).*
+   *(All 186 unit tests across 42 suites will run and report status).*
 
 ---
 
@@ -375,6 +379,20 @@ cmake --build firmware/build -j4
 #    - firmware/build/phase_box_firmware.elf (For GDB/Picoprobe debugging)
 ```
 
+### Version numbers and releases
+
+Every merge to `main` is a release. `.github/workflows/release.yml` (logic in `.github/scripts/release.sh`) tags the
+merge commit `vX.Y.Z` and publishes a [GitHub Release](https://github.com/wsjk/phase-box/releases) whose notes list
+the merged PRs by title. Those notes are the project's changelog, so write each PR title as a release-note line. The
+bump is a patch (0.1.0 → 0.1.1) unless the PR has a `minor` or `major` label; `.github/release.yml` groups the notes
+by the same labels. The first release is v0.1.0.
+
+`cmake/version.cmake`, included by the root `CMakeLists.txt` and `firmware/CMakeLists.txt`, sets `PHASEBOX_VERSION`
+from `git describe` when CMake configures: `0.3.0` on a release commit, `0.3.0-2-gabc1234` two commits later, with
+`-dirty` for uncommitted changes, and `0.0.0-g<sha>` before the first tag. The simulator's window title shows it, and
+the firmware stores it as its program version (`picotool info firmware/build/phase_box_firmware.uf2`). Re-run `cmake`
+to pick up a new commit or tag.
+
 ---
 
 ## First power-up on a real board (checklist)
@@ -396,5 +414,6 @@ breadboard or PCB for the first time, verify these hardware integration points:
 7. **DIN/TRS MIDI out:** GP0 (UART0 TX) drives the signal. The 220 Ω resistors are for 5 V senders; at 3.3 V the MIDI spec uses
    33 Ω from 3V3 to DIN pin 4 and 10 Ω from GP0 to DIN pin 5. On a TRS jack, Type A and Type B swap those two contacts.
    GP1 (UART0 RX) is reserved for MIDI in, which nothing reads yet; it needs an optocoupler (6N138 or H11L1) and must never be wired straight to a MIDI jack.
-8. **Current limitations:** Preset storage in flash currently links `NoStorage` (hold-to-save confirms `NO STORAGE`), external MIDI clock sync,
-   and preset slots 2-8 are simulator-only. Core 1 screensaver dimming (30s inactivity -> 0x01 contrast) is fully operational.
+8. **Presets:** hold the encoder 1 s (`SAVED`), power-cycle, and check the settings come back. Press and turn the encoder to change slot.
+   Saving pauses both cores briefly (see `firmware/include/PicoFlash.hpp`).
+9. **Current limitations:** no external MIDI clock sync. Core 1 screensaver dimming (30s inactivity -> 0x01 contrast) is fully operational.

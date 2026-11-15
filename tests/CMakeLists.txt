@@ -29,6 +29,7 @@ add_executable(run_host_tests
     test_midi_router.cpp
     test_sim_pot.cpp
     test_sim_layout.cpp
+    test_flash_preset_storage.cpp
     ../src/hal/hal_adc.cpp
     ../src/hal/hal_encoder.cpp
     ../src/hal/hal_display.cpp

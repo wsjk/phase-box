@@ -1,7 +1,7 @@
 #pragma once
 // Where everything sits in the simulator window. The enclosure follows the drawing in docs/USER_GUIDE.md
-// (section 1): OLED on the left, rotary encoder on the right, two footswitches below with the expression
-// encoder between them, MIDI OUT jack along the bottom, USB-C top right. Pure geometry (no graphics
+// (section 1): OLED on the left, rotary encoder on the right, three footswitches below (TAP, MUTATE, BYPASS)
+// with the expression encoder between TAP and MUTATE, MIDI OUT jack along the bottom, USB-C top right. Pure geometry (no graphics
 // library), so it is unit-tested: bounds, overlaps, hit-testing and mouse-wheel mapping.
 #include <algorithm>
 #include <cmath>
@@ -39,12 +39,12 @@ struct Layout {
     int oled_scale = 3;                       // screen pixels per OLED pixel
     Rect enclosure, oled_bezel, oled_screen;
     Circle knob, knob_ring;                   // encoder cap, and the ring around it (turn / hold feedback)
-    Circle foot_tap, foot_mutate;
-    Circle led_tap, led_mutate, led_power;
+    Circle foot_tap, foot_mutate, foot_bypass;
+    Circle led_tap, led_mutate, led_bypass, led_power;
     Circle exp_knob, exp_knob_ring;           // expression encoder cap, and its value ring
     Circle jack_midi;
     Rect usb_port;
-    Rect buttons[BUTTON_COUNT];               // simulator-only shortcuts (not on the real unit)
+    Rect buttons[BUTTON_COUNT];               // one-click shortcuts (the unit does these with its own controls)
     Rect monitor;                             // text readouts under the enclosure
 
     static Layout make(int rows) {
@@ -57,13 +57,15 @@ struct Layout {
         L.oled_bezel = {L.oled_screen.x - 10, L.oled_screen.y - 10, sw + 20, sh + 20};
         L.knob = {650, cy, 58};
         L.knob_ring = {650, cy, 72};
-        L.foot_tap = {262, 380, 46};
-        L.foot_mutate = {650, 380, 46};
-        L.led_tap = {262, 320, 7};
-        L.led_mutate = {650, 320, 7};
+        L.foot_tap = {160, 380, 46};
+        L.foot_mutate = {500, 380, 46};
+        L.foot_bypass = {680, 380, 46};
+        L.led_tap = {160, 320, 7};
+        L.led_mutate = {500, 320, 7};
+        L.led_bypass = {680, 320, 7};
         L.led_power = {270, 50, 4};
-        L.exp_knob = {456, 380, 40};
-        L.exp_knob_ring = {456, 380, 60};
+        L.exp_knob = {330, 380, 40};
+        L.exp_knob_ring = {330, 380, 60};
         L.jack_midi = {110, 468, 14};
         L.usb_port = {702, 36, 52, 20};
         for (int i = 0; i < BUTTON_COUNT; ++i) L.buttons[i] = {940, 64.0f + 48.0f * i, 190, 36};

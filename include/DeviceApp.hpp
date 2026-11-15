@@ -3,9 +3,13 @@
 // on a computer: encoders and switches in -> pages / tempo / Turing / saving -> MIDI out + OLED frame.
 //   Encoder turn   = change the value on the current page (faster turn = bigger BPM steps)
 //   Encoder click  = next page            Encoder hold 1 s = save (see PresetSession)
-//   Expression encoder turn = LFO depth (PhaseBoxState::expression, 0..1, 20 clicks end to end)
+//   Encoder pressed + turned = previous / next preset slot (1..8; the press then neither saves nor changes page)
+//   Expression encoder turn  = LFO depth (PhaseBoxState::expression, 0..1, 20 clicks end to end)
+//   Expression encoder click = freeze on / off
 //   Footswitch 1   = tap tempo + restart all LFOs at 0 degrees
 //   Footswitch 2   = step the Turing machine
+//   Footswitch 3   = bypass on / off
+//   Footswitches 1 + 2 held together for 2 s = reset everything to defaults; do it again before any other edit to undo
 #include <algorithm>
 #include <cstdint>
 #include "OledRenderer.hpp"
@@ -27,7 +31,7 @@ public:
 struct DeviceInputs {
     bool enc_a = true, enc_b = true;   // page/value encoder
     bool exp_a = true, exp_b = true;   // expression encoder
-    bool enc_sw = false, tap = false, mutate = false;
+    bool enc_sw = false, exp_sw = false, tap = false, mutate = false, bypass = false;
 };
 
 class DeviceApp {
@@ -35,6 +39,7 @@ public:
     static constexpr uint32_t FRAME_US = 16667;        // engine + MIDI at 60 Hz
     static constexpr uint32_t RENDER_INTERVAL_MS = 33; // OLED at ~30 FPS
     static constexpr uint32_t FAST_TURN_MS = 30;       // detents closer than this count as a fast spin
+    static constexpr uint32_t RESET_HOLD_MS = 2000;    // footswitches 1 + 2 held this long = reset / undo reset
 
     DeviceApp(PhaseBoxState& state, PresetSession& presets, MidiOut& midi, uint16_t oled_w = 128, uint16_t oled_h = 32)
         : s_(state), presets_(presets), midi_(midi), fb_(oled_w, oled_h) {}
@@ -44,7 +49,11 @@ public:
         const uint32_t ms = to_ms(now_us);
 
         const int detent = quad_.feed(in.enc_a, in.enc_b);
-        if (detent != 0) {
+        if (detent != 0 && enc_sw_.state()) {           // turned while pressed: change preset slot
+            presets_.cancel_press();
+            presets_.select_slot(presets_.slot() + detent, s_, ms);   // stops at slots 1 and 8
+            touch(ms);
+        } else if (detent != 0) {
             const bool fast = have_detent_ && static_cast<uint32_t>(ms - last_detent_ms_) < FAST_TURN_MS;
             have_detent_ = true;
             last_detent_ms_ = ms;
@@ -58,6 +67,12 @@ public:
             touch(ms);
         }
 
+        exp_sw_.update(in.exp_sw, ms);
+        if (exp_sw_.rose()) {
+            s_.toggle_freeze();
+            touch(ms);
+        }
+
         const bool sw_down = enc_sw_.update(in.enc_sw, ms);
         if (enc_sw_.rose() || enc_sw_.fell()) touch(ms);
         if (presets_.button(sw_down, s_, ms) == PresetSession::Event::ShortPress) {
@@ -66,6 +81,7 @@ public:
 
         tap_sw_.update(in.tap, ms);
         if (tap_sw_.rose()) {
+            bpm_before_tap_ = s_.osc.bpm;
             float bpm;
             if (tap_tempo_.tap(ms, bpm)) s_.osc.bpm = bpm;
             s_.restart_phase();
@@ -75,6 +91,29 @@ public:
         mutate_sw_.update(in.mutate, ms);
         if (mutate_sw_.rose()) {
             s_.step_turing();
+            touch(ms);
+        }
+
+        bypass_sw_.update(in.bypass, ms);
+        if (bypass_sw_.rose()) {
+            s_.bypassed = !s_.bypassed;
+            touch(ms);
+        }
+
+        // Footswitches 1 + 2 together. Their own presses already fired; the tap must not count towards a new
+        // tempo (it would be an edit, and would block undo), so take it back.
+        const bool both = tap_sw_.state() && mutate_sw_.state();
+        if (both && !both_down_) {
+            both_down_ = true;
+            both_fired_ = false;
+            both_since_ms_ = ms;
+            s_.osc.bpm = bpm_before_tap_;
+            tap_tempo_.reset();
+        }
+        if (!both) both_down_ = false;
+        if (both_down_ && !both_fired_ && static_cast<uint32_t>(ms - both_since_ms_) >= RESET_HOLD_MS) {
+            both_fired_ = true;
+            if (!presets_.undo_reset(s_, ms)) presets_.reset_to_defaults(s_, ms);   // undo if nothing was edited since the reset
             touch(ms);
         }
     }
@@ -123,12 +162,14 @@ private:
 
     phasebox::hal::QuadratureDecoder quad_{phasebox::hal::pins::ENC_TRANSITIONS_PER_DETENT, phasebox::hal::pins::ENC_REVERSED};
     phasebox::hal::QuadratureDecoder exp_quad_{phasebox::hal::pins::ENC_TRANSITIONS_PER_DETENT, phasebox::hal::pins::EXP_ENC_REVERSED};
-    phasebox::hal::Debounce enc_sw_, tap_sw_, mutate_sw_;
+    phasebox::hal::Debounce enc_sw_, exp_sw_, tap_sw_, mutate_sw_, bypass_sw_;
     TapTempo tap_tempo_;
     MidiChangeFilter filter_;
 
     int active_dest_ = 0;
     bool have_detent_ = false, have_frame_ = false, rendered_ = false;
-    uint32_t last_detent_ms_ = 0, last_render_ms_ = 0, last_activity_ms_ = 0;
+    bool both_down_ = false, both_fired_ = false;
+    float bpm_before_tap_ = 0.0f;
+    uint32_t last_detent_ms_ = 0, last_render_ms_ = 0, last_activity_ms_ = 0, both_since_ms_ = 0;
     uint64_t last_frame_us_ = 0;
 };

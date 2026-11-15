@@ -1,6 +1,7 @@
 // Phase Box firmware (RP2040).
 //   Core 0: USB (TinyUSB), reads the controls, runs the engine at 60 Hz, sends MIDI over USB and DIN/TRS.
 //   Core 1: owns the OLED I2C bus. It only copies finished frames to the panel and dims the screen when idle.
+//   Presets are saved to the last 64 KB of flash (PicoFlash + FlashPresetStorage); a save pauses both cores briefly.
 // All behaviour lives in DeviceApp (include/DeviceApp.hpp), which is unit-tested on a computer; this file
 // only touches pins and peripherals.
 #include <atomic>
@@ -14,6 +15,8 @@
 #include "tusb.h"
 
 #include "DeviceApp.hpp"
+#include "FlashPresetStorage.hpp"
+#include "PicoFlash.hpp"
 #include "PhaseBoxState.hpp"
 #include "PresetManager.hpp"
 #include "PresetSession.hpp"
@@ -37,9 +40,10 @@ constexpr size_t FRAME_BYTES = static_cast<size_t>(OLED_W) * OLED_H / 8;
 phasebox::hal::SeqlockBuffer<FRAME_BYTES> g_shared_frame;   // Core 0 -> Core 1
 std::atomic<uint32_t> g_last_activity_ms{0};                // Core 0 -> Core 1
 
-phasebox::hal::PicoHalMidi g_uart_midi;   // uart0: GP0 (TX), GP1 (RX), 31250 baud
+phasebox::hal::PicoHalMidi g_uart_midi;   // uart0 on pins::UART_TX / UART_RX, 31250 baud
 PhaseBoxState g_state;
-NoStorage g_storage;                      // TODO: a flash-backed PresetStorage makes presets survive power-off
+PicoFlash g_flash;
+FlashPresetStorage g_storage(g_flash);    // slots 1-8, kept through power-off
 PresetSession g_presets(g_storage);
 
 /// Sends every CC to the USB host (when connected) and out of the DIN/TRS jack.
@@ -61,6 +65,7 @@ DeviceApp g_app(g_state, g_presets, g_midi_out, OLED_W, OLED_H);
 uint32_t ms_since_boot() { return to_ms_since_boot(get_absolute_time()); }
 
 void core1_entry() {
+    flash_safe_execute_core_init();   // lets Core 0 pause this core while it writes a preset to flash
     namespace pins = phasebox::hal::pins;
     phasebox::hal::PicoHalDisplay display(i2c0, pins::OLED_SDA, pins::OLED_SCL,
                                           phasebox::hal::PicoHalDisplay::DEFAULT_I2C_ADDR, OLED_W, OLED_H);
@@ -86,7 +91,8 @@ void core1_entry() {
 
 void init_input_pins() {
     namespace pins = phasebox::hal::pins;
-    const unsigned list[] = {pins::ENC_A, pins::ENC_B, pins::EXP_ENC_A, pins::EXP_ENC_B, pins::ENC_SW, pins::FS_TAP, pins::FS_MUTATE};
+    const unsigned list[] = {pins::ENC_A, pins::ENC_B, pins::EXP_ENC_A, pins::EXP_ENC_B, pins::ENC_SW, pins::EXP_ENC_SW,
+                             pins::FS_TAP, pins::FS_MUTATE, pins::FS_BYPASS};
     for (unsigned p : list) {
         gpio_init(p);
         gpio_set_dir(p, GPIO_IN);
@@ -123,8 +129,10 @@ int main() {
         in.exp_a = gpio_get(pins::EXP_ENC_A);
         in.exp_b = gpio_get(pins::EXP_ENC_B);
         in.enc_sw = !gpio_get(pins::ENC_SW);          // active low
+        in.exp_sw = !gpio_get(pins::EXP_ENC_SW);
         in.tap = !gpio_get(pins::FS_TAP);
         in.mutate = !gpio_get(pins::FS_MUTATE);
+        in.bypass = !gpio_get(pins::FS_BYPASS);
         g_app.poll_inputs(in, now_us);                // as often as possible so no encoder edge is missed
 
         if (now_us >= next_frame_us) {

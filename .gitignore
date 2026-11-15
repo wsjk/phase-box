@@ -13,3 +13,5 @@ build/
 patch*.bin
 preset_*.bin
 project_dump.txt
+# Claude Code worktrees (local, per session)
+.claude/worktrees/
