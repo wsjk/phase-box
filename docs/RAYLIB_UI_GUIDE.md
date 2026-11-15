@@ -267,3 +267,7 @@ ui_text(TextFormat("MY METRIC: %.3f (Units)", my_float_variable), mx + 15, my + 
   ```bash
   PHASE_BOX_KNOB=encoder ./build-native/phase_box_native_sim
   ```
+* **Refresh the README screenshot** (saves one capture after ~2 s, expression set to 0.60 so its ring shows, then quits):
+  ```bash
+  (cd docs/images && PHASE_BOX_SCREENSHOT=simulator.png ../../build-native/phase_box_native_sim)
+  ```

@@ -275,6 +275,12 @@ int main(int argc, char** argv) {
     uint32_t last_detent_ms = 0, mutate_flash_until = 0;
     float prev_turing_norm = state.turing_norm;
 
+    // PHASE_BOX_SCREENSHOT=file.png saves one window capture after ~2 s (for docs/images) and quits.
+    // The expression encoder is set part way so its value ring shows in the picture.
+    const char* shot_env = std::getenv("PHASE_BOX_SCREENSHOT");
+    int shot_frames = (shot_env && *shot_env) ? 120 : -1;
+    if (shot_frames > 0) state.turn_expression(PhaseBoxState::EXPRESSION_CLICKS * 3 / 5);
+
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
         clock_ms += dt * 1000.0;
@@ -514,6 +520,7 @@ int main(int argc, char** argv) {
         ui_text("[ESC] Quit", mx + static_cast<int>(L.monitor.w) - 85, my + 8, 12, RED);
 
         EndDrawing();
+        if (shot_frames > 0 && --shot_frames == 0) { TakeScreenshot(shot_env); break; }
     }
 
     unload_fonts();
