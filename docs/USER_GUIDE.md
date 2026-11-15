@@ -105,7 +105,7 @@ Pages **P4 (CHAN)**, **P5 (CC)**, **P9 (MAC WGT)**, **P10 (MAC DIV)**, and **P12
 7. Select the next destination on `P8` and repeat. All 3 streams output concurrently every cycle and are automatically saved to the active preset slot.
 
 ### 3.2 Expression Encoder (Global Depth)
-The second rotary encoder, between the footswitches, sets one depth value for all destinations:
+The second rotary encoder (on the PCB, beside the value encoder; in the simulator, between the footswitches) sets one depth value for all destinations:
 - Each click moves the value by **0.05**; it stops at **0.00** and **1.00** (20 clicks end to end).
 - At **0.00**: Modulation depth is halved (50%). This is the value at power-up.
 - At **1.00**: Modulation is at full depth.
