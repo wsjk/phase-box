@@ -1,4 +1,6 @@
 #pragma once
+#include <algorithm>
+#include <cmath>
 #include <vector>
 #include "PhaseOscillator.hpp"
 #include "TuringMachine.hpp"
@@ -10,7 +12,6 @@ struct PhaseBoxState {
     MacroEngine macros;
     int active_page = 0;        // 0: Wave, 1: BPM, 2: Phase, 3: Chan, 4: CC, 5: PM, 6: Mute, 7: Mac sel, 8: Mac wgt, 9: Mac div, 10: Turing mix, 11: Mac off
     bool button_state = false;
-    float adc_expression = 0.0f;
     // Legacy global values. P4/P5 now edit the *active destination's* channel/CC instead;
     // these stay only so preset files keep their layout.
     int midi_channel = 1;
@@ -21,6 +22,7 @@ struct PhaseBoxState {
     // Performance states (not saved in presets, not touched by reset):
     bool frozen = false;     // hold every output where it is and stop the LFOs; unfreezing continues from there
     bool bypassed = false;   // send 0 on every destination; the LFOs keep running silently so you rejoin in time
+    float expression = 0.0f; // expression encoder, 0..1: scales every LFO's depth from 0.5x (0) to 1x (1)
     std::vector<int> live_values;   // what the destinations would send right now
     std::vector<int> held_values;   // what they sent when freeze was switched on
 
@@ -30,12 +32,19 @@ struct PhaseBoxState {
     }
     void toggle_freeze() { set_frozen(!frozen); }
 
+    /// Expression encoder: each click moves the value by 1/EXPRESSION_CLICKS, stopping at 0 and 1.
+    static constexpr int EXPRESSION_CLICKS = 20;
+    void turn_expression(int clicks) {
+        const int pos = static_cast<int>(std::lround(expression * EXPRESSION_CLICKS)) + clicks;
+        expression = static_cast<float>(std::clamp(pos, 0, EXPRESSION_CLICKS)) / EXPRESSION_CLICKS;
+    }
+
     float turing_norm = 0.5f;   // latest Turing output (0..1), updated once per master cycle
     float turing_mix = 0.0f;    // P11: 0 = LFO only, 1 = Turing sequence only
 
     /// Every setting back to its power-up default: oscillator (wave, BPM, phase, PM), Turing (mutation, mix,
     /// pattern), and every destination (channel, CC, weight, offset, multiplier). All LFOs restart at 0 degrees.
-    /// Not touched: the expression pedal (an input, not a setting), the current page and the preset slot.
+    /// Not touched: the expression encoder (a performance control, like freeze), the current page and the preset slot.
     void reset_parameters() {
         osc = PhaseOscillator();
         turing.reset();
@@ -72,7 +81,7 @@ struct PhaseBoxState {
         src.osc = &osc;
         src.turing_norm = turing_norm;
         src.turing_mix = turing_mix;
-        auto out = macros.evaluate(osc.phase, dt, adc_expression, src);
+        auto out = macros.evaluate(osc.phase, dt, expression, src);
         live_values.resize(out.size());
         for (size_t i = 0; i < out.size(); ++i) live_values[i] = out[i].value;
         if (frozen && held_values.size() != out.size()) held_values = live_values;   // frozen before anything was evaluated

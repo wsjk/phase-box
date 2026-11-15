@@ -26,7 +26,7 @@ This skill provides procedures for maintaining and extending preset serializatio
 3. **Dirty-State Auto-Save:**
    - Parameter adjustments trigger an internal 2-second dirty-timer (`AUTO_SAVE_DELAY_MS = 2000`).
    - If no further changes occur within 2 seconds, `PresetSession::update()` silently commits to the active slot.
-   - Non-preset state (current menu page, running oscillator phase, pedal position) NEVER marks the session dirty or triggers saves.
+   - Non-preset state (current menu page, running oscillator phase, expression encoder value) NEVER marks the session dirty or triggers saves.
 
 ---
 

@@ -24,7 +24,7 @@ int rising_crossings(const std::vector<int>& v, int threshold) {
     for (size_t i = 1; i < v.size(); ++i) if (v[i - 1] <= threshold && v[i] > threshold) ++n;
     return n;
 }
-PhaseBoxState fresh() { PhaseBoxState s; s.adc_expression = 1.0f; return s; } // 120 BPM: one master cycle = 0.5 s
+PhaseBoxState fresh() { PhaseBoxState s; s.expression = 1.0f; return s; } // 120 BPM: one master cycle = 0.5 s
 } // namespace
 
 TEST(SimPages, NavigationWrapsAcrossAllTwelvePages) {
@@ -216,7 +216,7 @@ TEST(SimPages, BpmStepsByOneWhenTurnedSlowlyAndByFiveWhenSpun) {
 }
 
 TEST(SimPages, RestartPhasePutsEveryLfoBackAtZero) {
-    PhaseBoxState s; s.adc_expression = 1.0f;
+    PhaseBoxState s; s.expression = 1.0f;
     for (int i = 0; i < 80; ++i) { s.advance(0.01f); s.evaluateMacros(0.01f); }   // 0.8 s = 1.6 cycles at 120 BPM
     EXPECT_TRUE(s.osc.phase > 1.0f);
     s.restart_phase();
@@ -262,10 +262,10 @@ TEST(SimReset, EveryParameterGoesBackToItsDefault) {
 
 TEST(SimReset, LeavesInputsAndTheUiPositionAlone) {
     PhaseBoxState s;
-    s.adc_expression = 0.7f; s.active_page = 5; s.button_state = true;
+    s.expression = 0.7f; s.active_page = 5; s.button_state = true;
     s.osc.bpm = 99.0f;
     s.reset_parameters();
-    EXPECT_NEAR(s.adc_expression, 0.7f, 0.0001f);           // the pedal is an input, not a setting
+    EXPECT_NEAR(s.expression, 0.7f, 0.0001f);           // the expression encoder is a performance control, not a setting
     EXPECT_EQ(s.active_page, 5);
     EXPECT_TRUE(s.button_state);
 }
@@ -297,8 +297,8 @@ TEST(SimFreeze, HoldsEveryOutputWhateverHappensAndResumesFromThere) {
     const auto at_freeze = s.evaluateMacros(0.001f);
     const float phase = s.osc.phase;
     bool still = true;
-    for (int i = 0; i < 500; ++i) {                           // time passes, and the pedal and settings change
-        s.adc_expression = (i % 2) ? 0.0f : 1.0f;
+    for (int i = 0; i < 500; ++i) {                           // time passes, and the expression and settings change
+        s.expression = (i % 2) ? 0.0f : 1.0f;
         if (i == 100) s.osc.shape = PhaseOscillator::SQUARE;
         if (i == 200) s.macros.destinations[0].scale = 0.3f;
         s.advance(0.001f);
@@ -308,7 +308,7 @@ TEST(SimFreeze, HoldsEveryOutputWhateverHappensAndResumesFromThere) {
     EXPECT_TRUE(still);
     EXPECT_NEAR(s.osc.phase, phase, 1e-6f);                   // the clock stood still
 
-    s.osc.shape = PhaseOscillator::SINE; s.macros.destinations[0].scale = 1.0f; s.adc_expression = 1.0f;
+    s.osc.shape = PhaseOscillator::SINE; s.macros.destinations[0].scale = 1.0f; s.expression = 1.0f;
     s.toggle_freeze();                                        // let go: continues from where it stopped
     s.advance(0.001f);
     const int first = s.evaluateMacros(0.001f)[0].value;
@@ -333,7 +333,7 @@ TEST(SimFreeze, FreezingBeforeAnythingWasEvaluatedHoldsTheFirstValues) {
     PhaseBoxState s = fresh();
     s.set_frozen(true);
     const auto a = s.evaluateMacros(0.001f);
-    s.macros.destinations[1].scale = 0.1f; s.adc_expression = 0.0f;
+    s.macros.destinations[1].scale = 0.1f; s.expression = 0.0f;
     const auto b = s.evaluateMacros(0.001f);
     for (size_t d = 0; d < a.size(); ++d) EXPECT_EQ(a[d].value, b[d].value);
 }
@@ -347,11 +347,11 @@ TEST(SimBypass, EverythingGoesToZeroWhileTheLfosKeepRunning) {
     for (int i = 0; i < 400; ++i) {
         s.advance(0.001f);
         for (const auto& m : s.evaluateMacros(0.001f)) all_zero = all_zero && m.value == 0;
-        if (i == 150) s.adc_expression = 0.3f;                // the pedal makes no difference either
+        if (i == 150) s.expression = 0.3f;                // the expression makes no difference either
     }
     EXPECT_TRUE(all_zero);
     EXPECT_TRUE(std::fabs(s.osc.phase - p0) > 0.01f);         // the clock was running underneath
-    s.adc_expression = 1.0f;
+    s.expression = 1.0f;
     s.bypassed = false;
     int sum = 0;
     for (int i = 0; i < 40; ++i) { s.advance(0.001f); for (const auto& m : s.evaluateMacros(0.001f)) sum += m.value; }

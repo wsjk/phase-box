@@ -49,7 +49,7 @@ cmake -B build-native -S .
 cmake --build build-native -j4
 ./build-native/phase_box_native_sim
 ```
-*Features realistic stompbox layout, interactive mouse knob dragging (circular or vertical) and wheel detents, treadle pedal dragging, footswitch clicks, and CoreMIDI routing directly to `"FRASIL FM-1"` (override with `$PHASE_BOX_MIDI_DEST="name"`; `"virtual"` creates DAW virtual source).*
+*Features realistic stompbox layout, interactive mouse knob dragging (circular or vertical) and wheel detents, expression encoder dragging, footswitch clicks, and CoreMIDI routing directly to `"FRASIL FM-1"` (override with `$PHASE_BOX_MIDI_DEST="name"`; `"virtual"` creates DAW virtual source).*
 
 ### 3. RP2040 Target Firmware Build (`.uf2`)
 
@@ -81,10 +81,10 @@ See detailed notes in [Architecture Reference](./references/architecture.md).
 > **Do not edit `include/core/` or `src/main.cpp`** — they are unbuilt legacy prototypes.
 
 1. **Hardware Decoupling (`DeviceApp`)**:
-   * All physical inputs (quadrature encoder, buttons, footswitches, ADC0 expression), state advancing, parameter editing (pages P1–P12), preset auto-save, and OLED rendering are encapsulated in `DeviceApp.hpp`.
+   * All physical inputs (both quadrature encoders, buttons, footswitches), state advancing, parameter editing (pages P1–P12), preset auto-save, and OLED rendering are encapsulated in `DeviceApp.hpp`.
    * This allows complete zero-hardware verification in `tests/test_device_app.cpp` using mock inputs.
 2. **Core 0 Workload (Real-Time Control & MIDI Engine)**:
-   * Polls inputs: Quadrature encoder (GP2, GP3), debounced switches (GP6, GP10, GP11), ADC0 expression pedal (GP26 at 200 Hz).
+   * Polls inputs: Quadrature encoder (GP2, GP3), debounced switches (GP6, GP10, GP11), expression encoder (GP7, GP8).
    * Runs TinyUSB tasks (`tud_task()`).
    * Steps modulation engine at 60 Hz (`DeviceApp::FRAME_US` = 16,667 µs).
    * Filters MIDI CC messages via `MidiChangeFilter` (sends on value change + periodic 1s refresh to respect the 3,125 B/s DIN MIDI bandwidth).
@@ -112,5 +112,5 @@ Update constants in `include/hal/pinout.hpp` (single source of truth):
 - Encoder: GP2 (A), GP3 (B), GP6 (Switch)
 - Footswitches: GP10 (Tap/Reset), GP11 (Mutate)
 - OLED I2C0: GP4 (SDA), GP5 (SCL)
-- Expression ADC0: GP26
-- Detent count & direction: `ENC_TRANSITIONS_PER_DETENT`, `ENC_REVERSED`
+- Expression encoder: GP7 (A), GP8 (B)
+- Detent count & direction: `ENC_TRANSITIONS_PER_DETENT` (both encoders), `ENC_REVERSED`, `EXP_ENC_REVERSED`

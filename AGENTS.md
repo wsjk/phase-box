@@ -10,7 +10,7 @@ This file is automatically loaded into agent context. It provides immediate grou
    - **ACTIVE PRODUCTION CODE:** Centered on `DeviceApp.hpp`, `PhaseBoxState.hpp`, `MacroEngine.hpp`, `SimControls.hpp`, and `PresetSession.hpp`. This is what is compiled by RP2040 firmware (`firmware/`), native simulator (`src/native_sim_main.cpp`), and 170 host unit tests across 40 test suites (`tests/`).
    - **DO NOT TOUCH `include/core/` OR `src/main.cpp`:** These are unbuilt legacy prototypes. Do NOT grep them, import them, or edit them when extending features or fixing bugs.
 2. **Dual-Core Workload Split (RP2040 Firmware):**
-   - **Core 0 (Real-Time Control & MIDI Engine):** Quadrature encoder decoding, switch debouncing, ADC0 expression sampling, 60 Hz engine advance, `MidiChangeFilter` bandwidth enforcement, dual MIDI streaming (UART0 31,250 baud on GP0 + TinyUSB), and 30 FPS OLED frame rendering into lock-free `SeqlockBuffer`.
+   - **Core 0 (Real-Time Control & MIDI Engine):** Quadrature decoding of both encoders (value + expression), switch debouncing, 60 Hz engine advance, `MidiChangeFilter` bandwidth enforcement, dual MIDI streaming (UART0 31,250 baud on GP0 + TinyUSB), and 30 FPS OLED frame rendering into lock-free `SeqlockBuffer`.
    - **Core 1 (Async Display & Screen Saver):** Exclusively owns `i2c0` SSD1306 (GP4 SDA, GP5 SCL); reads frames from `SeqlockBuffer` and updates panel without stalling Core 0. Manages `ScreenSaver` contrast dimming (dims to 0x01 after 30s of inactivity).
    - **Never perform blocking I/O, flash erase/writes, or I2C display drawing on Core 0.**
 3. **MIDI Bandwidth Rule:**
@@ -24,7 +24,7 @@ This file is automatically loaded into agent context. It provides immediate grou
 
 | Task / Domain | Target Files | Key Symbols |
 | :--- | :--- | :--- |
-| **Board Pinout & Detents** | `include/hal/pinout.hpp` | `ENC_A`, `ENC_B`, `ENC_SW`, `FS_TAP`, `FS_MUTATE`, `EXPR_PEDAL` |
+| **Board Pinout & Detents** | `include/hal/pinout.hpp` | `ENC_A`, `ENC_B`, `ENC_SW`, `EXP_ENC_A`, `EXP_ENC_B`, `FS_TAP`, `FS_MUTATE` |
 | **Menu Pages P1–P12** | `include/SimControls.hpp` | `simui::adjust()`, `simui::page_name()`, `simui::footer()`, `preview_curve()` |
 | **Synthesizer State** | `include/PhaseBoxState.hpp` | `PhaseBoxState`, `advance()`, `evaluateMacros()`, `frozen`, `bypassed` |
 | **Oscillator & Waveforms**| `include/PhaseOscillator.hpp`<br/>`src/PhaseOscillator.cpp` | `WaveShape` (`SINE`, `SAW`, `SQUARE`, `TRIANGLE`), `update()` |
@@ -32,7 +32,7 @@ This file is automatically loaded into agent context. It provides immediate grou
 | **Turing Shift Register** | `include/TuringMachine.hpp` | `TuringMachine`, `mutation_prob`, `step()` |
 | **Presets & Auto-Save** | `include/PresetSession.hpp`<br/>`firmware/include/PresetManager.hpp` | `PresetSession`, `update()` (2s auto-save), hold-to-save (1s), slots 1–8 |
 | **Hardware Driver Integration**| `include/DeviceApp.hpp`<br/>`firmware/src/firmware_main.cpp` | `DeviceApp`, `poll_inputs()`, `frame()`, `DualMidiOut` |
-| **Simulator Main & Stompbox UI** | `src/native_sim_main.cpp`<br/>`include/SimLayout.hpp`<br/>`include/SimPot.hpp` | Raylib loop, stompbox enclosure geometry, `KnobDrag`, treadle pedal drag |
+| **Simulator Main & Stompbox UI** | `src/native_sim_main.cpp`<br/>`include/SimLayout.hpp`<br/>`include/SimPot.hpp` | Raylib loop, stompbox enclosure geometry, `KnobDrag`, expression encoder drag/scroll |
 | **CoreMIDI Router & Fallback** | `include/MidiRouter.hpp`<br/>`include/CoreMidiBackend.hpp` | `midi_route::Router`, `DEFAULT_DESTINATION` (`"FRASIL FM-1"`), auto-reconnect |
 | **OLED Renderer & Font** | `include/OledRenderer.hpp`<br/>`include/SimFont.hpp` | `OledRenderer::render()`, 128×32 / 128×64 modes, custom bitmap font |
 | **Unit Test Suite** | `tests/test_device_app.cpp`<br/>`tests/test_sim_layout.cpp`, etc. | 170 GoogleTest cases across 40 suites |
@@ -47,7 +47,7 @@ Specialized procedures, architectural constraints, and step-by-step recipes are 
 | :--- | :--- | :--- |
 | **Master Runbook** | [`.agents/skills/phase-box/SKILL.md`](.agents/skills/phase-box/SKILL.md) | Overall workflow, build commands, dual-core rules |
 | **RP2040 Firmware** | [`.agents/skills/phase-box-firmware/SKILL.md`](.agents/skills/phase-box-firmware/SKILL.md) | Pico SDK, cross-compiler, pinout, Core 1 OLED & screensaver |
-| **Simulator & Raylib UI** | [`.agents/skills/phase-box-sim/SKILL.md`](.agents/skills/phase-box-sim/SKILL.md) | Stompbox geometry, knob/treadle drag, CoreMIDI, Raylib guide |
+| **Simulator & Raylib UI** | [`.agents/skills/phase-box-sim/SKILL.md`](.agents/skills/phase-box-sim/SKILL.md) | Stompbox geometry, knob/expression-encoder drag, CoreMIDI, Raylib guide |
 | **DSP, Waveforms & Menu** | [`.agents/skills/phase-box-dsp-macro/SKILL.md`](.agents/skills/phase-box-dsp-macro/SKILL.md) | 60 Hz pipeline, waveform recipes, Turing LFSR, P1–P12 |
 | **Presets & Storage** | [`.agents/skills/phase-box-presets/SKILL.md`](.agents/skills/phase-box-presets/SKILL.md) | PBX1 v3 binary format, CRC-32, 2s auto-save, hold-to-save |
 | **Generic Hardware Sim** | [`.agents/skills/raylib-hardware-sim/SKILL.md`](.agents/skills/raylib-hardware-sim/SKILL.md) | Reusable template for building stompbox/hardware UIs with Raylib |

@@ -4,7 +4,7 @@ description: >-
   Desktop simulator and CoreMIDI integration runbook for Phase Box.
   Use when developing, debugging, or running the native Raylib desktop simulator,
   modifying stompbox layout geometry (SimLayout/SimPot), tuning mouse/trackpad knob
-  or treadle dragging, or adjusting CoreMIDI routing to FRASIL FM-1 and DAW virtual ports.
+  or expression encoder dragging, or adjusting CoreMIDI routing to FRASIL FM-1 and DAW virtual ports.
 ---
 
 # Phase Box Desktop Simulator Skill
@@ -54,8 +54,8 @@ The simulator provides a 1:1 graphical model of the physical hardware enclosure.
   * **Mouse Wheel / Trackpad Scroll:** Turns the knob in discrete detents (`detents_from_wheel()`).
   * **Circular Drag:** Drag along outer rim clockwise to increment, counter-clockwise to decrement.
   * **Vertical Drag:** Click near knob center and drag straight up or down.
-* **Expression Treadle:**
-  * Drag or click along the vertical treadle slider on the right. Top = 100% (toe down), bottom = 0% (heel down).
+* **Expression Encoder** (between the footswitches):
+  * Drag (circular or vertical, own `KnobDrag`) or scroll over it; each click calls `PhaseBoxState::turn_expression()`. Amber ring + number show 0.00–1.00.
 * **Footswitches:**
   * Click **TAP** footswitch to tap tempo and reset LFO phase.
   * Click **MUTATE** footswitch to trigger immediate Turing shift register step.
@@ -71,7 +71,7 @@ The simulator provides a 1:1 graphical model of the physical hardware enclosure.
 | **`[F]`** | Freeze held outputs | **`[B]`** | Bypass outputs (send 0s) |
 | **`[R]`** | Reset all settings to defaults | **`[U]`** | Undo last reset |
 | **`[`** / **`]`** | Select Preset Slot (1–8) | **`[Enter]`** (1s) | Hold to Save Preset |
-| **`[1]` / `[2]` / `[3]`** | Set Expression (0%, 50%, 100%) | **`[ESC]`** | Exit Simulator |
+| **`[Z]`** / **`[X]`** | Expression encoder −1 / +1 click | **`[ESC]`** | Exit Simulator |
 
 ---
 

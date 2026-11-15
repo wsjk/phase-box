@@ -49,9 +49,9 @@ $$R_d = (1.0 - \text{tur\_mix}) \cdot W(\theta_d) + \text{tur\_mix} \cdot T$$
 
 ## 5. Bipolar Scaling, Offset & Expression
 
-Given destination weight $w_d \in [-2.0, +2.0]$, offset $o_d \in [-1.0, +1.0]$, and smoothed expression pedal value $E \in [0.0, 1.0]$:
+Given destination weight $w_d \in [-2.0, +2.0]$, offset $o_d \in [-1.0, +1.0]$, and expression encoder value $E \in [0.0, 1.0]$ (`PhaseBoxState::expression`, 20 clicks end to end):
 
-$$\text{scaled} = (R_d \cdot w_d \cdot E) + o_d$$
+$$\text{scaled} = (R_d \cdot w_d \cdot (0.5 + 0.5E)) + o_d$$
 $$\text{CC}_d = \text{clamp}\left( \text{round}(\text{scaled} \cdot 127),\ 0,\ 127 \right)$$
 
 ---
@@ -59,6 +59,6 @@ $$\text{CC}_d = \text{clamp}\left( \text{round}(\text{scaled} \cdot 127),\ 0,\ 1
 ## 6. Performance Overrides
 
 * **Freeze Mode (`FROZEN`)**:
-  Freezes $\Delta \theta \leftarrow 0$. Output holds constant at previous CC values regardless of pedal movements.
+  Freezes $\Delta \theta \leftarrow 0$. Output holds constant at previous CC values regardless of expression encoder turns.
 * **Bypass Mode (`BYPASS`)**:
   Forces all destinations to $\text{CC}_d \leftarrow 0$. Accumulators continue running in background. Bypass overrides Freeze.

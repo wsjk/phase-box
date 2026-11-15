@@ -12,7 +12,6 @@ add_executable(phase_box_firmware
     src/firmware_main.cpp
     src/usb_descriptors.c
     ../src/PhaseOscillator.cpp
-    ../src/hal/hal_adc.cpp
 )
 
 target_compile_definitions(phase_box_firmware PRIVATE PHASEBOX_OLED_HEIGHT=${PHASEBOX_OLED_HEIGHT})
@@ -25,7 +24,6 @@ target_include_directories(phase_box_firmware PRIVATE
 target_link_libraries(phase_box_firmware
     pico_stdlib
     hardware_i2c
-    hardware_adc
     hardware_uart
     hardware_gpio
     pico_multicore

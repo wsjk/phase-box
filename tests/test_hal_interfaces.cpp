@@ -67,7 +67,8 @@ TEST(HalInterfaces, PinoutMatchesDocumentedWiring) {
     EXPECT_EQ(hal::pins::OLED_SDA, 4);
     EXPECT_EQ(hal::pins::OLED_SCL, 5);
     EXPECT_EQ(hal::pins::ENC_SW, 6);
-    EXPECT_EQ(hal::pins::EXPR_PEDAL, 26);
+    EXPECT_EQ(hal::pins::EXP_ENC_A, 7);
+    EXPECT_EQ(hal::pins::EXP_ENC_B, 8);
 }
 
 TEST(Core1, EncoderRoutesToUiAndRenderIsThrottled) {

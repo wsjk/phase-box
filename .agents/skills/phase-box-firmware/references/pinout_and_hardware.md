@@ -13,9 +13,10 @@ namespace phasebox::hal::pins {
     constexpr unsigned OLED_SDA    = 4;  // GP4: SSD1306 I2C0 SDA
     constexpr unsigned OLED_SCL    = 5;  // GP5: SSD1306 I2C0 SCL
     constexpr unsigned ENC_SW      = 6;  // GP6: Encoder pushbutton
+    constexpr unsigned EXP_ENC_A   = 7;  // GP7: Expression encoder A
+    constexpr unsigned EXP_ENC_B   = 8;  // GP8: Expression encoder B
     constexpr unsigned FS_TAP      = 10; // GP10: Tap tempo footswitch
     constexpr unsigned FS_MUTATE   = 11; // GP11: Mutate footswitch
-    constexpr unsigned EXPR_PEDAL  = 26; // GP26: ADC0 Expression analog input
 }
 ```
 
@@ -23,8 +24,9 @@ namespace phasebox::hal::pins {
 
 | Macro | Default | Effect |
 | :--- | :--- | :--- |
-| `ENC_TRANSITIONS_PER_DETENT` | `4` | Number of quadrature state changes per physical detent click (typically 4 for Bourns/ALPS; set to 2 for some optical models). |
-| `ENC_REVERSED` | `0` | Invert rotation direction (set to 1 if clockwise turns decrease values). |
+| `ENC_TRANSITIONS_PER_DETENT` | `4` | Number of quadrature state changes per physical detent click (typically 4 for Bourns/ALPS; set to 2 for some optical models). Shared by both encoders. |
+| `ENC_REVERSED` | `false` | Invert the value encoder (set to `true` if clockwise turns decrease values). |
+| `EXP_ENC_REVERSED` | `false` | Invert the expression encoder. |
 
 ## Switch Configuration
 
@@ -32,15 +34,12 @@ namespace phasebox::hal::pins {
 * RP2040 internal pull-ups are enabled on all input pins (`gpio_pull_up()`).
 * Software debouncing uses a 20ms transition filter (`include/hal/debounce.hpp`).
 
-## ADC & Expression Circuit
+## Expression Encoder
 
-* Expression pedal connects via a 1/4" stereo TRS jack:
-  * **Tip**: Wiper connected to GP26 (ADC0).
-  * **Ring**: Reference voltage (3.3V RP2040 supply).
-  * **Sleeve**: Ground (GND).
-* Software EMA filter:
-  $$V_{\text{filtered}} = \alpha \cdot V_{\text{sample}} + (1 - \alpha) \cdot V_{\text{prev}}$$
-* Lower and upper deadbands (typically 2% of range) clamp noise at extremes to guarantee exact $0.0$ and $1.0$.
+* A second quadrature encoder (no push switch): A on GP7, B on GP8, common pin to GND.
+* Decoded on Core 0 by its own `QuadratureDecoder` in `DeviceApp::poll_inputs()`; each detent calls `PhaseBoxState::turn_expression()`.
+* Value range 0.0–1.0 in 20 clicks (`PhaseBoxState::EXPRESSION_CLICKS`), clamped at both ends. Depth multiplier = $0.5 + 0.5E$.
+* The unit has no analog input. `hal_adc.hpp` / `pico_hal_adc.hpp` remain only for the legacy `include/core/` prototypes.
 
 ## Dual-Core Concurrency & Lock-Free IPC
 

@@ -159,13 +159,13 @@ The enclosure is drawn with three layers:
 * Concentric metallic circles simulating a classic heavy-duty Carling stomp switch.
 * When clicked (`pressed = true`), the inner cap radius contracts and drops down by 2 pixels to simulate mechanical spring travel.
 
-### 4.5 The Expression Treadle (`draw_treadle`, lines 202–212)
-* Represents an expression pedal connected to the unit.
-* A vertical slider track (`L.treadle`).
-* The handle position is clamped on its track using `simlayout::y_from_expression()`.
-* The region below the handle fills with amber tint proportional to the pedal angle.
+### 4.5 The Expression Encoder (`draw_expression_encoder`, lines 202–208)
+* The second rotary encoder on the unit, between the footswitches (`L.exp_knob`, value ring `L.exp_knob_ring`).
+* Drawn with `draw_knob` in endless-encoder mode (15° ticks); the pointer turns 15° per click.
+* An amber arc on the ring shows `state.expression` (0 at −135°, 1 at +135°), with the value printed under the `EXPRESSION` label.
+* Input: drag it with its own `simlayout::KnobDrag` (circular or vertical), scroll over the ring (`detents_from_wheel`), or press `[Z]` / `[X]`. Every click calls `PhaseBoxState::turn_expression()`, the same function the firmware's `DeviceApp` uses.
 
-### 4.6 The Diagnostic Monitor (lines 468–516)
+### 4.6 The Diagnostic Monitor (lines 467–515)
 * The large lower panel displays real-time polyrhythmic output values, active MIDI destination details, CoreMIDI connection state, and a full menu page directory.
 
 ---
@@ -206,7 +206,7 @@ Change any RGB values and recompile with `cmake --build build-native -j4`.
        state.restart_phase();
        break;
    ```
-3. **Draw the button** in [src/native_sim_main.cpp](../src/native_sim_main.cpp#L461-L467):
+3. **Draw the button** in [src/native_sim_main.cpp](../src/native_sim_main.cpp#L460-L466):
    ```cpp
    draw_button(L.buttons[simlayout::BTN_PANIC], "PANIC RESET", false);
    ```
@@ -229,7 +229,7 @@ static Layout make(int rows) {
     
     L.knob = {650, cy, 58};           // cx, cy, radius
     L.foot_tap = {262, 380, 46};      // cx, cy, radius
-    L.treadle = {830, 60, 80, 300};   // x, y, width, height
+    L.exp_knob = {456, 380, 40};      // cx, cy, radius (expression encoder)
     // ...
     return L;
 }
@@ -240,7 +240,7 @@ static Layout make(int rows) {
 
 ### Recipe 4: Adding a New Real-Time Status Metric
 
-To display a new readout in the lower monitor panel, edit the drawing block around line 475 in [src/native_sim_main.cpp](../src/native_sim_main.cpp#L475):
+To display a new readout in the lower monitor panel, edit the drawing block around line 474 in [src/native_sim_main.cpp](../src/native_sim_main.cpp#L474):
 
 ```cpp
 // Draw a string at (mx + 15, my + 140) with font size 12 in YELLOW:

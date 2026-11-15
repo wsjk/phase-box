@@ -1,8 +1,9 @@
 #pragma once
 // Everything the Phase Box does on the device, with the hardware injected so it runs (and is tested)
-// on a computer: encoder, switches, pedal in -> pages / tempo / Turing / saving -> MIDI out + OLED frame.
+// on a computer: encoders and switches in -> pages / tempo / Turing / saving -> MIDI out + OLED frame.
 //   Encoder turn   = change the value on the current page (faster turn = bigger BPM steps)
 //   Encoder click  = next page            Encoder hold 1 s = save (see PresetSession)
+//   Expression encoder turn = LFO depth (PhaseBoxState::expression, 0..1, 20 clicks end to end)
 //   Footswitch 1   = tap tempo + restart all LFOs at 0 degrees
 //   Footswitch 2   = step the Turing machine
 #include <algorithm>
@@ -24,9 +25,9 @@ public:
 
 /// One reading of the physical controls. Switches: true = pressed. Encoder A/B: raw pin levels (1 = high).
 struct DeviceInputs {
-    bool enc_a = true, enc_b = true;
+    bool enc_a = true, enc_b = true;   // page/value encoder
+    bool exp_a = true, exp_b = true;   // expression encoder
     bool enc_sw = false, tap = false, mutate = false;
-    float expression = 0.0f;   // 0..1, already smoothed
 };
 
 class DeviceApp {
@@ -51,6 +52,12 @@ public:
             touch(ms);
         }
 
+        const int exp_detent = exp_quad_.feed(in.exp_a, in.exp_b);
+        if (exp_detent != 0) {
+            s_.turn_expression(exp_detent);
+            touch(ms);
+        }
+
         const bool sw_down = enc_sw_.update(in.enc_sw, ms);
         if (enc_sw_.rose() || enc_sw_.fell()) touch(ms);
         if (presets_.button(sw_down, s_, ms) == PresetSession::Event::ShortPress) {
@@ -70,8 +77,6 @@ public:
             s_.step_turing();
             touch(ms);
         }
-
-        s_.adc_expression = std::clamp(in.expression, 0.0f, 1.0f);   // the pedal does not count as screen activity
     }
 
     /// Call at about FRAME_US intervals. Advances the engine, sends MIDI, runs auto-save and redraws.
@@ -117,6 +122,7 @@ private:
     phasebox::hal::FrameBuffer fb_;
 
     phasebox::hal::QuadratureDecoder quad_{phasebox::hal::pins::ENC_TRANSITIONS_PER_DETENT, phasebox::hal::pins::ENC_REVERSED};
+    phasebox::hal::QuadratureDecoder exp_quad_{phasebox::hal::pins::ENC_TRANSITIONS_PER_DETENT, phasebox::hal::pins::EXP_ENC_REVERSED};
     phasebox::hal::Debounce enc_sw_, tap_sw_, mutate_sw_;
     TapTempo tap_tempo_;
     MidiChangeFilter filter_;

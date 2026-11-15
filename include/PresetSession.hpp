@@ -3,7 +3,7 @@
 //  - Auto-save: 2 s after the last edit the current settings are written silently.
 //  - Hold-to-save: holding the encoder button for 1 s saves at once and shows "SAVED".
 //  - Dirty detection compares a fingerprint of the *saved* fields, so any edit counts and
-//    non-persisted state (page, pedal, running phase) never causes a write.
+//    non-persisted state (page, expression, running phase) never causes a write.
 // Time is passed in explicitly (milliseconds, wrap-safe), so the same code runs on the device,
 // in the simulator and in unit tests with a fake clock.
 #include <cstdint>
