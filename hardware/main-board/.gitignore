@@ -1,0 +1,6 @@
+# KiCad local files
+*-backups/
+*.lck
+fp-info-cache
+*.kicad_prl
+#auto_saved_files#

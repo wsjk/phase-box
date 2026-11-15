@@ -168,6 +168,7 @@ phase-box/
 │   ├── test_preset_manager.cpp  # Binary preset encoding & CRC integrity
 │   └── test_regressions.cpp     # System regression tests
 ├── cmake/version.cmake          # PHASEBOX_VERSION from the latest v* git tag
+├── hardware/main-board/         # KiCad carrier board for a Pico in a Hammond 1590BB (see its README)
 ├── .github/                     # Release workflow: tags and publishes a GitHub Release on every merge to main
 ├── scripts/                     # Utility scripts
 │   └── reset_coremidi.sh        # macOS CoreMIDI preference and state recovery tool
