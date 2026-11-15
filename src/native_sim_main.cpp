@@ -228,7 +228,7 @@ int main(int argc, char** argv) {
     const Layout L = Layout::make(rows_env ? std::atoi(rows_env) : 64);
 
     if (!std::getenv("PHASE_BOX_NO_HIGHDPI")) SetConfigFlags(FLAG_WINDOW_HIGHDPI);   // sharp on Retina screens
-    InitWindow(L.window_w, L.window_h, "Phase Box - Polyrhythmic Macro Simulator");
+    InitWindow(L.window_w, L.window_h, "Phase Box " PHASEBOX_VERSION " - Polyrhythmic Macro Simulator");
     load_fonts();
     SetTargetFPS(60);
 
