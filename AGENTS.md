@@ -1,84 +1,46 @@
-# Phase Box: Agent Development Guide & Repo Rules
+# Phase Box: Agent Guide & Repo Rules
 
-This file is automatically loaded into agent context. It provides immediate ground truth to prevent wasteful codebase exploration.
+## Ground Rules
 
----
-
-## ⚡ Ground Rules & Architecture
-
-1. **Active Stack vs. Unbuilt Prototype:**
-   - **ACTIVE PRODUCTION CODE:** Centered on `DeviceApp.hpp`, `PhaseBoxState.hpp`, `MacroEngine.hpp`, `SimControls.hpp`, and `PresetSession.hpp`. This is what is compiled by RP2040 firmware (`firmware/`), native simulator (`src/native_sim_main.cpp`), and 186 host unit tests across 42 test suites (`tests/`).
-   - **DO NOT TOUCH `include/core/` OR `src/main.cpp`:** These are unbuilt legacy prototypes. Do NOT grep them, import them, or edit them when extending features or fixing bugs.
-2. **Dual-Core Workload Split (RP2040 Firmware):**
-   - **Core 0 (Real-Time Control & MIDI Engine):** Quadrature decoding of both encoders (value + expression), switch debouncing, 60 Hz engine advance, `MidiChangeFilter` bandwidth enforcement, dual MIDI streaming (UART0 31,250 baud on GP0 + TinyUSB), and 30 FPS OLED frame rendering into lock-free `SeqlockBuffer`.
-   - **Core 1 (Async Display & Screen Saver):** Exclusively owns `i2c0` SSD1306 (GP4 SDA, GP5 SCL); reads frames from `SeqlockBuffer` and updates panel without stalling Core 0. Manages `ScreenSaver` contrast dimming (dims to 0x01 after 30s of inactivity).
-   - **Never perform blocking I/O or I2C display drawing on Core 0.** The one exception is preset saving: flash erase/program stalls *both* cores whichever core runs it (XIP is off), so it goes only through `FlashPresetStorage` -> `PicoFlash` (`flash_safe_execute`; Core 1 calls `flash_safe_execute_core_init()`). It costs ~1 ms per save and ~45 ms for the erase every 8th save of a slot.
-3. **MIDI Bandwidth Rule:**
-   - Serial DIN MIDI runs at 31,250 baud (~3,125 B/s). Always route CC messages through `MidiChangeFilter` (sends on value change + periodic 1s refresh) rather than blasting raw CCs every cycle.
-4. **Default MIDI Target:**
-   - Desktop simulator routes CoreMIDI directly to `"FRASIL FM-1"` (configurable via `$PHASE_BOX_MIDI_DEST="name"`; `"virtual"` creates a DAW virtual port).
-5. **Docs Check and Release Notes (every commit or PR):**
-   - Before you commit a change to code, build files or hardware, run `ls docs/*.md`, then read `README.md` and every file listed. Fix any text the change makes wrong (controls, pages, pinout, wiring, build commands, test counts) in the same commit. Also check `AGENTS.md`, the affected `.agents/skills/` files and any README in the folder you changed.
-   - There is no changelog file. Each merge to `main` is released automatically (`.github/workflows/release.yml`), and the release notes are the merged PR titles, so write the PR title as a release-note line. Label the PR `minor` for a new feature or behaviour change, or `major` for a breaking one (for example, a preset format that old presets cannot load); otherwise it is a patch release.
-   - Fix only what the change makes wrong. For a full audit of all docs against the code, use the `docs-drift-check` skill if it is installed.
+1. **Active code:** `DeviceApp.hpp`, `PhaseBoxState.hpp`, `MacroEngine.hpp`, `SimControls.hpp`, `PresetSession.hpp`. Built by the RP2040 firmware (`firmware/`), the simulator (`src/native_sim_main.cpp`) and the host tests (`tests/`, 186 tests in 42 suites).
+   **DO NOT TOUCH `include/core/` OR `src/main.cpp`:** unbuilt legacy prototypes. Do not grep, import or edit them.
+2. **Dual-core firmware:** Core 0 runs encoders, debounce, the 60 Hz engine, `MidiChangeFilter`, MIDI out (UART0 GP0 + TinyUSB) and renders OLED frames into `SeqlockBuffer`. Core 1 alone owns `i2c0` (SSD1306, GP4/GP5) and the `ScreenSaver`.
+   **Never do blocking I/O or I2C drawing on Core 0.** Only exception: preset saves, which go through `FlashPresetStorage` -> `PicoFlash` (details in the firmware skill).
+3. **MIDI bandwidth:** DIN runs at 31,250 baud. Always send CCs through `MidiChangeFilter`, never raw every cycle.
+4. **Simulator MIDI target:** CoreMIDI `"FRASIL FM-1"` by default; `$PHASE_BOX_MIDI_DEST="name"` overrides, `"virtual"` makes a DAW port.
+5. **Docs check and release notes (every commit or PR):**
+   - Before committing code, build-file or hardware changes, run `ls docs/*.md`, then read `README.md` and every listed file. In the same commit, fix any text the change makes wrong (controls, pages, pinout, wiring, build commands, test counts). Also check `AGENTS.md`, affected `.agents/skills/` files and READMEs in the changed folder.
+   - No changelog file: each merge to `main` is released automatically (`.github/workflows/release.yml`) with the merged PR titles as notes. Write the PR title as a release-note line. Label `minor` for a new feature or behaviour change, `major` for a breaking one (e.g. a preset format old presets cannot load); otherwise patch.
+   - Fix only what the change makes wrong. Full audit: the `docs-drift-check` skill, if installed.
    - Say in the PR description which docs you updated, or that none needed it.
 
----
+## File Map
 
-## 🗺️ File Map & Quick Navigation
-
-| Task / Domain | Target Files | Key Symbols |
+| Domain | Files | Key symbols |
 | :--- | :--- | :--- |
-| **Board Pinout & Detents** | `include/hal/pinout.hpp` | `UART_TX`, `UART_RX`, `ENC_A`, `ENC_B`, `ENC_SW`, `EXP_ENC_A`, `EXP_ENC_B`, `EXP_ENC_SW`, `FS_TAP`, `FS_MUTATE`, `FS_BYPASS` |
-| **Menu Pages P1–P12** | `include/SimControls.hpp` | `simui::adjust()`, `simui::page_name()`, `simui::footer()`, `preview_curve()` |
-| **Synthesizer State** | `include/PhaseBoxState.hpp` | `PhaseBoxState`, `advance()`, `evaluateMacros()`, `frozen`, `bypassed` |
-| **Oscillator & Waveforms**| `include/PhaseOscillator.hpp`<br/>`src/PhaseOscillator.cpp` | `WaveShape` (`SINE`, `SAW`, `SQUARE`, `TRIANGLE`), `update()` |
-| **Macro Engine & Divisions**| `include/MacroEngine.hpp` | `MacroDestination` (`scale`, `offset`, `clock_mult`), `evaluate()` |
-| **Turing Shift Register** | `include/TuringMachine.hpp` | `TuringMachine`, `mutation_prob`, `step()` |
-| **Presets & Auto-Save** | `include/PresetSession.hpp`<br/>`firmware/include/PresetManager.hpp` | `PresetSession`, `update()` (2s auto-save), hold-to-save (1s), slots 1–8 |
-| **Flash Preset Storage (device)** | `include/FlashPresetStorage.hpp`<br/>`firmware/include/PicoFlash.hpp` | `FlashPresetStorage` (2 sectors/slot, append + CRC), `FlashDevice`, `PicoFlash` (`flash_safe_execute`) |
-| **Hardware Driver Integration**| `include/DeviceApp.hpp`<br/>`firmware/src/firmware_main.cpp` | `DeviceApp`, `poll_inputs()` (press-and-turn slot, TAP+MUTATE 2 s reset/undo), `frame()`, `DualMidiOut` |
-| **Simulator Main & Stompbox UI** | `src/native_sim_main.cpp`<br/>`include/SimLayout.hpp`<br/>`include/SimPot.hpp` | Raylib loop, stompbox enclosure geometry, `KnobDrag`, expression encoder drag/scroll |
-| **CoreMIDI Router & Fallback** | `include/MidiRouter.hpp`<br/>`include/CoreMidiBackend.hpp` | `midi_route::Router`, `DEFAULT_DESTINATION` (`"FRASIL FM-1"`), auto-reconnect |
-| **OLED Renderer & Font** | `include/OledRenderer.hpp`<br/>`include/SimFont.hpp` | `OledRenderer::render()`, 128×32 / 128×64 modes, custom bitmap font |
-| **Unit Test Suite** | `tests/test_device_app.cpp`<br/>`tests/test_sim_layout.cpp`, etc. | 186 GoogleTest cases across 42 suites |
+| Pinout & detents | `include/hal/pinout.hpp` | `UART_TX/RX`, `ENC_A/B/SW`, `EXP_ENC_A/B/SW`, `FS_TAP/MUTATE/BYPASS` |
+| Menu pages P1–P12 | `include/SimControls.hpp` | `simui::adjust()`, `page_name()`, `footer()`, `preview_curve()` |
+| Synth state | `include/PhaseBoxState.hpp` | `advance()`, `evaluateMacros()`, `frozen`, `bypassed` |
+| Oscillator | `include/PhaseOscillator.hpp`, `src/PhaseOscillator.cpp` | `WaveShape`, `update()` |
+| Macro engine | `include/MacroEngine.hpp` | `MacroDestination` (`scale`, `offset`, `clock_mult`), `evaluate()` |
+| Turing register | `include/TuringMachine.hpp` | `mutation_prob`, `step()` |
+| Presets | `include/PresetSession.hpp`, `firmware/include/PresetManager.hpp` | 2 s auto-save, 1 s hold-to-save, slots 1–8 |
+| Flash storage | `include/FlashPresetStorage.hpp`, `firmware/include/PicoFlash.hpp` | 2 sectors/slot, append + CRC, `flash_safe_execute` |
+| Device driver | `include/DeviceApp.hpp`, `firmware/src/firmware_main.cpp` | `poll_inputs()`, `frame()`, `DualMidiOut` |
+| Simulator UI | `src/native_sim_main.cpp`, `include/SimLayout.hpp`, `include/SimPot.hpp` | Raylib loop, `KnobDrag` |
+| CoreMIDI | `include/MidiRouter.hpp`, `include/CoreMidiBackend.hpp` | `midi_route::Router`, `DEFAULT_DESTINATION` |
+| OLED | `include/OledRenderer.hpp`, `include/SimFont.hpp` | `render()`, 128×32 / 128×64 |
+| Tests | `tests/test_device_app.cpp`, `tests/test_sim_layout.cpp`, ... | GoogleTest |
+| Main board (KiCad) | `hardware/main-board/` | see its `README.md` |
 
----
+## Skills (`.agents/skills/<name>/SKILL.md`)
 
-## 🧠 Agent Skills & Task Runbooks (`.agents/skills/`)
+Read the matching one before working in its area: `phase-box` (master runbook, builds), `phase-box-firmware` (Pico SDK, pinout, Core 1, flash), `phase-box-sim` (Raylib, CoreMIDI), `phase-box-dsp-macro` (60 Hz pipeline, waveforms, Turing, P1–P12), `phase-box-presets` (PBX1 v3, CRC-32, saving), `raylib-hardware-sim`, `skill-creator`.
 
-Specialized procedures, architectural constraints, and step-by-step recipes are maintained in `.agents/skills/`. Agents (Claude, Gemini, Antigravity) should read the relevant `SKILL.md` when assigned tasks in these domains:
+## Build & Test
 
-| Domain / Task | Skill Directory | Key Topics |
-| :--- | :--- | :--- |
-| **Master Runbook** | [`.agents/skills/phase-box/SKILL.md`](.agents/skills/phase-box/SKILL.md) | Overall workflow, build commands, dual-core rules |
-| **RP2040 Firmware** | [`.agents/skills/phase-box-firmware/SKILL.md`](.agents/skills/phase-box-firmware/SKILL.md) | Pico SDK, cross-compiler, pinout, Core 1 OLED & screensaver |
-| **Simulator & Raylib UI** | [`.agents/skills/phase-box-sim/SKILL.md`](.agents/skills/phase-box-sim/SKILL.md) | Stompbox geometry, knob/expression-encoder drag, CoreMIDI, Raylib guide |
-| **DSP, Waveforms & Menu** | [`.agents/skills/phase-box-dsp-macro/SKILL.md`](.agents/skills/phase-box-dsp-macro/SKILL.md) | 60 Hz pipeline, waveform recipes, Turing LFSR, P1–P12 |
-| **Presets & Storage** | [`.agents/skills/phase-box-presets/SKILL.md`](.agents/skills/phase-box-presets/SKILL.md) | PBX1 v3 binary format, CRC-32, 2s auto-save, hold-to-save |
-| **Generic Hardware Sim** | [`.agents/skills/raylib-hardware-sim/SKILL.md`](.agents/skills/raylib-hardware-sim/SKILL.md) | Reusable template for building stompbox/hardware UIs with Raylib |
-| **Skill Creator** | [`.agents/skills/skill-creator/SKILL.md`](.agents/skills/skill-creator/SKILL.md) | Scaffolding and runbook for designing token-efficient agent skills |
-
----
-
-## 🛠️ Verification & Fast Build Commands
-
-* **Run all 186 Host Tests (430ms):**
-  ```bash
-  cmake -S tests -B build-test -DCMAKE_POLICY_VERSION_MINIMUM=3.5 && cmake --build build-test -j4 && ./build-test/run_host_tests
-  # Or helper script: ./.agents/skills/phase-box/scripts/build_host.sh
-  ```
-* **Build Desktop Simulator:**
-  ```bash
-  cmake -B build-native -S . -DCMAKE_POLICY_VERSION_MINIMUM=3.5 && cmake --build build-native -j4
-  ```
-* **Build RP2040 Firmware (.uf2):**
-  ```bash
-  # Helper script (auto-detects SDK and toolchain paths):
-  ./.agents/skills/phase-box/scripts/build_pico.sh
-
-  # Or manual execution:
-  export PATH="/Applications/CMake.app/Contents/bin:/Users/ww/tools/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin:$PATH"
-  export PICO_SDK_PATH="/Users/ww/src/pico-sdk"
-  cmake -S firmware -B firmware/build -DPICO_SDK_PATH="$PICO_SDK_PATH" && cmake --build firmware/build -j4
-  ```
+```bash
+./.agents/skills/phase-box/scripts/build_host.sh     # host tests (~430 ms)
+cmake -B build-native -S . -DCMAKE_POLICY_VERSION_MINIMUM=3.5 && cmake --build build-native -j4   # simulator
+./.agents/skills/phase-box/scripts/build_pico.sh     # firmware .uf2 (manual toolchain steps: phase-box-firmware skill)
+```
