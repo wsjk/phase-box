@@ -30,7 +30,7 @@ export PICO_SDK_PATH="/Users/ww/src/pico-sdk"
 
 ### 1. Host Unit Testing (GoogleTest on macOS)
 
-Fastest simulation, math verification, and regression testing without hardware (186 tests across 42 suites, ~430ms runtime):
+Fastest simulation, math verification, and regression testing without hardware (186 tests across 41 suites, ~430ms runtime):
 
 ```bash
 # Helper script (auto-detects tools and runs tests):

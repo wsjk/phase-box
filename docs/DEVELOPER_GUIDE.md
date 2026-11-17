@@ -153,7 +153,7 @@ phase-box/
 │   ├── include/PresetManager.hpp# Preset serialization, binary CRC validation, and storage interface
 │   ├── include/tusb_config.h    # TinyUSB stack configuration
 │   └── include/usb_descriptors.h# USB descriptor headers
-├── tests/                       # GoogleTest Host Unit Tests (149 tests across 37 suites)
+├── tests/                       # GoogleTest Host Unit Tests (186 tests across 41 suites)
 │   ├── CMakeLists.txt           # Standalone test runner build
 │   ├── test_device_app.cpp      # Full DeviceApp test driven by mock pins & inputs
 │   ├── test_device_blocks.cpp   # Isolated tests for Quadrature, Debounce, TapTempo, ScreenSaver
@@ -356,7 +356,7 @@ All algorithmic DSP math, macro scaling, device state machines, and MIDI routing
    cmake --build build-test -j4
    ./build-test/run_host_tests
    ```
-   *(All 186 unit tests across 42 suites will run and report status).*
+   *(All 186 unit tests across 41 suites will run and report status).*
 
 ---
 

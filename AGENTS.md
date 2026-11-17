@@ -2,7 +2,7 @@
 
 ## Ground Rules
 
-1. **Active code:** `DeviceApp.hpp`, `PhaseBoxState.hpp`, `MacroEngine.hpp`, `SimControls.hpp`, `PresetSession.hpp`. Built by the RP2040 firmware (`firmware/`), the simulator (`src/native_sim_main.cpp`) and the host tests (`tests/`, 186 tests in 42 suites).
+1. **Active code:** `DeviceApp.hpp`, `PhaseBoxState.hpp`, `MacroEngine.hpp`, `SimControls.hpp`, `PresetSession.hpp`. Built by the RP2040 firmware (`firmware/`), the simulator (`src/native_sim_main.cpp`) and the host tests (`tests/`, 186 tests in 41 suites).
    **DO NOT TOUCH `include/core/` OR `src/main.cpp`:** unbuilt legacy prototypes. Do not grep, import or edit them.
 2. **Dual-core firmware:** Core 0 runs encoders, debounce, the 60 Hz engine, `MidiChangeFilter`, MIDI out (UART0 GP0 + TinyUSB) and renders OLED frames into `SeqlockBuffer`. Core 1 alone owns `i2c0` (SSD1306, GP4/GP5) and the `ScreenSaver`.
    **Never do blocking I/O or I2C drawing on Core 0.** Only exception: preset saves, which go through `FlashPresetStorage` -> `PicoFlash` (details in the firmware skill).
@@ -12,6 +12,7 @@
    - Before committing code, build-file or hardware changes, run `ls docs/*.md`, then read `README.md` and every listed file. In the same commit, fix any text the change makes wrong (controls, pages, pinout, wiring, build commands, test counts). Also check `AGENTS.md`, affected `.agents/skills/` files and READMEs in the changed folder.
    - No changelog file: each merge to `main` is released automatically (`.github/workflows/release.yml`) with the merged PR titles as notes. Write the PR title as a release-note line. Label `minor` for a new feature or behaviour change, `major` for a breaking one (e.g. a preset format old presets cannot load); otherwise patch.
    - Fix only what the change makes wrong. Full audit: the `docs-drift-check` skill, if installed.
+   - Board or schematic changes (`hardware/`): use the `kicad-board` skill, if installed. Its `check.sh` must print CLEAN, and its `fab.sh` regenerates `fab/`, the schematic PDF and the renders in the same commit.
    - Say in the PR description which docs you updated, or that none needed it.
 
 ## File Map
