@@ -13,6 +13,7 @@ A two-layer carrier board for a Raspberry Pi Pico module, sized for a Hammond **
 | `fab/phase-box-gerbers.zip` | Gerbers + Excellon drill files, ready to upload to a fab |
 | `fab/phase-box-bom.csv`, `fab/phase-box-pos.csv` | Bill of materials and pick-and-place positions |
 | `fab/assembly-top.pdf`, `fab/assembly-bottom.pdf` | Assembly drawings (reference designators) |
+| `fab/fit-check-1to1.pdf` | Board, lid outline and panel holes at 1:1 on A4, for checking the fit before ordering |
 
 Status: the schematic passes ERC with no violations. The board is fully routed (Freerouting 2.5.0)
 with GND pours on both layers, and passes DRC with no violations, no unconnected items and no
@@ -31,8 +32,8 @@ track width is 0.15 mm because the router narrows some tracks to 0.19 mm between
 - **ENC1**: Alps EC11E encoder with push switch (value, page and save). **ENC2**: the same part
   (expression; its switch on GP9 is freeze).
 - **J5, OLED**: a 0.96" 128×64 SSD1306 I²C module, soldered directly on its 4 pins (no socket, to keep it under
-  the lid). Pin order **GND VCC SCL SDA**: some modules swap GND and VCC, so check yours. Build the firmware
-  with `-DPHASEBOX_OLED_HEIGHT=64`.
+  the lid). Pin order **GND VCC SCL SDA**: some modules swap GND and VCC, so check yours. The firmware
+  defaults to 64 rows to match.
 - **MIDI out (DIN and TRS)**: a 74LVC2G34 buffers GP0 into one output per jack, so each current loop has its
   own driver. 3.3 V MIDI values: 33 Ω to the source pin, 10 Ω to the sink pin. **SW1** chooses the TRS
   standard: slider toward the "A" end = Type A (tip = sink), "B" end = Type B (tip = source).
@@ -125,6 +126,9 @@ clears all three footswitch bodies.
 ## Not verified
 
 - **Mechanical fit.** The board stand-off height, the OLED window position (it depends on the module) and
-  where the jacks go on the wall have not been checked against a real 1590BB. Print the board 1:1 and
-  check it against the enclosure before ordering.
+  where the jacks go on the wall have not been checked against a real 1590BB. Print
+  `fab/fit-check-1to1.pdf` at 100 % (no "fit to page"), measure its 50 mm scale bar, then lay it on the
+  lid and check the holes and the board outline before ordering. The lid outline and holes are on the
+  Dwgs.User layer, which is not sent to the fab. To redo the PDF:
+  `kicad-cli pcb export pdf --mode-single --layers Edge.Cuts,Dwgs.User,F.Fab,F.CrtYd --ibt --black-and-white -o fab/fit-check-1to1.pdf phase-box.kicad_pcb`.
 - **Nothing has been built or tested.**

@@ -96,7 +96,7 @@ See [pinout_and_hardware.md](./references/pinout_and_hardware.md) for full circu
 ## 🩺 Hardware Bringup & Troubleshooting Checklist
 
 1. **Screen Blank**:
-   - Check if panel is 32 or 64 rows: recompile with `-DPHASEBOX_OLED_HEIGHT=64` if using a 128×64 display.
+   - Check if panel is 32 or 64 rows: the default is 64; recompile with `-DPHASEBOX_OLED_HEIGHT=32` if using a 128×32 display.
    - Check I2C address: standard is `0x3C`, some eBay/Amazon modules use `0x3D`.
    - Confirm GP4 (SDA) and GP5 (SCL) connections.
 2. **Display Inverted or Upside Down**:

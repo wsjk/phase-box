@@ -26,9 +26,9 @@
 #include "hal/pinout.hpp"
 #include "hal/seqlock_buffer.hpp"
 
-// OLED rows: 32 or 64 (set with -DPHASEBOX_OLED_HEIGHT=64, or cmake -DPHASEBOX_OLED_HEIGHT=64).
+// OLED rows: 64 or 32 (set with -DPHASEBOX_OLED_HEIGHT=32, or cmake -DPHASEBOX_OLED_HEIGHT=32).
 #ifndef PHASEBOX_OLED_HEIGHT
-#define PHASEBOX_OLED_HEIGHT 32
+#define PHASEBOX_OLED_HEIGHT 64
 #endif
 
 namespace {

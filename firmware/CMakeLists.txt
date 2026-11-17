@@ -6,8 +6,8 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
-# OLED rows: 32 or 64 (cmake -DPHASEBOX_OLED_HEIGHT=64 ..)
-set(PHASEBOX_OLED_HEIGHT 32 CACHE STRING "OLED panel height in pixels (32 or 64)")
+# OLED rows: 64 (the main board's 128x64 module) or 32 (cmake -DPHASEBOX_OLED_HEIGHT=32 ..)
+set(PHASEBOX_OLED_HEIGHT 64 CACHE STRING "OLED panel height in pixels (32 or 64)")
 
 add_executable(phase_box_firmware
     src/firmware_main.cpp

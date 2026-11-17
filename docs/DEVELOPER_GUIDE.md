@@ -327,7 +327,7 @@ Hardware pin mappings are defined in the HAL headers and drivers. To change a pi
   - `EXP_ENC_A` = GP7, `EXP_ENC_B` = GP8, `EXP_ENC_SW` = GP9 (expression encoder; its switch = freeze)
   - `UART_TX` = GP0, `UART_RX` = GP1 (`uart0`; `PicoHalMidi` defaults)
   - Free for future controls: GP13–GP22, GP26–GP28.
-* **OLED Configuration:** Set height with `cmake -DPHASEBOX_OLED_HEIGHT=64 ..` (32 rows by default; 64 rows supported). Default bus speed is 400 kHz (`-DPHASEBOX_OLED_I2C_HZ=1000000` for 1 MHz).
+* **OLED Configuration:** Set height with `cmake -DPHASEBOX_OLED_HEIGHT=32 ..` (64 rows by default, matching the main board; 32 rows supported). Default bus speed is 400 kHz (`-DPHASEBOX_OLED_I2C_HZ=1000000` for 1 MHz).
 * **Encoder Reversal / Detents:** Change `ENC_REVERSED`, `EXP_ENC_REVERSED` or `ENC_TRANSITIONS_PER_DETENT` (shared by both encoders) in [include/hal/pinout.hpp](../include/hal/pinout.hpp).
 
 ---
@@ -404,7 +404,7 @@ breadboard or PCB for the first time, verify these hardware integration points:
 
 1. **Build & Flash:** Run `./.agents/skills/phase-box/scripts/build_pico.sh` and drag `phase_box_firmware.uf2` onto the Pico in BOOTSEL mode.
 2. **USB:** The board should enumerate as a class-compliant USB MIDI device and stream CC messages (verify in macOS Audio MIDI Setup or a MIDI monitor app).
-3. **Screen blank?** Confirm the panel height (`cmake -DPHASEBOX_OLED_HEIGHT=64 ..` for 64 rows, 32 rows default), the I2C address
+3. **Screen blank?** Confirm the panel height (64 rows by default; `cmake -DPHASEBOX_OLED_HEIGHT=32 ..` for a 32-row panel), the I2C address
    (`0x3C`, some modules use `0x3D`), and SDA/SCL on GP4/GP5. The bus runs at 400 kHz; only raise it
    (`-DPHASEBOX_OLED_I2C_HZ=1000000`) if your module is happy at that speed.
 4. **Picture mirrored or upside down?** In `PicoHalDisplay::init()` change segment remap `0xA1` to `0xA0` and scan direction `0xC8` to `0xC0`.
