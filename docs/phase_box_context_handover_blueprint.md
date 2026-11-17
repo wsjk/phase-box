@@ -22,7 +22,7 @@ This document contains the complete state, architecture specifications, and impl
 3. **Preset State Serialization & Session (`firmware/include/PresetManager.hpp`, `include/PresetSession.hpp`):** Safe, atomic serialization with CRC32, dirty-timer auto-save (2s idle), hold-to-save (1s hold), and 8 preset slots.
 4. **OLED Screen Burn-In Protection (`include/ScreenSaver.hpp`, `firmware/src/firmware_main.cpp`):** Automatic inactivity timer (30 seconds) dimming SSD1306 contrast to minimum (`0x01`), with immediate restore to `0xCF` on user activity.
 5. **Desktop Simulator & Stompbox UI (`src/native_sim_main.cpp`, `include/SimLayout.hpp`, `include/SimPot.hpp`):** Raylib native desktop simulation with interactive mouse knob dragging, detent scrolling, expression encoder drag/scroll and click-to-freeze, three footswitches (TAP, MUTATE, BYPASS), and macOS CoreMIDI routing directly to `FRASIL FM-1`.
-6. **Host Test Suite (`tests/`):** 186 GoogleTest unit test cases across 42 test suites covering DSP math, hardware abstraction layers, DeviceApp simulation, preset session persistence, SimLayout geometry, and CoreMIDI routing.
+6. **Host Test Suite (`tests/`):** 186 GoogleTest unit test cases across 41 test suites covering DSP math, hardware abstraction layers, DeviceApp simulation, preset session persistence, SimLayout geometry, and CoreMIDI routing.
 
 ---
 

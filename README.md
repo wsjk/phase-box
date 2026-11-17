@@ -34,7 +34,7 @@ Designed specifically for controlling video synthesizers (such as LZX Industries
 - **Presets in Flash:** 8 slots saved to the last 64 KB of the RP2040's flash, with 2 s auto-save, wear levelling and power-loss-safe writes.
 - **Dual MIDI Output:** Hardware serial MIDI (31,250 baud on GP0) and plug-and-play USB-MIDI class compliance (TinyUSB).
 - **Desktop Simulator:** Native Raylib desktop visualizer featuring a realistic stompbox enclosure UI, interactive mouse knob dragging (circular or vertical) and wheel detents, drag/scroll expression encoder with value ring, clickable footswitches (TAP, MUTATE, BYPASS), click-to-freeze expression encoder, live waveform visualizer, preset management, freeze, and bypass modes. Routes directly to macOS `CoreMIDI` (defaulting to `FRASIL FM-1` or virtual DAW port).
-- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 186 unit tests across 42 test suites).
+- **Zero-Hardware Testing:** Fully decoupled Hardware Abstraction Layer (HAL) with a GoogleTest host test suite (`tests/`, 186 unit tests across 41 test suites).
 
 ---
 
