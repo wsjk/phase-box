@@ -47,8 +47,10 @@ TEST(SimLayout, FollowsTheDrawingInTheUserGuide) {
     EXPECT_TRUE(L.foot_tap.x < L.foot_mutate.x);                                // Tap on the left, then Mutate,
     EXPECT_TRUE(L.foot_mutate.x < L.foot_bypass.x);                             // then Bypass on the right
     EXPECT_NEAR(L.foot_bypass.y, L.foot_tap.y, 0.01f);
-    EXPECT_TRUE(L.exp_knob.x > L.foot_tap.x && L.exp_knob.x < L.foot_mutate.x); // expression encoder between the footswitches
-    EXPECT_NEAR(L.exp_knob.y, L.foot_tap.y, 0.01f);
+    EXPECT_TRUE(L.exp_knob_ring.x - L.exp_knob_ring.r > L.oled_bezel.x + L.oled_bezel.w); // expression encoder between
+    EXPECT_TRUE(L.exp_knob_ring.x + L.exp_knob_ring.r < L.knob_ring.x - L.knob_ring.r);   // the OLED and the value encoder,
+    EXPECT_NEAR(L.exp_knob.y, L.knob.y, 0.01f);                                            // on the same line (as on the PCB)
+    EXPECT_NEAR(L.exp_knob.x, L.foot_mutate.x, 0.01f);                                     // and above the MUTATE footswitch
     EXPECT_TRUE(L.jack_midi.y > L.foot_tap.y + L.foot_tap.r);                   // jacks along the bottom
     EXPECT_TRUE(L.usb_port.x > L.enclosure.x + L.enclosure.w / 2);              // USB-C at the top right
     EXPECT_TRUE(L.usb_port.y < L.enclosure.y + 40);

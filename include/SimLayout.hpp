@@ -51,21 +51,21 @@ struct Layout {
         Layout L;
         L.oled_rows = (rows == 32) ? 32 : 64;
         L.enclosure = {30, 20, 760, 470};
-        const float cy = 190;                                   // the OLED and the knob share this centre line
+        const float cy = 190;                                   // the OLED and both encoders share this centre line
         const float sw = 128.0f * L.oled_scale, sh = static_cast<float>(L.oled_rows * L.oled_scale);
         L.oled_screen = {70, cy - sh / 2, sw, sh};
         L.oled_bezel = {L.oled_screen.x - 10, L.oled_screen.y - 10, sw + 20, sh + 20};
-        L.knob = {650, cy, 58};
-        L.knob_ring = {650, cy, 72};
+        L.knob = {690, cy, 58};
+        L.knob_ring = {690, cy, 72};
         L.foot_tap = {160, 380, 46};
-        L.foot_mutate = {500, 380, 46};
+        L.foot_mutate = {536, 380, 46};             // under the expression encoder, as on the PCB
         L.foot_bypass = {680, 380, 46};
         L.led_tap = {160, 320, 7};
-        L.led_mutate = {500, 320, 7};
+        L.led_mutate = {536, 320, 7};
         L.led_bypass = {680, 320, 7};
         L.led_power = {270, 50, 4};
-        L.exp_knob = {330, 380, 40};
-        L.exp_knob_ring = {330, 380, 60};
+        L.exp_knob = {536, cy, 40};                 // between the OLED and the value encoder, as on the PCB
+        L.exp_knob_ring = {536, cy, 60};
         L.jack_midi = {110, 468, 14};
         L.usb_port = {702, 36, 52, 20};
         for (int i = 0; i < BUTTON_COUNT; ++i) L.buttons[i] = {940, 64.0f + 48.0f * i, 190, 36};

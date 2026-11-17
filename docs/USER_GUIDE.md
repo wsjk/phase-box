@@ -20,15 +20,15 @@ Phase Box features an intuitive physical control surface designed for live audio
        |   PHASE BOX                                   [USB-C] |
        |                                                       |
        |  +--------------------+                               |
-       |  | P1: WAVE  [SINE] * |      ( O ) ROTARY ENCODER     |
-       |  | ~~~~~~~~~~~~~~~~~~ |     (Turn: Value / Click: Page|
-       |  | VAL: SINE          |      Hold 1s: Preset Save)    |
-       |  +--------------------+                               |
-       |    128x32/64 OLED                                     |
+       |  | P1: WAVE  [SINE] * |   ( o )        ( O )          |
+       |  | ~~~~~~~~~~~~~~~~~~ | EXPRESSION  ROTARY ENCODER    |
+       |  | VAL: SINE          |  (click:    (Turn: Value /    |
+       |  +--------------------+  freeze)     Click: Page /    |
+       |    128x32/64 OLED                    Hold 1s: Save)   |
        |                                                       |
-       |  [TAP / RESET]  ( O )   [MUTATE / CYCLE]   [BYPASS]   |
-       |  Footswitch 1  EXPRESSION  Footswitch 2  Footswitch 3 |
-       |               (click: freeze)                         |
+       |  [TAP / RESET]          [MUTATE / CYCLE] [BYPASS]     |
+       |  Footswitch 1           Footswitch 2     Footswitch 3 |
+       |                                                       |
        |                                                       |
        |  [MIDI OUT DIN/TRS]                                   |
        +-------------------------------------------------------+
@@ -105,7 +105,7 @@ Pages **P4 (CHAN)**, **P5 (CC)**, **P9 (MAC WGT)**, **P10 (MAC DIV)**, and **P12
 7. Select the next destination on `P8` and repeat. All 3 streams output concurrently every cycle and are automatically saved to the active preset slot.
 
 ### 3.2 Expression Encoder (Global Depth)
-The second rotary encoder (on the PCB, beside the value encoder; in the simulator, between the footswitches) sets one depth value for all destinations:
+The second rotary encoder (between the OLED and the value encoder, above the MUTATE footswitch) sets one depth value for all destinations:
 - Each click moves the value by **0.05**; it stops at **0.00** and **1.00** (20 clicks end to end).
 - At **0.00**: Modulation depth is halved (50%). This is the value at power-up.
 - At **1.00**: Modulation is at full depth.
