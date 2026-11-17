@@ -223,7 +223,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    // OLED rows: 64 by default; PHASE_BOX_OLED_ROWS=32 previews the 128x32 panel the firmware defaults to.
+    // OLED rows: 64 by default; PHASE_BOX_OLED_ROWS=32 previews a 128x32 panel (firmware -DPHASEBOX_OLED_HEIGHT=32).
     const char* rows_env = std::getenv("PHASE_BOX_OLED_ROWS");
     const Layout L = Layout::make(rows_env ? std::atoi(rows_env) : 64);
 

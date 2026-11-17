@@ -144,7 +144,7 @@ public:
         gpio_pull_up(sda_pin_);
         gpio_pull_up(scl_pin_);
 
-        // SSD1306 Initialization sequence for 128x32
+        // SSD1306 initialization sequence for 128x32 and 128x64
         send_cmd(0xAE); // Display OFF
         send_cmd(0xD5); // Set Display Clock Divide Ratio
         send_cmd(0x80);
