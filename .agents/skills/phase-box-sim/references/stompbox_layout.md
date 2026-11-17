@@ -55,6 +55,6 @@ The encoder knob supports two drag modalities plus mouse wheel detents:
 
 ## Expression Encoder
 
-* `L.exp_knob` / `L.exp_knob_ring`, between the footswitches. It uses its own `KnobDrag` and wheel accumulator, so it never turns the value knob.
+* `L.exp_knob` / `L.exp_knob_ring`, between the OLED and the value knob, above MUTATE (as on the PCB). It uses its own `KnobDrag` and wheel accumulator, so it never turns the value knob.
 * Every click calls `PhaseBoxState::turn_expression(±1)`: 1/20 per click, clamped to 0.0–1.0 (same code path as the firmware).
 * `draw_expression_encoder()` shows the value as an amber arc from −135° (0.0) to +135° (1.0).

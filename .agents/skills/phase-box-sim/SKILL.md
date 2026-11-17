@@ -54,7 +54,7 @@ The simulator provides a 1:1 graphical model of the physical hardware enclosure.
   * **Mouse Wheel / Trackpad Scroll:** Turns the knob in discrete detents (`detents_from_wheel()`).
   * **Circular Drag:** Drag along outer rim clockwise to increment, counter-clockwise to decrement.
   * **Vertical Drag:** Click near knob center and drag straight up or down.
-* **Expression Encoder** (between the footswitches):
+* **Expression Encoder** (between the OLED and the value knob, above MUTATE):
   * Drag (circular or vertical, own `KnobDrag`) or scroll over it; each click calls `PhaseBoxState::turn_expression()`. Amber ring + number show 0.00–1.00.
 * **Footswitches:**
   * Click **TAP** footswitch to tap tempo and reset LFO phase.

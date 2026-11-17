@@ -160,7 +160,7 @@ The enclosure is drawn with three layers:
 * When clicked (`pressed = true`), the inner cap radius contracts and drops down by 2 pixels to simulate mechanical spring travel.
 
 ### 4.5 The Expression Encoder (`draw_expression_encoder`, lines 202–208)
-* The second rotary encoder on the unit, between the footswitches (`L.exp_knob`, value ring `L.exp_knob_ring`).
+* The second rotary encoder on the unit, between the OLED and the value knob and above MUTATE, as on the PCB (`L.exp_knob`, value ring `L.exp_knob_ring`).
 * Drawn with `draw_knob` in endless-encoder mode (15° ticks); the pointer turns 15° per click.
 * An amber arc on the ring shows `state.expression` (0 at −135°, 1 at +135°), with the value printed under the `EXPRESSION` label.
 * Input: drag it with its own `simlayout::KnobDrag` (circular or vertical), scroll over the ring (`detents_from_wheel`), or press `[Z]` / `[X]`. Every click calls `PhaseBoxState::turn_expression()`, the same function the firmware's `DeviceApp` uses.
@@ -225,11 +225,11 @@ All geometric dimensions live in `Layout::make()` in [include/SimLayout.hpp](../
 static Layout make(int rows) {
     Layout L;
     L.enclosure = {30, 20, 760, 470}; // x, y, width, height
-    const float cy = 190;             // shared center line for OLED & Knob
-    
-    L.knob = {650, cy, 58};           // cx, cy, radius
-    L.foot_tap = {262, 380, 46};      // cx, cy, radius
-    L.exp_knob = {456, 380, 40};      // cx, cy, radius (expression encoder)
+    const float cy = 190;             // shared center line for the OLED and both encoders
+
+    L.knob = {690, cy, 58};           // cx, cy, radius
+    L.foot_tap = {160, 380, 46};      // cx, cy, radius
+    L.exp_knob = {536, cy, 40};       // cx, cy, radius (expression encoder)
     // ...
     return L;
 }
